@@ -1,0 +1,330 @@
+/*
+ * CSS for the editor only
+ * (Any CSS that needs to be exported with the game should go in
+ * the style tag "exportableCSS" in index.html)
+ *
+ */
+
+div#editor {
+	width: 50%;
+	float: left;
+	font-family: monospace;
+}
+body#gs_export div#editor {
+	display: none;
+}
+
+.source {
+	display: none;
+}
+
+input#chooseFile {
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 8px;
+}
+
+div#editContainer {
+	position: relative;
+	height: 60%;
+	border: 1px solid #888888;
+	margin-right: 8px;
+	font-size: 11pt;
+}
+textarea#gsEdit {
+	white-space: pre-wrap;
+	background-color: transparent;
+	color: transparent;
+	caret-color: white;
+	z-index: 1;
+	left: 3em;
+	border: 0px;
+	font-size: inherit;
+	font: inherit;
+	resize: none;
+}
+div.light textarea#gsEdit {
+	caret-color: black;
+}
+/* with large scripts, syntax highlighting can take time;
+during that time, make the textarea visible */
+textarea#gsEdit.waiting {
+	color: #ffffff;
+	background-color: #000000;
+}
+div.light textarea#gsEdit.waiting {
+	color: #000000;
+	background-color: #ffffff;
+}
+textarea#gsEdit:focus-visible {
+	outline: 0;
+}
+.gsEdit {
+	width: calc(100% - 3em);
+	height: 100%;
+	overflow-y: scroll;
+	overflow-wrap: break-word;
+	font-family: monospace;
+	background-color: #000000;
+	color: #ffffff;
+	white-space: pre-wrap;
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: inline-block;
+	padding: 0px;
+}
+div.light .gsEdit {
+	color: #000000;
+}
+div.light .gsEdit {
+	background-color: #ffffff;
+}
+div.gsEdit p {
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+div.line {
+	position: relative;
+}
+div.lineNumber {
+	float: left;
+	text-indent:-3em;
+	width: 3em;
+	text-align: right;
+	z-index: 2;
+	/* width: -3em; */
+	/* border-left: 3em solid #111111; */
+	background-color: #222222;
+	position: relative;
+	left: -3em;
+	color: #555555;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+div.light div.lineNumber {
+	background-color: #aaaaaa;
+	color: #dddddd;
+}
+div.lineNumber.warning {
+	color: #00ff00;
+}
+div.light div.lineNumber.warning {
+	background-color: #009900;
+	color: #ffffff;
+}
+div.lineNumber.error {
+	color: #ff0000;
+}
+div.light div.lineNumber.error {
+	background-color: #ff0000;
+	color: #ffffff;
+}
+div#syntaxHighlighting {
+	z-index: 0;
+	padding-left: 3em;
+}
+
+/* editor syntax highlighting */
+span.blockType {
+	color: #ff3333;
+}
+span.comment {
+	color: #999999;
+}
+span.command {
+	color: #33ccff;
+}
+span.assertion {
+	color: #00ff99;
+}
+span.iterator {
+	color: #ff0099;
+}
+span.specialtag {
+	color: #ff99cc;
+}
+span.prop {
+	color: #ffff00;
+}
+span.variable {
+	color: #99cccc;
+}
+span.number {
+	color: #99cccc;
+}
+span.string {
+	color: #00ffff;
+}
+/* same in light mode */
+div.light span.blockType {
+	color: #990000;
+}
+div.light span.comment {
+	color: #666666;
+}
+div.light span.command {
+	color: #003366;
+}
+div.light span.assertion {
+	color: #009966;
+}
+div.light span.iterator {
+	color: #990066;
+}
+div.light span.specialtag {
+	color: #996600;
+}
+div.light span.prop {
+	color: #666600;
+}
+div.light span.variable {
+	color: #006666;
+}
+div.light span.number {
+	color: #006666;
+}
+div.light span.string {
+	color: #009933;
+}
+
+
+
+div#gs_controls {
+	text-align: center;
+	background-color: #000033;
+	border: 1px solid #0000cc;
+	margin: 8px 8px 0 0;
+	padding: 8px;
+	border-radius: 8px;
+}
+div#console_container {
+	margin: 0 8px 0 0;
+	padding: 4px 0 4px 0;
+	text-align: center;
+}
+div#gs_console {
+	text-align: left;
+	height: 15%;
+	background-color: #000000;
+	color: #999999;
+	border: 1px solid #333333;
+	margin: 0px auto 4px auto;
+	padding: 8px;
+	padding: 8px 24px;
+	overflow-y: scroll;
+}
+button#clear_console {
+	text-align: center;
+	margin: 0 auto;
+	background-color: #000000
+	color: #00cc00;
+}
+div#gs_console span.error {
+	color: #ff3333;
+}
+div#gs_console span.runtime_error {
+	color: #ff33ff;
+}
+div#gs_console span.runtime_warning {
+	color: #33ffff;
+}
+div#gs_console span.warning {
+	color: #33ff33;
+}
+div#gs_console a {
+	color: #6666ff;
+}
+div#editor button {
+	background-color: #ffffff;
+	color: #000000;
+	font-family: monospace;
+}
+div#fileOpsContainer {
+	padding-bottom: 4px;
+}
+div#fileOpsContainer div.buttonGroup {
+	display: inline-block;
+}
+label#import {
+	cursor: pointer;
+	border: 1px solid #0000cc;
+	background-color: #000066;
+	border-radius: 25px;
+	font-size: 10pt;
+	padding: 1px 4px;
+	display: inline-block;
+}
+.fileButton {
+	text-decoration: none;
+	color: #9999ff;
+	cursor: pointer;
+	border: 1px solid #0000cc;
+	background-color: #000066;
+	border-radius: 25px;
+	font-size: 10pt;
+	padding: 1px 4px;
+	display: inline-block;
+}
+div#examplesMenu {
+	display: none;
+	position: absolute;
+	width: max-content;
+	z-index: 2;
+	background-color: #000033;
+	border: 1px solid #333399;
+	left: -2px;
+}
+div#examplesMenu a {
+	text-decoration: none;
+	display: block;
+	padding: 2px 4px;
+}
+div#examplesMenu a:not(:first-of-type) {
+	border-top: 1px solid #333399;
+}
+div#examplesMenu a:hover {
+	background-color: #333366;
+	color: #ccccff;
+}
+
+div#toggleDarkButton {
+	float: right;
+	margin-right: 8px;
+}
+
+/* tooltips */
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #000000;
+  color: #fff;
+  text-align: center;
+  padding: 4px 1px;
+  border-radius: 6px;
+  border: 1px solid #ffffff;
+  font-style: italic;
+  
+  position: absolute;
+  z-index: 1;
+  top: 105%;
+  left: 0;
+}
+.tooltip .tooltiptext.right {
+	top: 0;
+	left: 105%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}		</style>
