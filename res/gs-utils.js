@@ -68,6 +68,7 @@ $(document).ready(function() {
 		GRUESCRIPT_SAVED = false;
 	});
 	// only allow pasting plain text
+	/*
 	GSEDIT.addEventListener('paste', function(e) {
 		// Prevent the default action
 		e.preventDefault();
@@ -95,6 +96,7 @@ $(document).ready(function() {
 			selection.addRange(range);
 		}
 	});
+	 */
 
 	GSEDIT.addEventListener('scroll', function() {
 		syncScroll();

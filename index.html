@@ -917,6 +917,12 @@ Gruescript.iterator_lists = {
 			return things;
 		}
 	},
+	dirs: {
+		args: ['room'],
+		func: function(room) {
+			return Obj.keys(Game.rooms[room].directions);
+		}
+	},
 	these: {
 		args: ['+value'],
 		func: function(values) {
