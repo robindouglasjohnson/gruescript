@@ -2560,6 +2560,12 @@ function describe_room() {
 		}
 		/* else push an unavailable exit marker of same width? */
 	});
+	// author-defined directions
+	for(var weird_direction in hero_location().directions) {
+		if(!exitOrder.includes(weird_direction)) {
+			exits.push(draw_button(weird_direction, "go('"+weird_direction+"')",false,true,true));
+		}
+	}
 	
 	if(exits.length) {
 		

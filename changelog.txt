@@ -1,5 +1,9 @@
 
 2021-08-19
+- fixed unconventional directions declared with 'dir'
+
+- fixed parser logs for rules and procedures (thanks DanyUP)
+
 - fixed 'dirs' in iterations
 - ignore ':' in an inline comment
 - tagdescs can now contain braced expressions
