@@ -2358,14 +2358,14 @@ function buildGame(runP) {
 		gs_console('build failed');
 		return false;
 	}
-	gs_console_append('...rules built ('+SetverbsIn.length+')');
+	gs_console_append('...rules built ('+RulesIn.length+')');
 	
 	gs_console('building procedures...');
 	if(!buildProcs()) {
 		gs_console('build failed');
 		return false;
 	}
-	gs_console_append('...rules built ('+SetverbsIn.length+')');
+	gs_console_append('...procedures built ('+Object.keys(ProcsIn).length+')');
 	
 	gs_console('building variables...');
 	if(!buildVariables()) {
