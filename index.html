@@ -137,7 +137,7 @@ div#scroller {
 }
 div#scroller button {
 	background-color: #000000;
-	line-height: 1.5;
+	line-height: 1.33;
 }
 span.prompt {
 	color: #9999cc;
@@ -151,17 +151,17 @@ span.old_message {
 div#room_description_container {
 	/* overflow: hidden */
 	background-color: #000055;
-	line-height: 1.5;
+	line-height: 1.33;
 	color: #ccccff;
 }
 div#room_description {
 	overflow: stretch;
 	height: auto; 
 	padding: 8px 4% 2px 4%;
-	line-height: 1.5;
+	line-height: 1.33;
 }
 div#room_description div.im_in {
-	/* line-height: 1; */
+	/* line-height: 1.33; */
 }
 
 @media (orientation: portrait) {
@@ -215,6 +215,8 @@ button.examine {
 } */
 
 div#room_description button {
+	padding-top: 1px;
+	padding-bottom: 1px;
 	background-color: #000022;
 }
 div#room_description button.examine {
@@ -263,7 +265,7 @@ div#inventory {
 	/* border: 1px solid #000044; */
 	padding: 2px 8px 2px 8px;
 	
-	line-height: 1.5;
+	line-height: 1.33;
 }
 
 div#holding_container {
@@ -278,13 +280,17 @@ div#holding {
 	/* border: 1px solid #000044; */
 	padding: 8px;
 	
-	line-height: 1.5;
+	line-height: 1.33;
 }
 div#holding button {
+	padding-top: 1px;
+	padding-bottom: 1px;
 	background-color: #000033;
 }
 
 div#inventory button {
+	padding-top: 1px;
+	padding-bottom: 1px;
 	background-color: #000033;
 	padding-left: 0.5cm;
 	padding-right: 0.5cm;
@@ -302,9 +308,11 @@ div#save_load_container {
 }
 div#save_load {
 	text-align: center;
-	line-height: 1.5;
+	line-height: 1.33;
 }
 div#save_load button {
+	padding-top: 1px;
+	badding-bottom: 1px;
 	background-color: #000000;
 }
 
@@ -321,7 +329,7 @@ div#saved_games {
 	
 	display: none;
 	
-	line-height: 1.5;
+	line-height: 1.33;
 	
 }
 div#saved_games button {
@@ -341,7 +349,7 @@ div#options {
 	
 	display: none;
 	
-	line-height: 1.5;
+	line-height: 1.33;
 }
 
 div#options button {
@@ -361,7 +369,7 @@ div#credits {
 	
 	display: none;
 	
-	line-height: 1.5;
+	line-height: 1.33;
 }
 
 div#credits button {
@@ -599,6 +607,17 @@ Gruescript.commands = {
 			remove_tag(Game.vars.room, tag);
 		}
 	},
+	clear: {
+		args: ['tag'],
+		func: function(tag) {
+			for(var thing in Game.things) {
+				Gruescript.commands.untag.func(thing, tag);
+			}
+			for(var room in Game.rooms) {
+				Gruescript.commands.untag.func(room, tag);
+			}
+		}
+	},
 	assign: { // set variable value
 		args: ['variable', 'value'],
 		func: function(variable, vval) {
@@ -639,6 +658,18 @@ Gruescript.commands = {
 			var dicesides = parseInt(num);
 			var result = dicesides ? 1 + pick(dicesides) : 0;
 			Gruescript.commands.assign.func(variable, result);
+		}
+	},
+	count: { // count the items in a list
+		args: ['variable', 'lister'],
+		func: function(variable, list) {
+			Gruescript.commands.assign.func(variable, list.length);
+		}
+	},
+	pick: {
+		args: ['variable', 'lister'],
+		func: function(variable, list) {
+			Gruescript.commands.assign.func(variable, pickOne(list));
 		}
 	},
 	say: {
@@ -796,6 +827,12 @@ Gruescript.assertions = {
 			return Game.rooms.hasOwnProperty(room);
 		}
 	},
+	contains: {
+		args: ['value', 'lister'],
+		func: function(value, list) {
+			return list.includes(value);
+		}
+	},
 	is: {
 		args: ['variable', 'string'],
 		func: function(val1, val2) {
@@ -849,8 +886,8 @@ Gruescript.iterators = {
 	'select': {
 		mode: 'until_succeed'
 	}
-}
-Gruescript.iterator_lists = {
+};
+Gruescript.listers = {
 	carried: {
 		args: [],
 		func: function() {
@@ -920,7 +957,7 @@ Gruescript.iterator_lists = {
 	dirs: {
 		args: ['room'],
 		func: function(room) {
-			return Obj.keys(Game.rooms[room].directions);
+			return Object.keys(Game.rooms[room].directions);
 		}
 	},
 	these: {
@@ -929,10 +966,24 @@ Gruescript.iterator_lists = {
 			return values;
 		}
 	}
+};
+function is_instruction(word) {
+	if (Gruescript.commands[word] || Gruescript.assertions[word] || Gruescript.iterators[word]) {
+		return true;
+	}
+	if(word.charAt(0)=='!') {
+		var ord = word.substring(1);
+		return !!(Gruescript.assertions[word] || Gruescript.iterators[word]);
+	} else {
+		return false;
+	}
 }
 
-
 function verifyWord(word, verifyAs) {
+	if(verifyAs=='lister') {
+		// this has aready been checked
+		return true;
+	}
 	if(typeof verifyAs == 'string' && verifyAs.charAt(0)=='+') {
 		var plustype = verifyAs.substring(1);
 		for(var i in word) {
@@ -942,7 +993,7 @@ function verifyWord(word, verifyAs) {
 		}
 		return true;
 	}
-	if(typeof verifyAs == 'string' || typeof verifyAs == 'number') {
+	if(typeof verifyAs == 'string') {
 		switch(verifyAs) {
 			case 'variable':
 				return legal_name(word,true);
@@ -956,6 +1007,8 @@ function verifyWord(word, verifyAs) {
 				return !!Game.things[word];
 			case 'number':
 				return numeric(word);
+			case 'lister':
+				return !!Gruescript.listers[word];
 			case 'string': // ANYTHING can be a string
 			case 'value':  // or a value
 				return true;
@@ -980,6 +1033,9 @@ function check_args(words, argtypes, commandName, lineN) {
 		var thistype = argtypes[i];
 		//console.log('thistype is '+thistype);
 		var thisword = words[i];
+		if(typeof thisword=='undefined') {
+			return do_runtime_error('not enough arguments for "'+commandName+'"');
+		}
 		if(!verifyWord(thisword, thistype)) {
 			var allowedtypes = (typeof thistype==='string') ? thistype : join_with_or(thistype, true);
 			do_error(lineN, '"'+thisword+'" is not a '+allowedtypes);
@@ -1007,18 +1063,18 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	if(isIterator) {
 		//console.log('iterator_list is: '+words[1]);
 		var iterator_list = words[1];
-		if(!Gruescript.iterator_lists[iterator_list]) {
-			return do_error(lineN, '"'+words[1]+'" is not a valid iterator list');
+		if(!Gruescript.listers[iterator_list]) {
+			return do_error(lineN, '"'+words[1]+'" is not a valid lister');
 		}
 		// for the purposes of verifying argumnets, treat the iterator_list as a command
-		command = Gruescript.iterator_lists[iterator_list];
+		command = Gruescript.listers[iterator_list];
 	} else {
 		command = Gruescript[isAssertion ? 'assertions' : 'commands'][commandName];
 	}
 
 	var passedArgs = [];
 	var numArgs = command.args.length;
-
+	//console.log('command is ', command);
 	var passedArgs = [];
 	for(var i=0;i<command.args.length;++i) {
 		if(command.args[i]==='string') {
@@ -1034,15 +1090,39 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 			}
 			passedArgs.push(argsArray);
 			break;
+		} else if(command.args[i]=='lister') {
+			var lister = words[1+i];
+			if(!Gruescript.listers[lister]) {
+				return do_error(lineN, '"'+lister+'" is not a lister');
+			}
+			var listerArgs = words.slice(2+i);
+			var argsArray = [];
+			for(var j in listerArgs) {
+				argsArray.push(evalProps(listerArgs[j]));
+			}
+			for(var j=0; j<Gruescript.listers[lister].args.length; ++j) {
+				var argType = Gruescript.listers[lister].args[j];
+				if(!verifyWord(argsArray[j], argType)) {
+					return do_error(lineN, '"'+argsArray[j] + '" is not a '+argType + ' (for '+lister+')');
+				}
+			}
+			var listIn = Gruescript.listers[lister].func(argsArray);
+			passedArgs.push(listIn);
+			break;
 		}
 		
 		if(command.args[i]=='variable') {
 			passedArgs.push(words[isIterator ? 2+i : 1+i]);
 		} else {
-			passedArgs.push(evalProps(words[isIterator ? 2+i : 1+i]));
+			var nextword = words[isIterator ? 2+i : 1+i];
+			if(!nextword) {
+				return do_error(lineN, 'not enough arguments for "'+commandName+'" (expected '+command.args[i]+')');
+			}
+			passedArgs.push(evalProps(nextword));
 		}
 	}
 	
+	//console.log('command is '+commandName);
 	//console.log('passedArgs is ' + JSON.stringify(passedArgs));
 	// verify arguments
 	//console.log('command.args is '+JSON.stringify(command.args));
@@ -1240,14 +1320,14 @@ function runSteps(steps, lineN) {
 		
 		//console.log(steps[i])
 		
-		var thisstep = '';
+		var thisstep = stripComments(steps[i]);
 		var message = '';
-		var colonIx = steps[i].indexOf(':');
+		var colonIx = thisstep.indexOf(':');
 		if(colonIx==-1) {
-			thisstep = steps[i];
+			// nothing
 		} else {
-			thisstep = steps[i].substring(0,colonIx);
-			message = stripComments(steps[i].substring(1+colonIx)).trim();
+			message = thisstep.substring(1+colonIx).trim();
+			thisstep = thisstep.substring(0,colonIx);
 		}
 		
 		// iterators are special
@@ -1634,7 +1714,7 @@ function getGameData() {
 					colour = '#' + colour;
 				}
 				$('html > head').append('\n<style>' + cssSelector + ' { '+ cssProperty + ' : ' + colour + ' !important}</style>');
-			} else if(Object.keys(Gruescript.commands).includes(firstwd)) {
+			} else if(is_instruction(firstwd)) {
 				if(!gameData.intro) {
 					gameData.intro = [];
 				}
@@ -2620,11 +2700,12 @@ function draw_button(display_text, script, is_examine, is_direction, is_inventor
 
 function get_tagdescs(thing) {
 	var tagDescs = [];
+	Game.vars['this'] = thing;
 	for(var i in Game.things[thing].tags) {
 		var tag = Game.things[thing].tags[i];
 		// tags with descriptions allow them to be printed after the noun
 		if(Tags[tag]) {
-			tagDescs.push(Tags[tag]);
+			tagDescs.push(expandBraces(Tags[tag]));
 		}
 	}
 	return tagDescs;
@@ -2967,8 +3048,11 @@ function go(direction) {
 	// see if any "conditional exit" type verbs stop the move
 	for(var i=0;i<Verbs.length;++i) {
 		var verb = Verbs[i];
-		if(verb.verb=='go' && verb.thing==direction) {
+		if(verb.verb=='go' && (!verb.thing || verb.thing==direction)) {
 			stopped = runSteps(verb.steps);
+			if(stopped) {
+				break;
+			}
 		}
 	}
 	
@@ -3175,7 +3259,7 @@ function runProc(proc) {
 
 function do_setverbs() {
 	var things = get_things_in_scope();
-	var alreadyset = [];
+	var alreadyset = {};
 	////console.log('things in scope: ' +things.join(' '));
 	
 	for(var i=0;i<Setverbs.length;++i) {
@@ -3194,12 +3278,12 @@ function do_setverbs() {
 				continue;
 			}
 			
-			if(!alreadyset.includes(verb+' '+thing)) {
+			if(!alreadyset[verb+' '+thing]) {
 				var whetherset = runSteps(Setverbs[i].steps, Setverbs[i].lineN);
 				set_active(thing, verb,  whetherset);
 				////console.log('setting it: '+whetherset);
 				if(whetherset) {
-					alreadyset.push(verb+' '+thing);
+					alreadyset[verb+' '+thing]=true;
 				}
 			} //else //console.log("(it's already been set)");
 		} else {
@@ -3215,11 +3299,11 @@ function do_setverbs() {
 					activate_verb(thing, verb);
 				}
 				
-				if(!alreadyset.includes(verb+' '+thing)) {
+				if(!alreadyset[verb+' '+thing]) {
 					var whetherset = runSteps(Setverbs[i].steps, Setverbs[i].lineN);
 					set_active(thing, verb,  whetherset);
 					if(whetherset) {
-						alreadyset.push(verb+' '+thing);
+						alreadyset[verb+' '+thing]=true;
 					}
 				}
 			}
@@ -3235,6 +3319,7 @@ function do_setverbs() {
 		}
 		for(var j in verbs) {
 			activate_verb(thing, verbs[j]);
+			alreadyset[verbs[j]+' '+thing]=true;
 		}
 	}
 	
@@ -3245,10 +3330,10 @@ function do_setverbs() {
 		var isPortable = has_tag(thing, 'portable');
 		var isWearable = has_tag(thing,'wearable');
 		var isWorn = has_tag(thing,'worn');
-		set_active(thing,'take',isPortable && !isCarried);
-		set_active(thing,'drop',isCarried && !isWorn);
-		set_active(thing,'wear',isWearable && !isWorn && (!isPortable || isCarried));
-		set_active(thing,'remove',isWorn);
+		set_active(thing,'take',(isPortable && !isCarried)||alreadyset['take '+thing]);
+		set_active(thing,'drop',(isCarried && !isWorn)||alreadyset['drop '+thing]);
+		set_active(thing,'wear',(isWearable && !isWorn && (!isPortable || isCarried))||alreadyset['wear '+thing]);
+		set_active(thing,'remove',isWorn||alreadyset['remove '+thing]);
 	}
 }
 
@@ -3917,6 +4002,9 @@ function pick(n) { // random number 0 to n-1
 function pickOne(arr) { // random element of an array
 	if(typeof arr == 'string') {
 		console.error("watch out - pickOne was called with a string argument!");
+	}
+	if(arr.length==0) {
+		return null;
 	}
 	return arr[pick(arr.length)];
 }
@@ -4739,21 +4827,15 @@ NativeVerbs = [
 				
 				<p>
 					Print room title in scroller:
-					<input type="checkbox" id="roomdesc_always" name="roomdesc_always" />
-					<label for="roomdesc_always">Always</label>
-					<input checked="checked" type="checkbox" id="roomdesc_landscape" name="roomdesc_landscape" />
-					<label for="roomdesc_landscape">Landscape&nbsp;only</label>
-					<input type="checkbox" id="roomdesc_never" name="roomdesc_never" />
-					<label for="roomdesc_never">Never</label>
+					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_always" name="roomdesc_always" /><label for="roomdesc_always">Always</label></div>
+					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="roomdesc_landscape" name="roomdesc_landscape" /><label for="roomdesc_landscape">Landscape&nbsp;only</label></div>
+					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_never" name="roomdesc_never" /><label for="roomdesc_never">Never</label></div>
 				</p>
 				<p>
 					List objects in scroller:
-					<input type="checkbox" id="listobj_always" name="listobj_always" />
-					<label for="listobj_always">Always</label>
-					<input type="checkbox" id="listobj_landscape" name="listobj_landscape" />
-					<label for="listobj_landscape">Landscape&nbsp;only</label>
-					<input checked="checked" type="checkbox" id="listobj_never" name="listobj_never" />
-					<label for="listobj_never">Never</label>
+					<div style="display: inline-block;"><input type="checkbox" id="listobj_always" name="listobj_always" /><label for="listobj_always">Always</label></div>
+					<div style="display: inline-block;"><input type="checkbox" id="listobj_landscape" name="listobj_landscape" /><label for="listobj_landscape">Landscape&nbsp;only</label></div>
+					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="listobj_never" name="listobj_never" /><label for="listobj_never">Never</label></div>
 				</p>
 				
 				<p style="text-align: center;"><button type="button" onClick="hide_options()">done</button></p>

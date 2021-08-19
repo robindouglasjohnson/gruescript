@@ -792,7 +792,7 @@ verb hang
 display hang {$held} # how it's displayed in the button
 prompt hang {$held} on {$this} # how it's displayed at the mock command prompt
 tag $held hooked # add an (author-defined) tag
-say You hang {the $held} on the {the $this}.
+say You hang {the $held} on {the $this}.
 put $held $this.loc # 'held' and 'this' are special contextual variables
 
 tagdesc hooked on hook # will be displayed with the object

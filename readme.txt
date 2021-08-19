@@ -1,8 +1,16 @@
-
 GRUESCRIPT
+
+Gruescript is a scripting language/online tool for creating
+point-n-click text adventures. For more information and full
+documentation, see the docs/gruescript.odt (LibreOffice format).
 
 'index.html' is the Gruescript tool. This is identical to the online
 version. It should run from your filesystem with no problems.
+
+The directory 'res' contains javascript and css. To make it easy for
+Gruescript to download the authored game (especially when running from
+the filesystem), only editor-specific code and styling is included in
+these files. The rest is embedded in index.html.
 
 The directory 'stuff' contains two files:
 
@@ -43,5 +51,7 @@ https://creativecommons.org/licenses/by/3.0/
 BUGS
 
 Gruescript is still in beta and there will be many of these. Please
-report to robindouglasjohnson@gmail.com, with details of what happened,
-what you were doing, and what browser you were using. Thanks!
+raise an issue on github
+<https://github.com/robindouglasjohnson/gruescript> or report to
+robindouglasjohnson@gmail.com, with details of what happened, what you
+were doing, and what browser you were using. Thanks!
