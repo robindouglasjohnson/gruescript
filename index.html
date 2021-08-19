@@ -1830,6 +1830,15 @@ function buildroom(block) {
 					roomData.tags.push(words[j]);
 				}
 			}
+		} else if(firstwd=='prop') {
+			if(!words[1]) {
+				return do_error(lineN, 'prop must have a property name');
+			} else if(!legal_name(words[1])) {
+				return do_error(lineN, '"'+words[1]+'" is not a valid property name');
+			} else {
+				var propName = words[1];
+				roomData.props[propName] = wordsFrom(words,2);
+			}
 		} else {
 			return do_error(lineN, 'didn\'t understand "'+firstwd+'" in room declaration');
 		}
@@ -4403,7 +4412,7 @@ function set_plain_colours(plainp) {
 
 function change_font() {
 	var font = $('#font_select').val();
-	$('body').css('font-family', font + ', ' + font + '_ie');
+	$('body').css('font-family', font);
 	
 	localStorage.setItem(Game.id + 'options_font', font);
 	
@@ -4418,7 +4427,7 @@ function restore_display_options() {
 		var size = localStorage.getItem(Game.id + 'options_fontsize');
 		
 		$('body').css({
-			'font-family': font + ', ' + font + '_ie',
+			'font-family': font,
 			'font-size': size + 'pt'
 		});
 		
