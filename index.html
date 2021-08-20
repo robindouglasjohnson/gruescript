@@ -2898,7 +2898,7 @@ function expandBraces(txt) {
 		variableName = wordsBetween[0];
 	}
 	
-	var variableValue = evalProps(variableName, true, article);
+	var variableValue = ''+evalProps(variableName, true, article);
 	////console.log('variableValue evaluated as "'+variableValue+'"');
 	
 	variableValue = expandBraces(variableValue);
