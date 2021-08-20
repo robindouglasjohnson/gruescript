@@ -2715,7 +2715,8 @@ function draw_button(display_text, script, is_examine, is_direction, is_inventor
 
 function get_tagdescs(thing) {
 	var tagDescs = [];
-	Game.vars['this'] = thing;
+	THISES.push(getVariableValue('this'));
+	Game.vars['this']=thing;
 	for(var i in Game.things[thing].tags) {
 		var tag = Game.things[thing].tags[i];
 		// tags with descriptions allow them to be printed after the noun
@@ -2723,6 +2724,7 @@ function get_tagdescs(thing) {
 			tagDescs.push(expandBraces(Tags[tag]));
 		}
 	}
+	Game.vars['this']=THISES.pop();
 	return tagDescs;
 }
 
