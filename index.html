@@ -4153,6 +4153,7 @@ function load_game(game_name, suppress_message) {
 	GAME_OVER = false;
 	Game = JSONfn.parse(localStorage.getItem(Game.id + '_' + game_name));
 	$('#saved_games').fadeOut();
+	$('#editor').fadeIn();
 	$('#room_description').html('');
 	say_if(!suppress_message, "Game restored from '" + game_name + "'");
 	clear_undo_stack();
@@ -4171,6 +4172,7 @@ function delete_game(game_name, suppress_message) {
 	if(suppress_message || confirm("Really delete game '" + game_name + "'?")) {
 		localStorage.removeItem(Game.id + '_' + game_name);
 		$('#saved_games').fadeOut();
+		$('#editor').fadeIn();
 		if(!suppress_message) {
 			dim_old_messages();
 			say('');
@@ -4195,6 +4197,7 @@ function delete_stored_game() {
 
 function goto_loader() {
 	$('#room_description').slideDown();
+
 	var html = 'Restore saved game<br/><br/>';
 	
 	var i=0;
@@ -4222,12 +4225,14 @@ function goto_loader() {
 	html += "<br/>" + draw_button("cancel", "remove_loader()");
 	
 	$('#saved_games').html(html);
+	$('#editor').fadeOut();
 	$('#saved_games').fadeIn();
 	
 }
 
 function remove_loader() {
 	$('#saved_games').fadeOut();
+	$('#editor').fadeIn();
 }
 
 
