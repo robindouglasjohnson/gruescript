@@ -445,6 +445,26 @@ COLOURS = {
 		selector: '#scroller',
 		property: 'color'
 	},
+	main_text_old: {
+		selector: '.old_message',
+		property: 'color'
+	},
+	main_prompt: {
+		selector: '.prompt',
+		property: 'color'
+	},
+	main_prompt_old: {
+		selector: '.old_prompt',
+		property: 'color'
+	},
+	instructions_button: {
+		selector: '#scroller button',
+		property: 'background-color'
+	},
+	instructions_button_text: {
+		selector: '#scroller button',
+		property: 'color'
+	},
 	room_background: {
 		selector: '#room_description_container',
 		property: 'background-color'
@@ -3171,7 +3191,7 @@ function do_verb(verb, thing, not_a_turn) {
 		dim_old_messages();
 		say('');
 		say('<span class="prompt">&gt; ' + phrasing + '</span>');
-		push_undo_state(phrasing);
+		push_undo_state(expandBraces(phrasing));
 		Game.vars.held = Game.held ? Game.held : 0;
 	}
 	
@@ -4888,6 +4908,7 @@ NativeVerbs = [
 						<a onClick="loadExample('Locks and keys');">Locks and keys</a>
 						<a onClick="loadExample('NPCs');">NPCs</a>
 						<a onClick="loadExample('Cloak of Darkness');">Cloak of Darkness</a>
+						<a onClick="loadExample('The Party Line');">The Party Line<br/>(full game)</a>
 					</div>
 				</div>
 				<div class="fileButton" id="toggleDarkButton" onClick="toggleDark();">Dark</div>
