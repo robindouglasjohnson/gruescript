@@ -3895,7 +3895,7 @@ function a_thing(thing, caps, capsForThing) {
 		desc = Game.things[thing].props.display // not name!
 		isThing = true;
 	} else {
-		desc = thing;
+		desc = ''+thing;
 	}
 	if(capsForThing) {
 		desc = capitalise(desc);
