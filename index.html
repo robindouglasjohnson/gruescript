@@ -848,13 +848,13 @@ Gruescript.assertions = {
 	gt: {
 		args: ['number', 'number'],
 		func: function(val1, val2) {
-			return val1 > val2;
+			return parseInt(val1) > parseInt(val2);
 		}
 	},
 	lt: {
 		args: ['number', 'number'],
 		func: function(val1, val2) {
-			return val1 < val2;
+			return parseInt(val1) < parseInt(val2);
 		}
 	},
 	'continue': {
