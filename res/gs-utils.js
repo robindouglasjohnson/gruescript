@@ -833,9 +833,9 @@ examine off
 person 2
 assign maxscore 5
 assign maxinv 6
-say You're still not sure what this party is about. The invitation \
-	came and, well, you weren't doing anything else. The cab drops you\
-	off and pulls away.
+say You're still not sure what this party is about. The invitation \\
+    came and, well, you weren't doing anything else. The cab drops you\\
+    off and pulls away.
 say
 status {$room.Display} | Score {$score}/{$maxscore}
 
@@ -861,8 +861,8 @@ verbs knock
 
 verb knock front_door
 prompt knock on $this
-say An elderly doorman answers the door, ushers you in, and locks the \
-	door behind you.
+say An elderly doorman answers the door, ushers you in, and locks the \\
+    door behind you.
 goto foyer
 
 room foyer You're in a grand foyer at the foot of a staircase.
@@ -914,31 +914,31 @@ verb talk doorman
 eq $score 0
 random x 4
 !eq $x 1: "Why not enjoy some music in the ballroom to the north?"
-!eq $x 2: "Help yourself to some refreshments in the dining hall. It's \
-	through the ballroom, north then east."
-!eq $x 3: "<span class="treasure">Treasures</span> may be deposited in \
-	the cloakroom to the east."
+!eq $x 2: "Help yourself to some refreshments in the dining hall. It's \\
+    through the ballroom, north then east."
+!eq $x 3: "<span class="treasure">Treasures</span> may be deposited in \\
+    the cloakroom to the east."
 !eq $x 4: "Guests who enjoy plants are invited to view the conservatory to the west."
 # first floor
 verb talk doorman
 gt $score 0
 lt $score 5
 random x 4
-!eq $x 1: "For those of a sporting disposition, there is a billiard room upstairs. \
-	Bring your own balls."
-!eq $x 2: "Books on a narrow variety of topics are available in the upstairs library, \
-	accessible through the billiard room."
+!eq $x 1: "For those of a sporting disposition, there is a billiard room upstairs. \\
+    Bring your own balls."
+!eq $x 2: "Books on a narrow variety of topics are available in the upstairs library, \\
+    accessible through the billiard room."
 !eq $x 3: "There is a comfortable home cinema, upstairs and to the west."
-!eq $x 4: "Lavatory conveniences are available on the first floor. Or for our American \
-	friends, a 'bathroom' exists on the 'second' floor."
+!eq $x 4: "Lavatory conveniences are available on the first floor. Or for our American \\
+    friends, a 'bathroom' exists on the 'second' floor."
 # further up
 verb talk doorman
 eq $score 5
 random x 2
-!eq $x 1: "The master bedroom is on the second floor, or more incorrectly the 'third' \
-	floor. I am afraid it is off limits to guests."
-!eq $x 2: "There is a splendid roof garden atop of the building, boasting spectacular \
-	views of the surrounding environs. STAY OUT."
+!eq $x 1: "The master bedroom is on the second floor, or more incorrectly the 'third' \\
+    floor. I am afraid it is off limits to guests."
+!eq $x 2: "There is a splendid roof garden atop of the building, boasting spectacular \\
+    views of the surrounding environs. STAY OUT."
 
 thing key front door key
 tags portable
@@ -1531,20 +1531,20 @@ verb talk roadie
 random year 40
 add year 1969 # 1970 to 2009
 run set_band_name
-say The roadie tells you about the time she toured with {$band_name} \
-	in {$year}.
+say The roadie tells you about the time she toured with {$band_name} \\
+    in {$year}.
 
 proc set_band_name
-pick adjective these Steel Screaming Metal Flying Crashing Rocking \
-	Temperate Fuschia Dark Impenetrable Partial Lime Sandy Polar \
-	Magenta Creamy Thankful Nocturnal Artillery Contorted Hateful \
-	Tasteless President Wiry Celestial Nuclear War Cyan Sergeant Flat \
-	Crystal Large Short Wooden Paper
-pick noun these Insect Airship Woman Fred Tulip Rock Vampire King Honey\
-	Bolognese Vulture Tiger Birthday Gate Lad Maid Cop Tree Pin \
-	Skeleton Murderer Graveyard String Belief Sutra Sect Face Occasion \
-	Garden Lizard Sorcerer Weight Hatchet Building Spider Mollusc \
-	Distance Servant Devil Toad Scarf Weather Ocean Knife Kidney Speed
+pick adjective these Steel Screaming Metal Flying Crashing Rocking \\
+    Temperate Fuschia Dark Impenetrable Partial Lime Sandy Polar \\
+    Magenta Creamy Thankful Nocturnal Artillery Contorted Hateful \\
+    Tasteless President Wiry Celestial Nuclear War Cyan Sergeant Flat \\
+    Crystal Large Short Wooden Paper
+pick noun these Insect Airship Woman Fred Tulip Rock Vampire King Honey\\
+    Bolognese Vulture Tiger Birthday Gate Lad Maid Cop Tree Pin \\
+    Skeleton Murderer Graveyard String Belief Sutra Sect Face Occasion \\
+    Garden Lizard Sorcerer Weight Hatchet Building Spider Mollusc \\
+    Distance Servant Devil Toad Scarf Weather Ocean Knife Kidney Speed
 random x 2
 write band_name {$adjective} {$noun}
 eq $x 1
@@ -1670,7 +1670,7 @@ has $this drinkable
 proc chef_trigger
 sayat dining_hall A head chef enters the room from the north. "They have finished all the {$just_eaten}!" she yells.
 sayat dining_hall She walks back north.
-sayat kitchen The head chef pops her head through the door to the south. \
+sayat kitchen The head chef pops her head through the door to the south. \\
 "They have finished all the {$just_eaten}!" she yells.
 
 room kitchen
@@ -1704,8 +1704,8 @@ verb talk sous_chef
 verb talk sous_chef # while wearing chef's hat
 !lt sous_chef.anger 4
 say The sous-chef shouts "That's it! I quit!"
-say He takes off his washing-up glvoes and throws them a the floor, \
-	then storms out.
+say He takes off his washing-up glvoes and throws them a the floor, \\
+    then storms out.
 bring gloves
 hide sous_chef
 
@@ -1717,8 +1717,8 @@ add sous_chef.anger 1
 !eq sous_chef.anger 1: "Let me be, boss, I'm working as fast as I can."
 !eq sous_chef.anger 2: "Please, boss, you're undervaluing me."
 !eq sous_chef.anger 3: "Stop pestering me, boss, let me do my job!"
-!eq sous_chef.anger 4: "Boss, I swear if you criticise me one more \
-	time, I'll quit!"
+!eq sous_chef.anger 4: "Boss, I swear if you criticise me one more \\
+    time, I'll quit!"
 
 thing cheese_tray tray of cheeses
 name cheese tray
@@ -1763,25 +1763,25 @@ run push_orders
 
 proc take_tray
 thingat $tray kitchen
-sayat kitchen The sous-chef picks up {the $tray}, carries it south, and\
-	comes back.
-sayat dining_hall A sous-chef arrives with {a $tray}, sets it down, and\
-	goes back north.
+sayat kitchen The sous-chef picks up {the $tray}, carries it south, and\\
+    comes back.
+sayat dining_hall A sous-chef arrives with {a $tray}, sets it down, and\\
+    goes back north.
 put $tray.contents dining_hall
 hide $tray
 
 proc take_tray # tray not at kitchen
-sayat kitchen The head chef shouts to the sous-chef, "We have run out \
-	of {$tray.contents}! How could you let this happen!"
-sayat kitchen She takes her hat off, throws it at the floor, and \
-	storms out in a rage.
-sayat dining_hall With a furious cry of "OUT of {$tray.CONTENTS}!", a \
-	head chef storms in from the north, and leaves to the west.
-sayat ballroom An enraged head chef storms in from the east, elbows \
-	her way through the crowd, and leaves to the south.
-sayat foyer An enraged head chef storms in from the north. The doorman \
-	opens the door to allow her to leave, then immediately locks it \
-	behind her.
+sayat kitchen The head chef shouts to the sous-chef, "We have run out \\
+    of {$tray.contents}! How could you let this happen!"
+sayat kitchen She takes her hat off, throws it at the floor, and \\
+    storms out in a rage.
+sayat dining_hall With a furious cry of "OUT of {$tray.CONTENTS}!", a \\
+    head chef storms in from the north, and leaves to the west.
+sayat ballroom An enraged head chef storms in from the east, elbows \\
+    her way through the crowd, and leaves to the south.
+sayat foyer An enraged head chef storms in from the north. The doorman \\
+    opens the door to allow her to leave, then immediately locks it \\
+    behind her.
 hide head_chef
 put chefs_hat kitchen
 
@@ -1803,8 +1803,8 @@ here sous_chef
 run sous_chef_guard_star
 
 proc sous_chef_guard_star
-!has chefs_hat worn: The sous-chef won't let you. "You said you wanted \
-	to keep that on display, boss."
+!has chefs_hat worn: The sous-chef won't let you. "You said you wanted \\
+    to keep that on display, boss."
 say The sous-chef won't let you.
 
 thing refrigerator
@@ -1849,9 +1849,9 @@ say Some things fall out.
 assign $this.contents 0
 assign container $this
 all things
-	eq $this.contained_in $container
-	bring $this
-	assign $this.contained_in 0
+    eq $this.contained_in $container
+    bring $this
+    assign $this.contained_in 0
 
 thing wrench
 prop contained_in cupboards
@@ -1889,7 +1889,7 @@ verbs look
 verb look photographs
 display look
 prompt look at photographs
-say The photographs go back several decades. They show various rooms \
+say The photographs go back several decades. They show various rooms \\
 in this house, always with a party going on.
 
 thing teenager teenage boy (crying on stairs)
@@ -1967,8 +1967,8 @@ here tv
 eq $plot_introduced 0
 run make_tv_action
 run make_tv_scene
-say On the TV, {a $primary_character} is {$action} \
-	{a $secondary_character} in {a $tv_scene}.
+say On the TV, {a $primary_character} is {$action} \\
+    {a $secondary_character} in {a $tv_scene}.
 assign plot_introduced 1
 
 proc watch_tv
@@ -1980,25 +1980,25 @@ proc nextscene
 eq $x 1
 run advance_plot
 run make_tv_action
-say On the TV, {the $primary_character} is now {$action} \
-	{a $secondary_character} in {a $tv_scene}.
+say On the TV, {the $primary_character} is now {$action} \\
+    {a $secondary_character} in {a $tv_scene}.
 proc nextscene
 eq $x 2
 run make_tv_scene
 run make_new_characters
 run make_tv_action
-say The TV cuts to a {$tv_scene}, where {a $primary_character} is \
-	{$action} {a $secondary_character}.
+say The TV cuts to a {$tv_scene}, where {a $primary_character} is \\
+    {$action} {a $secondary_character}.
 proc nextscene
 eq $x 3
 run make_tv_action
-say On the TV, {the $primary_character} and {the $secondary_character} \
-	are now {$action} each other.
+say On the TV, {the $primary_character} and {the $secondary_character} \\
+    are now {$action} each other.
 proc nextscene
 eq $x 4
 run make_tv_character
-say On the TV, {the $primary_character} and {the $secondary_character} \
-	are now {$action} {a $character}.
+say On the TV, {the $primary_character} and {the $secondary_character} \\
+    are now {$action} {a $character}.
 random y 5
 eq $y 1 # replace one of the characters
 pick replaced_character these primary_character secondary_character
@@ -2007,8 +2007,8 @@ proc nextscene
 eq $x 5
 run make_tv_character
 run make_tv_action
-say On the TV, {the $primary_character} and {the $secondary_character} \
-	are now {$action} {a $character}.
+say On the TV, {the $primary_character} and {the $secondary_character} \\
+    are now {$action} {a $character}.
 random y 5
 eq $y 1 # replace one of the characters
 pick replaced_character these primary_character secondary_character
@@ -2016,8 +2016,8 @@ assign $replaced_character $character # note assignment to variable REFERENCE
 proc nextscene
 eq $x 6
 run make_tv_scene
-say On the TV, {the $primary_character} and {the $secondary_character} \
-	arrive at {a $tv_scene}.
+say On the TV, {the $primary_character} and {the $secondary_character} \\
+    arrive at {a $tv_scene}.
 proc nextscene
 eq $x 7
 run make_tv_character
@@ -2046,28 +2046,28 @@ eq $x 2 # keep the primary character and change the secondary
 assign secondary_character $character
 
 proc make_tv_character
-pick character these robot ape man woman prince princess knight wizard \
-	hobbit elf vampire werewolf cat dog blob captain \
-	shark cowboy soldier zombie alien astronaut ghost \
-	dinosaur cop lieutenant horse giant bat superhero terrorist \
-	president witch farmer motorcyclist athlete miner boxer trucker \
-	criminal assassin detective mobster archeologist servant professor \
-	mermaid spy housewife clown singer fishwife geisha goth governor \
-	ninja samurai maid model grandmother grandfather actor actress \
-	nerd nun nurse doctor peasant pilot scientist
-	
+pick character these robot ape man woman prince princess knight wizard \\
+    hobbit elf vampire werewolf cat dog blob captain \\
+    shark cowboy soldier zombie alien astronaut ghost \\
+    dinosaur cop lieutenant horse giant bat superhero terrorist \\
+    president witch farmer motorcyclist athlete miner boxer trucker \\
+    criminal assassin detective mobster archeologist servant professor \\
+    mermaid spy housewife clown singer fishwife geisha goth governor \\
+    ninja samurai maid model grandmother grandfather actor actress \\
+    nerd nun nurse doctor peasant pilot scientist
+    
 proc make_tv_scene
 assign old_scene $tv_scene
-pick tv_scene these spaceship island skyscraper lake lagoon railway field \
-	stadium school city moon ship planet crater explosion wedding funeral \
-	lab bunker ruin castle restaurant cafe airport farm village inn \
-	forest mine mountain ocean beach desert church prison cemetary \
-	apartment courtroom store elevator fairground library museum \
-	office mall theatre aeroplane
-	
+pick tv_scene these spaceship island skyscraper lake lagoon railway field \\
+    stadium school city moon ship planet crater explosion wedding funeral \\
+    lab bunker ruin castle restaurant cafe airport farm village inn \\
+    forest mine mountain ocean beach desert church prison cemetary \\
+    apartment courtroom store elevator fairground library museum \\
+    office mall theatre aeroplane
+    
 proc make_tv_action
-pick action these kissing fighting chasing punching killing \
-	shooting hitting
+pick action these kissing fighting chasing punching killing \\
+    shooting hitting
 
 thing comfy_chairs comfy chairs
 name chairs
@@ -2120,8 +2120,8 @@ proc make_popcorn
 say A robotic voice says "NO--BUCKET--DETECTED"
 
 proc make_popcorn
-say A robotic arm extends, grabs the popcorn bucket, and draws it \
-	inside the machine.
+say A robotic arm extends, grabs the popcorn bucket, and draws it \\
+    inside the machine.
 hide bucket
 !has bucket water
 say The bucket reappears, filled with fresh popcorn.
@@ -2149,8 +2149,8 @@ verb take oscar
 here popcorn_machine
 !has popcorn_machine broken
 say A robotic voice says "ATTEMPTED--THEFT--DETECTED"
-say A robotic arm extends from the popcorn machine, grabs the Oscar, \
-	and puts it back.
+say A robotic arm extends from the popcorn machine, grabs the Oscar, \\
+    and puts it back.
 
 room billiard_room You're in a billiard room.
 prop display Billiard room
@@ -2227,8 +2227,8 @@ has geometry_book torn
 say A few pages have been ripped out, but nothing important.
 continue
 verb read geometry_book
-say You flick through the book, and learn a few facts about lines and \
-	angles.
+say You flick through the book, and learn a few facts about lines and \\
+    angles.
 tag geometry_book read
 
 
@@ -2289,8 +2289,8 @@ verb knock bathroom_door
 has $held paper: A voice whispers, "Paper!"
 assign paper $held
 hide $paper
-say The door briefly openes. A hand shoots out and grabs {the $paper}. \
-	"That'll do!"
+say The door briefly openes. A hand shoots out and grabs {the $paper}. \\
+    "That'll do!"
 say The door closes and locks. You hear ripping paper.
 tag queue moving
 eq $paper geometry_book
@@ -2375,8 +2375,8 @@ held wrench
 
 verb unbolt toilet_seat
 here man_in_bath
-say "Hey!" says the man in the bath. "You can't go dismantling other \
-	people's bathrooms."
+say "Hey!" says the man in the bath. "You can't go dismantling other \\
+    people's bathrooms."
 
 verb unbolt toilet_seat
 say It comes loose.
@@ -2458,8 +2458,8 @@ continue
 
 verb talk man_in_bath
 tag man_in_bath spoken
-!eq man_in_bath.talk_cycle 1: "I copped off with a hot medical \
-	student, then woke up here."
+!eq man_in_bath.talk_cycle 1: "I copped off with a hot medical \\
+    student, then woke up here."
 !eq man_in_bath.talk_cycle 2: "I think she stole my kidneys!"
 !eq man_in_bath.talk_cycle 3: "Please fetch me some clothes so I can get out."
 
@@ -2506,8 +2506,8 @@ up roof_landing
 verb go up
 at second_floor_landing
 here drunk_person
-say The passed out drunk person is lying on the stairs, blocking the \
-	way.
+say The passed out drunk person is lying on the stairs, blocking the \\
+    way.
 
 thing drunk_person passed out drunk person (on stairs)
 loc second_floor_landing
@@ -2533,14 +2533,14 @@ verbs talk
 
 verb talk host
 has dancers crumbled
-say "Thank you, thank you," he says. "Now please leave. I could do \
-	with some sleep."
+say "Thank you, thank you," he says. "Now please leave. I could do \\
+    with some sleep."
 
 verb talk host
 !has host talked
 say The old man looks at you with exhausted eyes.
-say "Please lift the curse," he says weakly. "This party has been \
-	going on for over 90 years! I just want my house back.
+say "Please lift the curse," he says weakly. "This party has been \\
+    going on for over 90 years! I just want my house back.
 say Here... you'll need this access pass for the roof garden."
 give garden_pass
 tag host talked
@@ -2604,8 +2604,8 @@ verbs enter
 verb enter sky_palace
 lt $score 5
 say A magical forcefield blocks your way.
-say An ethereal voice chants: "Only the five-times blessed may enter \
-	the Palace of Celebria!"
+say An ethereal voice chants: "Only the five-times blessed may enter \\
+    the Palace of Celebria!"
 
 verb enter sky_palace
 say OK.
@@ -2685,8 +2685,8 @@ run meet_celebria
 verb talk celebria
 !has boombox got
 say Celebria takes pity on you.
-say "Very well, mortal. I shall give you the means to lift the curse. Use \
-	this artefact wisely, for it holds diabolical power!
+say "Very well, mortal. I shall give you the means to lift the curse. Use \\
+    this artefact wisely, for it holds diabolical power!
 say She lifts Her arms, and a devilish boombox descends from on high.
 bring boombox
 tag boombox got
@@ -2804,5 +2804,4 @@ has John crumbled
 tag band crumbled
 hide band
 tag roadie crumbled
-hide roadie
-`;
+hide roadie`;
