@@ -2717,7 +2717,6 @@ has boombox boombox_playing
 inscope boombox
 assign playing_here 1
 add track 1
-#this way you don't even have to increment the numbers
 !eq $track 1: The boombox plays "Mull of Kintyre."
 !eq $track 2: The boombox plays "Agadoo."
 !eq $track 3: The boombox plays "Delilah."
@@ -2731,7 +2730,7 @@ add track 1
 !eq $track 11: The boombox plays "The Millennium Prayer."
 !eq $track 12: The boombox plays "The Birdie Song."
 !eq $track 13: The boombox plays "Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini."
-!eq $track 14: The boombox plays "Living Next Door to Alive."
+!eq $track 14: The boombox plays "Living Next Door to Alice."
 !eq $track 15: The boombox plays "Teletubbies Say 'Eh-Oh'."
 !eq $track 16: The boombox plays "Earth Song."
 !eq $track 17: The boombox plays "I Wish I Could Fly."
