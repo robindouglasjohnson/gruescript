@@ -2718,46 +2718,46 @@ has boombox boombox_playing
 inscope boombox
 assign playing_here 1
 add track 1
-!eq $track 1: The boombox plays "Mull of Kintyre."
-!eq $track 2: The boombox plays "Agadoo."
-!eq $track 3: The boombox plays "Delilah."
-!eq $track 4: The boombox plays "Achy Breaky Heart."
-!eq $track 5: The boombox plays "Crazy Frog."
-!eq $track 6: The boombox plays "Mr Blobby."
-!eq $track 7: The boombox plays "Barbie Girl."
-!eq $track 8: The boombox plays "Thong Song."
-!eq $track 9: The boombox plays "The Cheeky Song."
-!eq $track 10: The boombox plays "You're Beautiful."
-!eq $track 11: The boombox plays "The Millennium Prayer."
-!eq $track 12: The boombox plays "The Birdie Song."
-!eq $track 13: The boombox plays "Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini."
-!eq $track 14: The boombox plays "Living Next Door to Alice."
-!eq $track 15: The boombox plays "Teletubbies Say 'Eh-Oh'."
-!eq $track 16: The boombox plays "Earth Song."
-!eq $track 17: The boombox plays "I Wish I Could Fly."
-!eq $track 18: The boombox plays "Friday."
-!eq $track 19: The boombox plays "Surfin' Bird."
-!eq $track 20: The boombox plays "Star Trekkin'."
-!eq $track 21: The boombox plays "Im' Too Sexy."
-!eq $track 22: The boombox plays "Mmmbop."
-!eq $track 23: The boombox plays "The Hamster Dance."
-!eq $track 25: The boombox plays "Could It Be Magic."
-!eq $track 26: The boombox plays "Get Ready For This."
-!eq $track 27: The boombox plays "Chirpy Chirpy Cheep Cheep."
-!eq $track 28: The boombox plays "Candle in the Wind."
-!eq $track 29: The boombox plays "Rockin' Robin."
-!eq $track 30: The boombox plays "The Fog on the Tyne."
-!eq $track 31: The boombox plays "Shaddap You Face."
-!eq $track 32: The boombox plays "Hooray Hooray It's a Holi-Holiday."
-!eq $track 33: The boombox plays "There's No One Quite Like Grandma."
-!eq $track 34: The boombox plays "The Chicken Song."
-!eq $track 35: The boombox plays "All I Want For Christmas is You."
-!eq $track 36: The boombox plays "I Wanna Be a Hippy."
-!eq $track 37: The boombox plays "I Should Be So Lucky."
-!eq $track 38: The boombox plays "No Limits."
-!eq $track 39: The boombox plays "Do Ya Think I'm Sexy."
-!eq $track 40: The boombox plays "Saturday Night Dance."
-say The boombox plays "My Ding-a-Ling."
+!eq $track 1: The boombox plays "Mull of Kintyre".
+!eq $track 2: The boombox plays "Agadoo".
+!eq $track 3: The boombox plays "Delilah".
+!eq $track 4: The boombox plays "Achy Breaky Heart".
+!eq $track 5: The boombox plays "Crazy Frog".
+!eq $track 6: The boombox plays "Mr Blobby".
+!eq $track 7: The boombox plays "Barbie Girl".
+!eq $track 8: The boombox plays "Thong Song".
+!eq $track 9: The boombox plays "The Cheeky Song".
+!eq $track 10: The boombox plays "You're Beautiful".
+!eq $track 11: The boombox plays "The Millennium Prayer".
+!eq $track 12: The boombox plays "The Birdie Song".
+!eq $track 13: The boombox plays "Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini".
+!eq $track 14: The boombox plays "Living Next Door to Alice".
+!eq $track 15: The boombox plays "Teletubbies Say 'Eh-Oh'".
+!eq $track 16: The boombox plays "Earth Song".
+!eq $track 17: The boombox plays "I Wish I Could Fly".
+!eq $track 18: The boombox plays "Friday".
+!eq $track 19: The boombox plays "Surfin' Bird".
+!eq $track 20: The boombox plays "Star Trekkin'".
+!eq $track 21: The boombox plays "Im' Too Sexy".
+!eq $track 22: The boombox plays "Mmmbop".
+!eq $track 23: The boombox plays "The Hamster Dance".
+!eq $track 25: The boombox plays "Could It Be Magic".
+!eq $track 26: The boombox plays "Get Ready For This".
+!eq $track 27: The boombox plays "Chirpy Chirpy Cheep Cheep".
+!eq $track 28: The boombox plays "Candle in the Wind".
+!eq $track 29: The boombox plays "Rockin' Robin".
+!eq $track 30: The boombox plays "The Fog on the Tyne".
+!eq $track 31: The boombox plays "Shaddap You Face".
+!eq $track 32: The boombox plays "Hooray Hooray It's a Holi-Holiday".
+!eq $track 33: The boombox plays "There's No One Quite Like Grandma".
+!eq $track 34: The boombox plays "The Chicken Song".
+!eq $track 35: The boombox plays "All I Want For Christmas is You".
+!eq $track 36: The boombox plays "I Wanna Be a Hippy".
+!eq $track 37: The boombox plays "I Should Be So Lucky".
+!eq $track 38: The boombox plays "No Limits".
+!eq $track 39: The boombox plays "Do Ya Think I'm Sexy".
+!eq $track 40: The boombox plays "Saturday Night Dance".
+say The boombox plays "My Ding-a-Ling".
 assign track 0
 
 rule
