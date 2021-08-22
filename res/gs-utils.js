@@ -543,8 +543,8 @@ assign talking 0
 !eq $endconv 0: You stop talking to {the $talkee}.
 say {$endconv}
 
-conversation ends automatically with no message if the talkee is no longer in scope
-(probably because you left the room)
+#conversation ends automatically with no message if the talkee is no longer in scope
+#(probably because you left the room)
 rule
 eq $talking 1
 !inscope $talkee
