@@ -333,7 +333,48 @@ div#saved_games {
 	
 }
 div#saved_games button {
-	background-color: #000000;
+	color: #cccccc;
+	background-color: #333333;
+}
+div#saved_games button:first-of-type {
+	color: #ffffff;
+	background-color: #666666;
+}
+
+div.save_prompt {
+	display: none;
+	text-align: center;
+	margin: 2px;
+	padding: 8px;
+	background-color: #111111;
+	color: #ffffff;
+	line-spacing: 1.5;
+}
+div.save_prompt button {
+	color: #000000;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+div.restart_prompt {
+	display: none;
+	text-align: center;
+	margin: 2px;
+	padding: 8px;
+}
+div.restart_prompt button {
+	padding-top: 1px;
+	padding-bottom: 1px;
+	color: #000000;
+}
+input#save_name {
+	width: 40%;
+	font-family: inherit;
+	font-size: inherit;
+}
+#saved_games button.confirm_delete {
+	background-color: #cccccc;
+	color: #000000;
+	display: none;
 }
 
 div#options {
@@ -2763,9 +2804,12 @@ function describe_room_in_scroller() {
 
 INV_ICONS = false;
 
-function draw_button(display_text, script, is_examine, is_direction, is_inventory, is_held) {
+function draw_button(display_text, script, is_examine, is_direction, is_inventory, is_held, classname, id) {
 	// is_examine and is_direction shouldn't both be true
-	return '<button type="button" ' + (is_examine? 'class="examine" ' : '') +(is_direction? 'class="direction" ' : '') + 'onClick="' + script + '" ' + (is_held ? 'disabled="disabled" ' : '') + '>' + expandBraces(display_text) + '</button>';
+	return '<button ' +
+		(classname?'class="'+classname+'" ':'') +
+		(id?'id="'+id+'" ':'') +
+		'type="button" ' + (is_examine? 'class="examine" ' : '') +(is_direction? 'class="direction" ' : '') + 'onClick="' + script + '" ' + (is_held ? 'disabled="disabled" ' : '') + '>' + expandBraces(display_text) + '</button>';
 }
 
 function get_tagdescs(thing) {
@@ -3614,12 +3658,28 @@ function initialise() {
 }
 
 function confirm_restart() {
-	if(GAME_OVER || confirm("Really restart this story?")) {
+	if(GAME_OVER) {
 		restart_game();
+	} else {
+		$('#prompt').slideUp();
+		$('#save_prompt').slideUp();
+		$('#restart_prompt').slideDown();
 	}
+}
+function really_restart() {
+	restart_game();
+	$('#restart_prompt').slideUp();
+	$('#prompt').slideDown();
+	$('#text_in').focus();
+}
+function cancel_restart() {
+	$('#restart_prompt').slideUp();
+	$('#prompt').slideDown();
+	$('#text_in').focus();
 }
 
 function restart_game() {
+	$('#save_prompt').slideUp();
 	$('#room_description').slideDown();
 	GAME_OVER = false;
 	Game = JSONfn.parse(INITIAL_GAME);
@@ -4165,57 +4225,64 @@ function undo() {
 /*
  *  Load and save games
  */
-
-function save_game() {
-	
+SAVED_GAME_NAME = '';
+function save_game(savename) {
 	if(GAME_OVER) {
-		// document.getElementById('scroller').innerHTML += ("<br/>You can't save, because the game is over<br/>\
-		//     Try undoing, restoring or restarting");
 		return;     
 	}
 	
-	var game_name = prompt("Enter a name for your saved game", Game.title);
-	
-	if(!game_name) {
-		dim_old_messages();
-		say('');
-		say("<span class=\"prompt\">&gt; save</span>\nCancelled");
-		return;
+	if(!savename) {
+		savename = SAVED_GAME_NAME ? SAVED_GAME_NAME :
+			Game.title.replaceAll(/[^a-zA-Z0-9\s]/g,'');
 	}
-	store_game(game_name)
+	
+	$('#restart_prompt').slideUp();
+	$('#save_prompt').slideDown();
+	$('#save_name').val(savename).focus().select();
 }
-function store_game(game_name, suppress_message) {
+
+function confirm_save() {
+	var game_name = $('#save_name').val();
+	if(!/^[a-zA-Z0-9][a-zA-Z0-9\s]*$/.test(game_name)) {
+		say('Please use only letters, numbers and spaces.');
+	} else if(game_name.toUpperCase=='AUTOSAVE') {
+		say("'AUTOSAVE' is used internally by Gruescript. Please choose something else.");
+	} else {
+		$('#save_prompt').slideUp();
+		SAVED_GAME_NAME = game_name;
+		store_game(game_name);
+	}
+}
+function cancel_save() {
+	$('#save_prompt').slideUp();
+}
+function store_game(game_name, suppress_message, circumvent_thingy) {
 	game_name = game_name.toUpperCase();
-	game_name = game_name.split("'").join("");
-	game_name = game_name.split('"').join("");
-	game_name = game_name.split('\n').join("");
-	game_name = game_name.split('\r').join("");
-	game_name = game_name.split('\t').join("");
-	game_name = game_name.split('\\').join("");
+	if(!circumvent_thingy) {
+		game_name = game_name.split(/[^a-zA-Z0-9\-_]/).join("_"); // must be usable in an element id!
+	}
 	
 	if((!suppress_message && game_name=='AUTOSAVE') || !game_name.split(" ").join("")) { // spaces are allowed, but not ONLY spaces
 		say_if(!suppress_message, "Game not saved. Please use a more sensible name.");
 		return;
 	}
-	if(!suppress_message) {
-		dim_old_messages();
-		say('');
-		say('<span class="prompt">&gt; save ' + game_name + '</span>');
-	}
-	
+		
 	Game.timestamp = new Date().getTime();
 	// FUTURE SELF: watch out for continuing autosaved games from before an update that broke savefiles. You're welcome!
 	
 	try {
 		localStorage.setItem(Game.id + '_' + game_name, JSONfn.stringify(Game));
-		say_if(!suppress_message, "Game saved as '" + game_name + "'");
-	} catch(e) {
-		say_if(!suppress_message, "Couldn't save game, sorry");
-		if(suppress_message) {
-			console.log('couldn\'t autosave');
+		if(!suppress_message) {
+			dim_old_messages();
 		}
+		say_if(!suppress_message, "Game saved as '" + game_name.replaceAll('_',' ') + "'.");
+	} catch(e) {
+		if(!suppress_message) {
+			dim_old_messages();
+		}
+		say_if(!suppress_message, "Couldn't save game, sorry.");
+		if(suppress_message) { console.log('couldn\'t autosave'); }
 	}
-	
 }
 
 function load_game(game_name, suppress_message) {
@@ -4230,7 +4297,7 @@ function load_game(game_name, suppress_message) {
 	$('#saved_games').fadeOut();
 	$('#editor').fadeIn();
 	$('#room_description').html('');
-	say_if(!suppress_message, "Game restored from '" + game_name + "'");
+	say_if(!suppress_message, "Game restored from '" + game_name.replaceAll('_',' ') + "'");
 	clear_undo_stack();
 	do_setverbs();
 	
@@ -4243,17 +4310,25 @@ function load_game(game_name, suppress_message) {
 	update_display();
 }
 
-function delete_game(game_name, suppress_message) {
-	if(suppress_message || confirm("Really delete game '" + game_name + "'?")) {
-		localStorage.removeItem(Game.id + '_' + game_name);
-		$('#saved_games').fadeOut();
-		$('#editor').fadeIn();
-		if(!suppress_message) {
-			dim_old_messages();
-			say('');
-			say('<span class="prompt">&gt; delete ' + game_name + '</span>');
-			say("Saved game '" + game_name + "' deleted");
-		}
+function delete_game(game_name) {
+	// hack for backward compatibility - games saved with earlier version may contain bad characters,
+	// so skip the "confirm" step.
+	if(game_name.split(/[^a-zA-Z0-9\-_]/).join("-") != game_name) {
+		really_delete_game(game_name);
+	}
+	
+	$('button.confirm_delete').hide();
+	$('#confirm_delete_'+game_name).fadeIn();
+}
+DONE_DELETIONS = false;
+function really_delete_game(game_name, suppress_message) {
+	localStorage.removeItem(Game.id + '_' + game_name);
+	//$('#saved_games').fadeOut();
+	if(game_name!='AUTOSAVE') { goto_loader(); }
+	if(!suppress_message) {
+		dim_old_messages();
+		say("Saved game '" + game_name + "' deleted");
+		DONE_DELETIONS = true;
 	}
 }
 
@@ -4266,29 +4341,29 @@ function autosave_game() {
 	////console.log('autosaved game');
 }
 function delete_stored_game() {
-	delete_game('AUTOSAVE', true);
+	really_delete_game('AUTOSAVE', true);
 }
 
 
 function goto_loader() {
-	$('#room_description').slideDown();
-
+	dim_old_messages();
+		
 	var html = 'Restore saved game<br/><br/>';
 	
 	var i=0;
 	for(var key in localStorage) {
 		
 		if(key.indexOf(Game.id + '_')==0) {
-			++i;
 			
 			game_name = key.substring(1 + Game.id.length);
 			
 			if(game_name != 'AUTOSAVE') {
-			
+				++i
 				// html += '<a onClick="load_game(\'' + game_name + '\')" href="javascript:void(0)">' + game_name + '</a> ' +
 				//  '[<a onClick="delete_game(\'' + game_name + '\')" href="javascript:void(0)">delete</a>]<br/>';
-				html += draw_button(game_name, "load_game('" + game_name + "')") +
-						draw_button("delete", "delete_game('" + game_name + "')") + "<br/>\n";
+				html +=  draw_button(game_name.replaceAll('_',' '), "load_game('" + game_name + "')") +
+						draw_button("delete", "delete_game('" + game_name + "')") + 
+						draw_button("confirm delete", "really_delete_game('" + game_name + "')",false,false,false,false,'confirm_delete', 'confirm_delete_'+game_name) + "<br/>\n";
 			}
 		}
 	}
@@ -4297,15 +4372,15 @@ function goto_loader() {
 	}
 		
 	//html += '<br/>[<a onClick="remove_loader()" href="javascript:void(0)">cancel</a>]';
-	html += "<br/>" + draw_button("cancel", "remove_loader()");
+	html += "<br/>" + draw_button("cancel", "remove_loader();");
 	
 	$('#saved_games').html(html);
-	$('#editor').fadeOut();
 	$('#saved_games').fadeIn();
-	
+	$('#editor').fadeOut();
 }
 
 function remove_loader() {
+	$('button.confirm_delete').hide();
 	$('#saved_games').fadeOut();
 	$('#editor').fadeIn();
 }
@@ -4438,6 +4513,12 @@ $(document).ready(function() {
 		var checked = $('#plain_colours').prop('checked');
 		localStorage.setItem(Game.id + 'option_plain_colours', checked?0:1);
 		set_plain_colours(checked);
+	});
+
+	$('#save_name').keypress(function() {
+		if(event.keyCode==13 && this.value!=''){
+			$('#confirm_save').focus();
+		}
 	});
 
 });
@@ -4885,6 +4966,18 @@ NativeVerbs = [
 				</div>
 			</div>
 			<div id="save_load_container">
+				<div id="save_prompt" class="save_prompt">
+					Save game as: <input type="text" id="save_name" /><br/>
+					<button type="button" id="confirm_save" onClick="confirm_save()">Save</button>
+					<button type="button" onClick="cancel_save()">Cancel</button>
+				</div>
+			
+				<div id="restart_prompt" class="save_prompt">
+					Really restart this game?<br/>
+					<button type="button" id="confirm_restart" onClick="really_restart()">Restart</button>
+					<button type="button" onClick="cancel_restart()">Continue</button>
+				</div>
+			
 				<div id="save_load">
 					<button type="button" onClick="save_game()">save game</button>
 					<button type="button" onClick="goto_loader()">restore game</button>
