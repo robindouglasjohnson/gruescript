@@ -697,11 +697,10 @@ assign opposite_thiefdir $olddir
 
 proc attempt_theft
 # find something to try to steal
-select here
+select in thief.loc
 has $this art
 assign stealing $this
 try steal_art
-say The thief picks up {the $stealing} and puts it into a sack marked "SWAG".
 
 proc steal_art # TRY to steal this art
 sayat thief.loc The thief reaches out a bony hand towards {the $stealing}...
@@ -710,6 +709,9 @@ sayat thief.loc The thief reaches out a bony hand towards {the $stealing}...
 proc steal_art # creator present
 eq $talkee $stealing.creator # if they're busy talking to the player...
 sayat thief.loc {The $stealing.creator} is too distracted to notice! # theft succeeds
+sayat thief.loc The thief picks up {the $stealing} and puts it into a sack marked "SWAG".
+hide $stealing
+tag $stealing stolen
 
 proc steal_art # creator present, not talking
 sayat thief.loc {The $stealing.creator} slaps the thief's hand away!
