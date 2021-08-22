@@ -237,10 +237,10 @@ function doHighlighting() {
 		line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
 		
 		// special tags, variables and property names, and iterator lists
-		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 		// properties and directions
-		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|tags|dir|loc|verbs|cverbs|display|prompt|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
+		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|wait|tags|dir|loc|verbs|cverbs|display|prompt|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
 
 		// variables and numbers
 		line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
@@ -1593,7 +1593,6 @@ loc cloakroom
 
 verb read treasures_sign
 say It reads: "Drop <span class="treasure">treasures</span> here!"
-loc cloakroom
 
 thing walking_cane walking cane
 name cane

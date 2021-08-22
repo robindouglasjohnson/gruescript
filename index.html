@@ -1707,7 +1707,7 @@ function getGameData() {
 				if(gameData.hasOwnProperty('examine')) {
 					return do_error(lineN, 'game block must only contain one "examine" line');
 				} else if(!words[1]) {
-					do_warning(lineN, '"examine" must have "on" or "off" after it (assuming you meant "examine on")');
+					do_warning(lineN, '"examine" must have "on" or "off" after it (assuming you meant "examine off")');
 				} else if(words[1] == 'on') {
 					gameData.examine = true;
 				} else if(words[1] == 'off') {
@@ -1715,6 +1715,20 @@ function getGameData() {
 				}
 				if(!gameData.hasOwnProperty('examine')||words[2]) {
 					return do_error('"examine" must have only "on" or "off" after it');
+				}
+			} else if(firstwd=='wait') {
+				if(gameData.hasOwnProperty('wait')) {
+					return do_error(lineN, 'game block must only contain one "wait" line');
+				} else if(!words[1]) {
+					do_warning(lineN, '"wait" must have "on" or "off" after it (assuming you meant "wait on")');
+					gameData.wait = true;
+				} else if(words[1] == 'on') {
+					gameData.wait = true;
+				} else if(words[1] == 'off') {
+					gameData.wait = false;
+				}
+				if(!gameData.hasOwnProperty('wait')||words[2]) {
+					return do_error(lineN, '"wait" must have only "on" or "off" after it');
 				}
 			} else if(firstwd=='colour'||firstwd=='color') {
 				if(!words[1]) {
@@ -1758,6 +1772,9 @@ function getGameData() {
 		gameData.person = 2;
 		do_warning(0, 'no person declated, using 2 ("you")');
 	}
+	if(!gameData.hasOwnProperty('wait')) {
+		gameData.wait = true;
+	}
 	
 	return gameData;
 }
@@ -1775,7 +1792,11 @@ function first_person_bldg() { // first_person() but while game is building
 }
 
 function buildroom(block) {
-	var roomData = {props: {}};
+	var roomData = {
+		active_verbs: [],
+		permanent_verbs: [],
+		props: {}
+	};
 	for(var i=0;i<block.code.length;++i) {
 		var thisLine = block.code[i];
 		var lineN = block.lineN + i;
@@ -1858,6 +1879,18 @@ function buildroom(block) {
 			} else {
 				var propName = words[1];
 				roomData.props[propName] = wordsFrom(words,2);
+			}
+		} else if(firstwd=='verbs') {
+			for(var j=1;j<words.length;++j) {
+				var verb = words[j];
+				if(!legal_name(verb)) {
+					return do_error(lineN, '"'+verb+'" is not a valid verb');
+				}
+				if(roomData.active_verbs.includes(verb)) {
+					do_warning(lineN, 'verb "'+verb+'" is listed twice for "'+roomName+'"');
+				}
+				roomData.active_verbs.push(verb);
+				roomData.permanent_verbs.push(verb);
 			}
 		} else {
 			return do_error(lineN, 'didn\'t understand "'+firstwd+'" in room declaration');
@@ -2054,7 +2087,7 @@ function buildThings() {
 	return true;
 }
 
-function buildVerb(block) {
+function buildVerb(block, isSetverb) {
 	// for verb OR setverb
 	var verbData = {};
 	for(var i=0;i<block.code.length;++i) {
@@ -2079,7 +2112,7 @@ function buildVerb(block) {
 				verbData.thing = words[2];
 			}
 			if(words[3]) {
-				return do_error(lineN, '"verb" should only have one or two words (verb and optional thing) after it');
+				return do_error(lineN, '"'+(isSetverb?'set':'')+'verb" should only have one or two words (verb and optional thing/\'intransitive\')');
 			}
 		} else if(firstwd=='display') {
 			var displayKey = verbData.thing ? (verbData.verb + ' ' + verbData.thing) : verbData.verb;
@@ -2147,7 +2180,7 @@ function buildSetverbs() {
 	// Setverbs is an array, NOT an object: there can be
 	// several definitions for one setverb
 	for(var i=0;i<blocks.length;++i) {
-		var thisSetverb = buildVerb(blocks[i]);
+		var thisSetverb = buildVerb(blocks[i], true);
 		if(!thisSetverb) {
 			return false;
 		}
@@ -2155,7 +2188,7 @@ function buildSetverbs() {
 	}
 	for(var i=0;i<SetverbsIn.length;++i) {
 		var thisSetverb = SetverbsIn[i];
-		if(thisSetverb.thing && !GameIn.things[thisSetverb.thing]) {
+		if(thisSetverb.thing && thisSetverb.thing!='intransitive' && !GameIn.things[thisSetverb.thing]) {
 			return do_error(thisSetverb.lineN, '"'+thisSetverb.thing+'" is not a thing');
 		}
 	}
@@ -2380,7 +2413,7 @@ function buildGame(runP) {
 		gs_console('build failed');
 		return false;
 	}
-	gs_console_append('...setverbs built ('+SetverbsIn.length+')');
+	gs_console_append('...setverbs built ('+(SetverbsIn.length)+')');
 	
 	gs_console('building rules...');
 	if(!buildRules()) {
@@ -2653,7 +2686,9 @@ function describe_room() {
 		html += '</ul>\n';
 	}
 	
-	html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">wait</button></div>';
+	if(Game.wait) {
+		html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">wait</button></div>';
+	}
 	
 	document.getElementById('room_description').innerHTML = html;
 	
@@ -3185,8 +3220,10 @@ function do_verb(verb, thing, not_a_turn) {
 	if(!not_a_turn) {
 		// draw prompt
 		Game.vars.verb = verb;
-		Game.vars.thing = thing;
-		Game.vars['this'] = thing;
+		if(thing) {
+			Game.vars.thing = thing;
+			Game.vars['this'] = thing;
+		}
 		var phrasing = display_verb(verb,thing, true);
 		dim_old_messages();
 		say('');
@@ -3305,16 +3342,22 @@ function do_setverbs() {
 		if(Setverbs[i].thing) {
 			var thing = Setverbs[i].thing;
 			////console.log('this is'+thing);
-			Game.vars['this'] = thing;
 			
-			var def_active = Game.things[thing].permanent_verbs.includes(verb) || (carried(thing) && Game.things[thing].active_when_carried.includes(verb));
+			var def_active;
+			if(thing=='intransitive') {
+				def_active = Game.rooms[Game.vars.room].permanent_verbs.includes(verb);
+			} else {
+				Game.vars['this'] = thing;
+				def_active = Game.things[thing].permanent_verbs.includes(verb) ||
+					(carried(thing) && Game.things[thing].active_when_carried.includes(verb));
+			}
 			
 			
 			if(def_active) {
-				activate_verb(thing, verb);
+				set_active(thing, verb, true);
 				continue;
 			}
-			
+
 			if(!alreadyset[verb+' '+thing]) {
 				var whetherset = runSteps(Setverbs[i].steps, Setverbs[i].lineN);
 				set_active(thing, verb,  whetherset);
@@ -3372,6 +3415,7 @@ function do_setverbs() {
 		set_active(thing,'wear',(isWearable && !isWorn && (!isPortable || isCarried))||alreadyset['wear '+thing]);
 		set_active(thing,'remove',isWorn||alreadyset['remove '+thing]);
 	}
+	
 }
 
 function list_verbs(thing, is_room) {
@@ -3382,7 +3426,7 @@ function list_verbs(thing, is_room) {
 	
 	for(var i in Game[things_or_rooms][thing].active_verbs) {
 		var verb = Game[things_or_rooms][thing].active_verbs[i];
-		snippets.push(draw_button(display_verb(verb, thing), "do_verb('" + verb + "','" + thing + "')"));
+		snippets.push(draw_button(display_verb(verb, thing), "do_verb('" + verb + "','" + (is_room?'':thing) + "')"));
 	}
 	
 	if(snippets.length) {
@@ -3440,10 +3484,21 @@ function deactivate_all(thing) {
 }
 
 function set_active(thing, verb, bool) {
+	if(thing=='intransitive') {
+		set_active_room_verb(Game.vars.room, verb, bool);
+		return;
+	}
 	if(bool) {
 		activate_verb(thing, verb);
 	} else {
 		deactivate_verb(thing, verb);
+	}
+}
+function set_active_room_verb(room, verb, bool) {
+	if(bool) {
+		activate_room_verb(room, verb);
+	} else {
+		deactivate_room_verb(room, verb);
 	}
 }
 
