@@ -60,43 +60,17 @@ $(document).ready(function() {
 	  reader.readAsText(file);
 	};
 	
-	loadExample("Cloak of Darkness");
+	if(load_from_browser(true)) {
+		gs_console('restored from previous session');
+	} else {
+		loadExample("Cloak of Darkness");
+	}
 	
 	GSEDIT.addEventListener('input', function() {
 		highlight();
 		GRUESCRIPT_CHANGED = true;
 		GRUESCRIPT_SAVED = false;
 	});
-	// only allow pasting plain text
-	/*
-	GSEDIT.addEventListener('paste', function(e) {
-		// Prevent the default action
-		e.preventDefault();
-
-		// Get the copied text from the clipboard
-		const text = (e.clipboardData)
-			? (e.originalEvent || e).clipboardData.getData('text/plain')
-			// For IE
-			: (window.clipboardData ? window.clipboardData.getData('Text') : '');
-		
-		if (document.queryCommandSupported('insertText')) {
-			document.execCommand('insertText', false, text);
-		} else {
-			// Insert text at the current position of caret
-			const range = document.getSelection().getRangeAt(0);
-			range.deleteContents();
-
-			const textNode = document.createTextNode(text);
-			range.insertNode(textNode);
-			range.selectNodeContents(textNode);
-			range.collapse(false);
-
-			const selection = window.getSelection();
-			selection.removeAllRanges();
-			selection.addRange(range);
-		}
-	});
-	 */
 
 	GSEDIT.addEventListener('scroll', function() {
 		syncScroll();
@@ -171,6 +145,8 @@ function done_highlighting() {
 		DOING_HIGHLIGHTING = false;
 		$('#gsEdit').removeClass('waiting');
 		WORRYING = GSEDIT.value.length >= MIN_LENGTH_TO_WORRY;
+		clearTimeout(AUTOSAVE_TIMEOUT);
+		AUTOSAVE_TIMEOUT = setTimeout(autosave, 1000);
 	}
 }
 
@@ -264,23 +240,39 @@ function save_to_browser() {
 	gs_console('saved to browser local storage');
 }
 
-function load_from_browser() {
-	if(!GRUESCRIPT_SAVED) {
+// autosave to local storage
+AUTOSAVE_TIMEOUT = null;
+function autosave(forceP) {
+	window.localStorage.gruescriptAutosave = $('#gsEdit').val();
+}
+
+function load_from_browser(from_autosave) {
+	if(!GRUESCRIPT_SAVED && !from_autosave) {
 		if(!confirm("You have unsaved changes. Restore anyway?")) {
 			return;
 		}
 	}
-	var savedGs = window.localStorage.gruescriptSave;
-	if(!savedGs) {
+	var savedGs = from_autosave ? window.localStorage.gruescriptAutosave :
+		window.localStorage.gruescriptSave;
+	
+	if(from_autosave && !savedGs) {
+		return false;
+	}
+	
+	if(!savedGs && !from_autosave) {
 		gs_console("couldn't restore - no saved content found in local storage");
-		return;
+		return false;
 	}
 	
 	$('#gsEdit').val(savedGs);
 	highlight();
 	readGruescript();
 	GRUESCRIPT_CHANGED = false;
-	GRUESCRIPT_SAVED = true;
+	if(from_autosave) {
+		return true;
+	} else {
+		GRUESCRIPT_SAVED = true;
+	}
 }
 
 // download the gruescript source
