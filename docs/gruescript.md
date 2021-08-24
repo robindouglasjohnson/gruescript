@@ -1708,6 +1708,13 @@ score</i>/<i>maxscore</i></code>  (e.g. "0/5") at the right of the
 status bar. If the value of `maxscore` is zero, only `score` will
 be shown. This can be overridden by the status` command.
 
+`maxinv`
+: The maximum number of items the player is allowed to carry at once
+via the `take` verb If this is zero (as per the default behaviour), there
+is no limit. Other ways of adding things to inventory, like `give`, do
+*not* respect this limit. (This is included mainly for historical reasons;
+inventory limits have been Frowned Upon in IF design for many years.)
+
 ### Visible tags
 
 Tags can be made 'visible' by using a `tagdesc` block. This is a single
