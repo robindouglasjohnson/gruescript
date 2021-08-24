@@ -715,27 +715,44 @@ a message that will be printed after the command is completed.
 
 The Gruescript commands, shown with their arguments in italics, are:
 
-`bring`
+<code>bring <i>thing</i></code>
 : Move a thing to the room that the player is in. If the player is
 carrying or holding the thing, it will be removed from their inventory
 and placed 'on the floor'.
 
-
-`hide`
+<code>hide <i>thing</i></code>
 : Set a thing's 'location' to nothing, so that it is effectively
 removed from the game, regardless of where it is now (if anywhere), or
 whether it is carried.
 
-`give`
+<code>give <i>thing</i></code>
 : Put a thing into the player's inventory -- they will be 'holding' the
 new thing, and the thing they were previously holding (if any) will be
 returned to their main inventory.
 
-`carry`
+<code>carry <i>thing</i></code>
 : This is identical to give, except that the player will not be holding
 the thing; it will be placed in their main inventory. The thing they
 were holding, if any, will be unchanged.
 
+`unhold`
+: Set the player's 'holding' slot to empty. If the player was holding
+a thing, it will be returned to their main inventory.
+
+<code>wear <i>thing</i></code>
+: Make the thing be worn by the player. If the thing is portable and
+was not currently in the player's inventory, it will be 'given' to
+them first. If it is *not* portable and was not in the player's room,
+it will be moved there.
+
+<code>unwear <i>thing</i></code>
+: Make the thing not worn by the player. If it is portable, it will be
+returned to the player's main inventory, but it will not become 'held'.
+
+<code>unwear <i>thing</i></code>
+: This is identical to give, except that the player will not be holding
+the thing; it will be placed in their main inventory. The thing they
+were holding, if any, will be unchanged.
 
 <code>put <i>room</i></code>
 : Move a thing to particular room. If the player was holding or

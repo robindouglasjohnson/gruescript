@@ -610,10 +610,22 @@ Gruescript.commands = {
 			give_hero(thing, true);
 		}
 	},
+	unhold: { // empty the 'holding' slot (don't change inventory)
+		args: [],
+		func: function() {
+			unhold(true);
+		}
+	},
 	wear: { // make the player be wearing the thing
 		args: ['thing'],
 		func: function(thing) {
 			wear(thing);
+		}
+	},
+	unwear: { // make the player be NOT wearing the thing
+		args: ['thing'],
+		func: function(thing) {
+			remove_tag(thing,'worn');
 		}
 	},
 	put: { // put a thing in a room
