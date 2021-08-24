@@ -749,11 +749,6 @@ it will be moved there.
 : Make the thing not worn by the player. If it is portable, it will be
 returned to the player's main inventory, but it will not become 'held'.
 
-<code>unwear <i>thing</i></code>
-: This is identical to give, except that the player will not be holding
-the thing; it will be placed in their main inventory. The thing they
-were holding, if any, will be unchanged.
-
 <code>put <i>room</i></code>
 : Move a thing to particular room. If the player was holding or
 carrying the thing, it will be removed from their inventory.
