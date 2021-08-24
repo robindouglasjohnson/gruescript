@@ -204,7 +204,7 @@ function doHighlighting() {
 		
 		// commands
 		// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
-		line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
+		line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
 		// assertions
 		line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
 		// iterators
