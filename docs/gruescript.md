@@ -1611,13 +1611,13 @@ this chapter and are free to implement dialogue however you wish, or
 not at all.
 
 The conversation system allows you to create more complex dialogue in 
-your game byswitching to a more choice-based system when the player is
+your game by switching to a more choice-based system when the player is
 talking toa non-player character (NPC). While a conversation is going
 on, a newpane appears in the interface, between the scroller and 
-roomdescription. This specifies who or what the player is talking 
-to,and contains up to three lists of 'topics' -- essentially, a 
-specialkind of verb -- that the player can "ask", "tell" or "say". 
-Finally,there is a button to end the conversation.
+room description. This specifies who or what the player is talking 
+to, and contains up to three lists of 'topics' -- essentially, a 
+special kind of verb -- that the player can "ask", "tell" or "say". 
+Finally, there is a button to end the conversation.
 
 For the purpose of the conversation system, an NPC is any thing with
 the tag `conversation`. It is likely (but not necessary) that you will
