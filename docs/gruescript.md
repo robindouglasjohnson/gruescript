@@ -2,13 +2,11 @@
 
 Robin Johnson
 
-
 This work is licenced under the Creative Commons Attribution 4.0
 International License. To view a copy of this license, visit
 http://creativecommons.org/licenses/by/4.0/
 or send a letter to Creative Commons, PO Box 1866, Mountain View, CA
 94042, USA.
-
 
 ## Foreword
 
@@ -207,6 +205,7 @@ beginning of the game. Here's an example:
 	version 1.0.0
 	person 2
 	examine on
+	conversation on
 	wait on
 	say You were minding your own business and playing with a ball of \
 	    wool one day when an alien spaceship crashlanded right next \
@@ -251,9 +250,14 @@ a button which the player can click to examine that thing. `examine`
 is a 'native verb', meaning every Gruescript game will know the verb
 without the author having to define it.
 
-If the `game` block contains `examine off` instead (or no examine line
-at all), the 'examine' verb will still exist, but will only be
-available as an ordinary verb button activated by a setverb.
+	conversation on
+	
+If this line is present, the game will use Gruescript's "ask/tell/say"
+conversation system. The verbs `talk`, `ask`, `tell`, `say`, and
+`end_conversation`, as well as any verbs that *begin* with `ask_`, `tell_` or
+`say_`, will be handled specially. If the game block contains `conversation off`,
+or no `conversation` line, the conversation system will not be used and
+you are free to define these verbs how you like.
 
 	wait on
 
@@ -451,7 +455,7 @@ Going through this example line by line:
 	thing top_hat blue top hat
 
 The beginning of the `thing` block: this thing has the internal name
-`top_hat`, and the short description "blue top hat", which is how it
+`top_hat`, and the *short description* "blue top hat", which is how it
 appears in a room or player inventory during gameplay.
 
 	name hat
@@ -554,6 +558,11 @@ it will have the tag  worn, and the verb remove will be activated.
 are  displayed in -- alive things are usually listed first in room
 contents.
 
+`conversation`
+: If your game has `conversation on`, this means that the thing can be
+talked to. It will automatically have the verb `talk` activated (unless
+the player is already talking to it.)
+
 `lightsource`
 : This thing provides light; if it is present in a dark room (whether
 or not  the player is carrying it), that room and its contents will be
@@ -598,15 +607,15 @@ something like " You are next to a  church. You can also see a church."
 The following properties of things have special meaning to Gruescript.
 
 `name`
-: The screen name of the thing (same as beginning a line in the thing
+: The *screen name* of the thing (same as beginning a line in the thing
 block  with name, as described above).
 
 `display`
-: The short description of the thing (same as the text that comes after
+: The *short description* of the thing (same as the text that comes after
 the thing's internal name in the first line of the thing block)
 
 `desc`
-: The long description of the thing, used by the examine verb (same as using  desc at the beginning of a line in the thing block)
+: The *long description* of the thing, used by the 'examine' verb (same as using `desc` at the beginning of a line in the thing block)
 
 `loc`
 : The current location of the thing. This property should be treated as
@@ -625,7 +634,7 @@ number 2".
 
 `indef`
 : How the thing should be referred to by the indefinite article ('a' or
-'an').  By default, Gruescript will prepend the thing's screen name
+'an').  By default, Gruescript will prepend the thing's short description (*not* its screen name)
 with 'a', 'an' if  it begins with a vowel (which won't always be
 right!), 'some' if it is plural,  or omit the article if it is a
 `proper_name`. Examples: "a unicorn", "lots of  beer".
@@ -1147,7 +1156,7 @@ word will be prefixed with the appropriate version of that
 article: if the principal world is (or is a reference to) a
 thing with a `def` or `indef` property, that value will be used
 if appropriate; otherwise 'a' will be changed to 'an' if the
-display name begins with a vowel (or 'an' to 'a' if it doesn't
+screen name begins with a vowel (or 'an' to 'a' if it doesn't
 -- 'an' behaves exactly the same as 'a' but can be used for
 capitalisation, as explained below), or 'some' for plural
 things; 'your' will be changed to 'my' if the game is in first
@@ -1231,7 +1240,7 @@ you do this with a property, you should capitalise the
 inside a braced expression, and the contents of the variable or
 property are the internal name of a thing (and that thing's
 internal name is lowercase), the result will be a capitalised
-or uppercase version of the display name.
+or uppercase version of its *screen name*.
 
 This can also be applied to articles and pronoun references in
 braced expressions. If an article is UPPERCASED, it will
@@ -1590,7 +1599,152 @@ verb `examine`, which is always considered active for all things
 (although it is performed by clicking the noun, rather than the verb)
 if your game has `examine on`.
 
-##Procedures and rules
+## Conversation
+
+Everything in this chapter only applies if your game uses Gruescript's
+conversation system -- that is, if your `game` block contains the line:
+
+	conversation on
+
+If this line is not present, or is `conversation off`, you can ignore
+this chapter and are free to implement dialogue however you wish, or
+not at all.
+
+The conversation system allows you to create more complex dialogue in 
+your game byswitching to a more choice-based system when the player is
+talking toa non-player character (NPC). While a conversation is going
+on, a newpane appears in the interface, between the scroller and 
+roomdescription. This specifies who or what the player is talking 
+to,and contains up to three lists of 'topics' -- essentially, a 
+specialkind of verb -- that the player can "ask", "tell" or "say". 
+Finally,there is a button to end the conversation.
+
+For the purpose of the conversation system, an NPC is any thing with
+the tag `conversation`. It is likely (but not necessary) that you will
+also want to give it the tag `alive`, and one of `male`, `female` or
+`nonbinary` to set its pronouns. An example:
+
+	thing mrs_ft Mrs Fothertonhayes-Cranstanley
+	name mrs fothertonhayes-thomas
+	loc pta_meeting
+	tags alive female conversation
+	prop start_conversation "How may I help you?" asks \
+	    Mrs Fothertonhayes-Cranstanley, looking down her nose at you.
+	prop end_conversation Mrs Fothertonhayes-Cranstanley gives you
+	    a curt nod.
+
+The special properties `start_conversation` and `end_conversation`
+contain strings that will be printed when the player starts or ends
+a conversation with this NPC. If they are not present, default
+messages are used: "You start talking to *(NPC)*." or "You stop
+talking to *(NPC)*." (or their first-person equivalents, in a game
+with `person 1`.)
+
+When the player 'talks' to Mrs Fothertonhayes-Cranstanley, they will
+see something like:
+
+	Talking to: Mrs Fothertonhayes-Cranstanley
+	Ask about: \[history\] \[geography\]
+	Tell about: \[husband\] \[burglary\]
+	Say: \[club password\]
+	\[end conversation\]
+
+The "end conversation" verb will hide the conversation panel. It
+will also disappear if the NPC that the player was talking to is no
+longer in scope, either because the player walked to another room
+or the NPC was moved somewhere else, or if the player begin another
+conversation by talking to a different NPC. If the conversation ends
+by any means other than the player clicking "end conversation", the
+NPC's `end_conversation` message will *not* be printed.
+
+During the conversation, the room description and inventory are
+visible as normal, and the player can continue to use whatever other
+verbs are available in the room. The special variable `conversation`
+will contain the internal name of the NPC. If you want to force the
+conversation to end without removing the NPC,
+
+	assign conversation 0
+
+will do so.
+
+You are free to treat `talk` as an ordinary verb, including 
+'overriding' it with specific or general verb blocks (the object is 
+the NPC), or adding it with a setverb to other things, such as simple 
+NPCs that you don't want to make a complex conversation tree for (just
+leave out the `conversation` tag.)
+
+Asks, tells and says are defined by setverb and verb blocks, the 
+same as ordinary verbs. The 'object' of ask, tell or say is considered
+to be the *conversation topic*, which can be a thing name or any
+arbitrary value. You can change the display of these 'verbs' with
+`display` and `prompt`, and do anything else that you can do in
+ordinary `verb` and `setverb` blocks.
+
+Regardless of setverbs, "ask", "say" and "tell" will *only* be
+considered for activation when a conversation is open. They will 
+never be tied to particular things. So,
+
+	setverb ask alibi
+
+will mean you can "ask about alibi" when talking to *any* NPC, and
+you do not need to worry about the verb becoming active for other
+things.
+
+To make asks, tells or says that are specific to a particular
+NPC, use verbs that *begin with* `ask_`, `tell_` or `say_` (with an
+underscore), followed by the NPC. So:
+
+	setverb ask_mrs_ft hat
+
+will make "hat" an available 'ask' topic for
+Mrs Fothertonhayes-Cranstanley, and nobody else, whether or not the
+hat is actually a thing. As usual, the setverb block can contain
+instructions:
+
+	setverb ask_mrs_ft hat
+	has mrs_ft wearing_hat
+
+will succeed, and activate the topic, only if she has the
+`wearing_hat` tag.
+
+Verb blocks can be made the same way. Any `ask_`, `tell_` or `say_`
+verb blocks with an NPC will be considered before any `ask`, `tell`
+or `say` blocks without, with execution stopping after a success
+as usual, so
+
+	verb ask_mrs_ft hat
+	say "I inherited it from a particularly dreadful great-aunt,"
+		she says. "Elegant, isn't it?"
+	
+	verb ask hat
+	say "It makes her look like a tree," says {the $conversation}.
+
+will print the first message when talking to
+Mrs Fothertonhayes-Cranstanley, and the second message when talking to
+anyone else. Any general `verb ask` blocks would be considered after
+either of them.
+
+General `setverb ask` or <code>setverb_ask_<i>topic</i></code> are 
+also allowed:
+
+	verb ask_fish_expert
+	has $this fish
+
+will activate "ask fish expert about" for every thing with the `fish`
+tag, and
+
+	verb ask
+	has $this hot_topic
+
+will make *any* thing with the `hot_topic` tag available as an ask 
+for *everyone* with `conversation`. Note that in these cases, only 
+'things' will be considered. If you want to do this other topics, 
+create 'dummy' things.
+
+By using variables, properties or tags in conversational verbs and 
+setverbs, it is possible to create quite complex conversation trees.
+
+## Procedures and rules
 
 ### Procedures
 
@@ -1691,6 +1845,11 @@ anything, this has a numeric value of zero.
 `room`
 : The room that the player is currently standing in.
 
+`conversation`
+: If your game has `conversation on`, this variable contains the
+internal name of the thing the player is currently talking to, if any.
+If there is no conversation going on, its value will be zero.
+
 `cantsee`
 : If this value is zero, the player can see. If it is 1 (or anything
 else) they cannot. Remember that a value of zero is the same as having
@@ -1739,23 +1898,25 @@ The `game` block may contain `colour` lines which determine the colours
 used by the game. You can spell it  `color` if you like. These
 lines take the form
 <pre>
-	colour <i>colour-area HEXCODE</u>
+	colour <i>colour-area HEXCODE</i></u>
 </pre>
 
 where <code><i>colour-area</i></code> is one of the below:
 
-	statusbar_background room_button_text
-	statusbar_text examine_button
-	main_background examine_button_text
-	main_text inventory_background
-	main_prompt inventory_text
-	main_text_old inventory_button
-	main_prompt_old inventory_button_text
-	instructions_button inventory_inactive_text
-	instructions_button_text save_background
-	room_background save_button
-	room_text save_button_text
-	room_button page_background
+	statusbar_background       conversation_text
+	statusbar_text             conversation_button
+	main_background            conversation_button_text
+	main_text                  examine_button
+	main_prompt                examine_button_text
+	main_text_old              inventory_background
+	main_prompt_old            inventory_text
+	instructions_button        inventory_button
+	instructions_button_text   inventory_button_text
+	room_background            inventory_inactive_text
+	room_text                  save_background
+	room_button                save_button
+	room_button_text           save_button_text
+	conversation_background    page_background
 
 Most of these are (hopefully) self-explanatory. Note that the
 `save_...` colour-areas apply to the part of the page containing the

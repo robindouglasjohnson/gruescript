@@ -9,11 +9,24 @@ Released under the MIT Licence:
  
 Copyright 2021 Robin Johnson
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the 
+"Software"), to deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, merge, publish, 
+distribute, sublicense, and/or sell copies of the Software, and to 
+permit persons to whom the Software is furnished to do so, subject to 
+the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  -->
 	<head>
@@ -162,6 +175,19 @@ div#room_description {
 }
 div#room_description div.im_in {
 	/* line-height: 1.33; */
+}
+div#conversation {
+	padding: 4px 4% 4px 4%;
+	display: none;
+	background-color: #000077;
+	line-height: 1.33;
+	color: #ccccff;
+}
+div#conversation button {
+	padding-top: 1px;
+	padding-bottom: 1px;
+	background-color: #666699;
+	color: #ffffff;
 }
 
 @media (orientation: portrait) {
@@ -549,6 +575,22 @@ COLOURS = {
 	inventory_inactive_text: {
 		selector: '#inventory button:disabled',
 		property: 'color'
+	},
+	conversation_background: {
+		selector: '.conversation',
+		property: 'background-color',
+	},
+	conversation_text: {
+		selector: '.conversation',
+		property: 'color',
+	},
+	conversation_button: {
+		selector: '.conversation button',
+		property: 'background-color'
+	},
+	conversation_button_text: {
+		selector: '.conversation button',
+		property: 'color',
 	},
 	save_background: {
 		selector: '#save_load_container',
@@ -1107,7 +1149,7 @@ function check_args(words, argtypes, commandName, lineN) {
 		//console.log('thistype is '+thistype);
 		var thisword = words[i];
 		if(typeof thisword=='undefined') {
-			return do_runtime_error('not enough arguments for "'+commandName+'"');
+			return do_runtime_error('Not enough arguments for "'+commandName+'"');
 		}
 		if(!verifyWord(thisword, thistype)) {
 			var allowedtypes = (typeof thistype==='string') ? thistype : join_with_or(thistype, true);
@@ -1117,7 +1159,7 @@ function check_args(words, argtypes, commandName, lineN) {
 	}
 	// if we're still here...
 	if(words.length > argtypes.length) {
-		return do_runtime_error('too many arguments for "'+commandName+'"');
+		return do_runtime_error('Too many arguments for "'+commandName+'"');
 	}
 	return true;
 }
@@ -1189,7 +1231,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 		} else {
 			var nextword = words[isIterator ? 2+i : 1+i];
 			if(!nextword) {
-				return do_error(lineN, 'not enough arguments for "'+commandName+'" (expected '+command.args[i]+')');
+				return do_error(lineN, 'Not enough arguments for "'+commandName+'" (expected '+command.args[i].join(', ')+')');
 			}
 			passedArgs.push(evalProps(nextword));
 		}
@@ -1200,7 +1242,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	// verify arguments
 	//console.log('command.args is '+JSON.stringify(command.args));
 	if(!check_args(passedArgs, command.args, commandName, lineN)) {
-		return do_runtime_error('bad arguments for "'+commandName+'"');
+		return do_runtime_error('Bad arguments for "'+commandName+'"');
 	}
 	//console.log("passed args check");
 
@@ -1246,7 +1288,7 @@ function evalProps(word, useDisplayName, article) {
 	var thing = Game.things[thingOrRoom];
 	var room = Game.rooms[thingOrRoom];
 	if(!(thing||room)) {
-		do_runtime_warning('couldn\'t evaluate "'+word+'" because "'+thingOrRoom+'" is not a thing or room');
+		do_runtime_warning('Couldn\'t evaluate "'+word+'" because "'+thingOrRoom+'" is not a thing or room');
 		return 0;
 	}
 	var thingOrRoomObj=thing ? thing : room;
@@ -1261,7 +1303,7 @@ function evalProps(word, useDisplayName, article) {
 		// else try alternate capitalisations
 	} else if(prop.startsWith('dir.')) {
 		if(!room) {
-			return do_runtime_error('couldn\'t evalate "'+word+'" because "'+prop+'" is not a room');
+			return do_runtime_error('Couldn\'t evalate "'+word+'" because "'+prop+'" is not a room');
 		}
 		var dir = prop.substring(4);
 		if(dir.charAt(0)=='$') {
@@ -1462,7 +1504,7 @@ function runStep(step, words, message, lineN, iteratorSteps) {
 		isNot = true;
 		result = do_instruction(firstwd.substring(1), words, message, lineN, true, true, true, iteratorSteps);
 	} else {
-		return do_runtime_error('didn\'t understand "'+firstwd+'"');
+		return do_runtime_error('Didn\'t understand "'+firstwd+'"');
 	}
 	gs_log_append(result ? ' (succeeded)' : ' (failed)');
 	return result;
@@ -1474,7 +1516,7 @@ function getNumberOrVariable(n, lineN, mustBeNumber) {
 	} else {
 		var vval = getVariableValue(n);
 		if(mustBeNumber && !numeric(vval)) {
-			return do_runtime_error('value of variable "n" is not numeric');
+			return do_runtime_error('Value of variable "'+n+'" is not numeric');
 		}
 		return mustBeNumber ? parseInt(vval) : vval;
 	}
@@ -1482,7 +1524,7 @@ function getNumberOrVariable(n, lineN, mustBeNumber) {
 
 function getVariableName(varname, lineN) {
 	if(!legal_name(varname)) {
-		return do_error(varname = " is not a valid variable name");
+		return do_error('"'+varname+'" is not a valid variable name');
 	} else {
 		return varname;
 	}
@@ -1499,7 +1541,7 @@ function getVariableValue(varname, mustBeNumber) {
 		} else if(numeric(result)) {
 			return parseInt(result);
 		} else {
-			return do_runtime_error('property "'+varname+'" is not a number');
+			return do_runtime_error('Property "'+varname+'" is not a number');
 		}
 	}
 	
@@ -1509,7 +1551,7 @@ function getVariableValue(varname, mustBeNumber) {
 			var vval = Game.vars[varname];
 		}
 		if(mustBeNumber && !numeric(vval)) {
-			return do_runtime_error('variable "'+varname+'" is not a number');
+			return do_runtime_error('Variable "'+varname+'" is not a number');
 		}
 		return mustBeNumber? parseInt(vval) : vval;
 	} else {
@@ -1521,7 +1563,7 @@ function getNumber(n, lineN) {
 	if(numeric(n)) {
 		return parseInt(n);
 	} else {
-		return do_error(lineN, n + " is not a number");
+		return do_error(lineN, '"'+n+'" is not a number');
 	}
 }
 function getThingOrRoom(name) {
@@ -1532,7 +1574,7 @@ function getThingOrRoom(name) {
 	} else if(Game.rooms[name]) {
 		return Game.rooms[name];
 	} else {
-		return do_runtime_error(name + " is not a thing or room");
+		return do_runtime_error('"'+name + '" is not a thing or room');
 	}
 }
 
@@ -1627,15 +1669,14 @@ function getBlocks(blockname) {
 };
 function do_error(lineN, msg) {
 	// todo: print this out in the nice web interface I'm gonna make
-	var linemsg = lineN ? 'error on line '+lineN : 'error';
+	var linemsg = lineN ? 'Error on line '+lineN : 'Error';
 	gs_console('<span class="error">' + linemsg +': ' + msg + '</span>');
 	$('#ln_'+lineN).addClass('error');
 	return false;
 }
 function do_warning(lineN, msg) {
-	// todo: print this out in the nice web interface I'm gonna make
-	var linemsg = lineN ? 'warning on line '+lineN : 'warning';
-	gs_console_append(' <span class="warning">' + linemsg + ': ' + msg + '</span>');
+	var linemsg = lineN ? 'Warning on line '+lineN : 'Warning';
+	gs_console_append('\n<br/><span class="warning">' + linemsg + ': ' + msg + '</span>');
 	$('#ln_'+lineN).addClass('warning');
 	return true;
 }
@@ -1706,7 +1747,7 @@ function getGameData() {
 	if(!gameBlocks.length) {
 		return do_error(0, 'No "game" block found');
 	} else if(gameBlocks.length > 1) {
-		return do_error(gameBlocks[1].lineN, 'there should only be one "game" block');
+		return do_error(gameBlocks[1].lineN, 'There should only be one "game" block');
 	}
 	
 	var gameBlock = gameBlocks[0];
@@ -1720,45 +1761,45 @@ function getGameData() {
 		if(i==0) {
 			var gameName = wordsFrom(words,1);
 			if(!gameName) {
-				return do_error(lineN, "game must have a name");
+				return do_error(lineN, '"game" block must include a title');
 			}
 			gameData.title = gameName;
 		} else if(words.length) {
 			var firstwd = words[0];
 			if(firstwd=='id') {
 				if(gameData.hasOwnProperty('id')) {
-					do_warning(lineN, 'game id declared more than once (using first value "' +
+					do_warning(lineN, '"id" declared more than once (using first value "' +
 						gameData.id + '")');
 				} else {
 					gameData.id = wordsFrom(words, 1);
 				}
 			} else if(firstwd=='author') {
 				if(gameData.hasOwnProperty('author')) {
-					do_warning(lineN, 'author declared more than once (using first value "' +
+					do_warning(lineN, '"author" declared more than once (using first value "' +
 						gameData.author + '")');
 				} else {
 					gameData.author = wordsFrom(words, 1);
 				}
 			} else if(firstwd=='version') {
 				if(gameData.hasOwnProperty('version')) {
-					do_warning(lineN, 'version declared more than once (using first value)');
+					do_warning(lineN, '"version" declared more than once (using first value)');
 				} else {
 					gameData.version = wordsFrom(words, 1);
 				}
 			} else if(firstwd=='person') {
 				if(gameData.hasOwnProperty('person')) {
-					do_warning(lineN, 'person declared more than once (using first value "' +
+					do_warning(lineN, '"person" declared more than once (using first value "' +
 						 gameData.person + '"');
 				} else {
 					var person=parseInt(wordsFrom(words, 1));
 					if(person!=1 && person!=2) {
-						do_warning(lineN, 'person must be 1 or 2');
+						do_warning(lineN, '"person" must be 1 or 2');
 					}
 					gameData.person = person;
 				}
 			} else if(firstwd=='examine') {
 				if(gameData.hasOwnProperty('examine')) {
-					return do_error(lineN, 'game block must only contain one "examine" line');
+					return do_error(lineN, '"game" block must only contain one "examine" line');
 				} else if(!words[1]) {
 					do_warning(lineN, '"examine" must have "on" or "off" after it (assuming you meant "examine off")');
 				} else if(words[1] == 'on') {
@@ -1771,7 +1812,7 @@ function getGameData() {
 				}
 			} else if(firstwd=='wait') {
 				if(gameData.hasOwnProperty('wait')) {
-					return do_error(lineN, 'game block must only contain one "wait" line');
+					return do_error(lineN, '"game" block must only contain one "wait" line');
 				} else if(!words[1]) {
 					do_warning(lineN, '"wait" must have "on" or "off" after it (assuming you meant "wait on")');
 					gameData.wait = true;
@@ -1783,9 +1824,23 @@ function getGameData() {
 				if(!gameData.hasOwnProperty('wait')||words[2]) {
 					return do_error(lineN, '"wait" must have only "on" or "off" after it');
 				}
+			} else if(firstwd=='conversation') {
+				if(gameData.hasOwnProperty('conversation')) {
+					return do_error(lineN, '"game" block must only contain one "conversation" line');
+				} else if(!words[1]) {
+					do_warning(lineN, '"conversation" must have "on" or "off" after it (assuming you meant "examine off")');
+				} else if(words[1] == 'on') {
+					gameData.conversation = true;
+					gameData.conv = {};
+				} else if(words[1] == 'off') {
+					gameData.conversation = false;
+				}
+				if(!gameData.hasOwnProperty('conversation')||words[2]) {
+					return do_error('"conversation" must have only "on" or "off" after it');
+				}
 			} else if(firstwd=='colour'||firstwd=='color') {
 				if(!words[1]) {
-					return do_error(lineN, 'no area name found after "colour"');
+					return do_error(lineN, 'No area name found after "colour"');
 				}
 				if(!Object.keys(COLOURS).includes(words[1])) {
 					return do_error(lineN, '"'+words[1]+'" is not a colourable area');
@@ -1794,7 +1849,7 @@ function getGameData() {
 				var cssSelector = COLOURS[colourArea].selector;
 				var cssProperty = COLOURS[colourArea].property;
 				if(!words[2]) {
-					do_warning('no colour value found for "colour"')
+					do_warning('No colour value found for "colour"')
 				}
 				var colour = words[2];
 				if(hexnumeric(colour)) {
@@ -1807,23 +1862,23 @@ function getGameData() {
 				}
 				gameData.intro.push(thisLine);
 			} else {
-				return do_error(lineN, 'didn\'t understand "'+firstwd+'" in game block');
+				return do_error(lineN, 'Didn\'t understand "'+firstwd+'" in game block');
 			}
 		}
 	}
 	if(!gameData.hasOwnProperty('author')) {
-		do_warning(0, "no author declared");
+		do_warning(0, "No author declared");
 	}
 	if(!gameData.hasOwnProperty('version')) {
-		do_warning(0, "no version declared");
+		do_warning(0, "No version declared");
 	}
 	if(!gameData.hasOwnProperty('id')) {
 		gameData.id = createId(gameData);
-		do_warning(0, 'no id declared, using "'+gameData.id+'"');
+		do_warning(0, 'No id declared, using "'+gameData.id+'"');
 	}
 	if(!gameData.hasOwnProperty('person')) {
 		gameData.person = 2;
-		do_warning(0, 'no person declated, using 2 ("you")');
+		do_warning(0, 'No person declated, using 2 ("you")');
 	}
 	if(!gameData.hasOwnProperty('wait')) {
 		gameData.wait = true;
@@ -1863,10 +1918,10 @@ function buildroom(block) {
 			roomData.name = words[1];
 			roomName = roomData.name;
 			if(!roomName) {
-				return do_error(lineN, 'room must have a name');
+				return do_error(lineN, '"room" must have a name');
 			}
 			if(GameIn.rooms && GameIn.rooms[roomName]) {
-				do_warning(lineN, 'duplicate room name "'+roomName+'"');
+				do_warning(lineN, 'Duplicate room name "'+roomName+'"');
 			}
 			var roomDesc = wordsFrom(words, 2);
 			if(!roomDesc) {
@@ -1880,7 +1935,7 @@ function buildroom(block) {
 				roomData.directions = {};
 			}
 			if(roomData.directions[firstwd]) {
-				do_warning(lineN, 'duplicate direction "'+firstwd+'" in room "'+roomName+'"');
+				do_warning(lineN, 'Duplicate direction "'+firstwd+'" in room "'+roomName+'"');
 			}
 			var toRoom = words[1];
 			if(!legal_name(toRoom)) {
@@ -1889,7 +1944,7 @@ function buildroom(block) {
 			roomData.directions[firstwd] = toRoom;
 			// todo: maaaaybe warn about one-way/illogical connections here
 			if(words[2]) {
-				do_error(lineN, 'there shouldn\'t be more than one word (a room) after a direction');
+				do_error(lineN, 'There shouldn\'t be more than one word (a room) after a direction');
 			}
 		} else if(firstwd=='dir'	) {
 			if(!roomData.directions) {
@@ -1900,7 +1955,7 @@ function buildroom(block) {
 				return do_error(lineN, '"'+direction+'" is not a valid direction');
 			}
 			if(roomData.directions[direction]) {
-				do_warning(lineN, 'duplicate direction "'+firstwd+'" in room "'+roomName+'"');
+				do_warning(lineN, 'Duplicate direction "'+firstwd+'" in room "'+roomName+'"');
 			}
 			var toRoom = words[2];
 			if(!legal_name(toRoom)) {
@@ -1908,7 +1963,7 @@ function buildroom(block) {
 			}
 			roomData.directions[direction] = toRoom;
 			if(words[3]) {
-				do_error(lineN, 'there shouldn\'t be more than two words (a direction and a room) after "dir"');
+				do_error(lineN, 'There shouldn\'t be more than two words (a direction and a room) after "dir"');
 			}
 		} else if(firstwd=='tags') {
 			if(!roomData.hasOwnProperty('tags')) {
@@ -1926,7 +1981,7 @@ function buildroom(block) {
 			}
 		} else if(firstwd=='prop') {
 			if(!words[1]) {
-				return do_error(lineN, 'prop must have a property name');
+				return do_error(lineN, '"prop" must have a property name after it');
 			} else if(!legal_name(words[1])) {
 				return do_error(lineN, '"'+words[1]+'" is not a valid property name');
 			} else {
@@ -1940,13 +1995,13 @@ function buildroom(block) {
 					return do_error(lineN, '"'+verb+'" is not a valid verb');
 				}
 				if(roomData.active_verbs.includes(verb)) {
-					do_warning(lineN, 'verb "'+verb+'" is listed twice for "'+roomName+'"');
+					do_warning(lineN, 'Verb "'+verb+'" is listed twice for "'+roomName+'"');
 				}
 				roomData.active_verbs.push(verb);
 				roomData.permanent_verbs.push(verb);
 			}
 		} else {
-			return do_error(lineN, 'didn\'t understand "'+firstwd+'" in room declaration');
+			return do_error(lineN, 'Didn\'t understand "'+firstwd+'" in room declaration');
 		}
 	}
 	return roomData;
@@ -1977,23 +2032,23 @@ function buildRooms() {
 			return false;
 		}
 		if(GameIn.rooms[thisRoom.name]) {
-			return do_error(thisRoom.lineN, 'duplicate room name "'+thisRoom.name+'"');
+			return do_error(thisRoom.lineN, 'Duplicate room name "'+thisRoom.name+'"');
 		}
 		GameIn.rooms[thisRoom.name] = Object.assign({}, thisRoom);
 	}
 	for(var room in GameIn.rooms) {
 		if(GameIn.rooms[room].tags && GameIn.rooms[room].tags.includes('start')) {
 			if(GameIn.vars.room) {
-				GameIn.vars.room = Object.keys(GameIn.rooms)[0];
-				do_warning(0, 'more than one room tagged "start" (using the first, "' +
-					GameIn.vars.room + '")');
-			} else {
-				GameIn.vars.room = room;
+				do_warning(0, 'More than one room tagged "start"');
 			}
+			// use the last, not the first; this makes it easy for
+			// authors to temporarily stick 'start' in some other room
+			// for testing
+			GameIn.vars.room = room;
 		}
 		if(!GameIn.vars.room) {
 			var startRoom = Object.keys(GameIn.rooms)[0];
-			do_warning(0, 'no room tagged "start" (using the first, "'+startRoom+'")');
+			do_warning(0, 'No room tagged "start" (using the first, "'+startRoom+'")');
 			GameIn.vars.room = startRoom;
 		}
 	}
@@ -2020,10 +2075,10 @@ function buildThing(block) {
 			thingData.name = words[1];
 			thingName = thingData.name;
 			if(!thingName) {
-				return do_error(lineN, 'thing must have a name');
+				return do_error(lineN, '"thing" must have a name after it');
 			}
 			if(GameIn.things && GameIn.things[thingName]) {
-				return do_error(lineN, 'duplicate thing "'+thingName+'"');
+				return do_error(lineN, 'Duplicate thing "'+thingName+'"');
 			}
 			var thingDesc = wordsFrom(words, 2);
 			if(!thingDesc) {
@@ -2032,7 +2087,7 @@ function buildThing(block) {
 			thingData.props.display = thingDesc;
 		} else if(firstwd=='name') {
 			if(!words[1]) {
-				return do_error('"name" must have a display name after it');
+				return do_error('"name" must have a screen name after it');
 			}
 			thingData.props.name = wordsFrom(words,1);
 		} else if(firstwd=='desc') {
@@ -2063,11 +2118,11 @@ function buildThing(block) {
 			}
 			thingData.props.loc = words[1];
 			if(words[2]) {
-				return do_error(lineN, 'loc should only have one room name after it');
+				return do_error(lineN, '"loc" should only have one word (a room) after it');
 			}
 		} else if(firstwd=='carried') {
 			if(GameIn.inventory && GameIn.inventory.includes(thingName)) {
-				do_warning(lineN, 'thing "'+thingName+'" is declared carried more than once');
+				do_warning(lineN, 'Thing "'+thingName+'" is declared carried more than once');
 			}
 			if(words[1]) {
 				do_warning(lineN, '"carried" should be the only word on its line');
@@ -2083,10 +2138,10 @@ function buildThing(block) {
 					return do_error(lineN, '"'+verb+'" is not a valid verb');
 				}
 				if(thingData.active_verbs.includes(verb)) {
-					do_warning(lineN, 'verb "'+verb+'" is listed twice for "'+thingName+'"');
+					do_warning(lineN, 'Verb "'+verb+'" is listed twice for "'+thingName+'"');
 				}
 				if(thingData.active_when_carried && thingData.active_when_carried.includes(verb)) {
-					return do_error(lineN, 'same verb "'+verb+'" for "'+thingName+'" cannot be both a verb and and a cverb');
+					return do_error(lineN, 'Same verb "'+verb+'" for "'+thingName+'" cannot be both a verb and and a cverb');
 				}
 				thingData.active_verbs.push(verb);
 				thingData.permanent_verbs.push(verb);
@@ -2101,16 +2156,16 @@ function buildThing(block) {
 					return do_error(lineN, '"'+verb+'" is not a valid verb');
 				}
 				if(thingData.active_when_carried.includes(verb)) {
-					do_warning(lineN, 'verb "'+verb+'" is listed twice for "'+thingName+'"');
+					do_warning(lineN, 'Verb "'+verb+'" is listed twice for "'+thingName+'"');
 				}
 				if(thingData.active_verbs && thingData.active_verbs.includes(verb)) {
-					return do_error(lineN, 'same verb "'+verb+'" for "'+thingName+'" cannot be both a verb and and a cverb');
+					return do_error(lineN, 'Same verb "'+verb+'" for "'+thingName+'" cannot be both a verb and and a cverb');
 				}
 				thingData.active_when_carried.push(verb);
 			}
 		} else if(firstwd=='prop') {
 			if(!words[1]) {
-				return do_error(lineN, 'prop must have a property name');
+				return do_error(lineN, '"prop" must have a property name after it');
 			} else if(!legal_name(words[1])) {
 				return do_error(lineN, '"'+words[1]+'" is not a valid property name');
 			} else {
@@ -2118,7 +2173,7 @@ function buildThing(block) {
 				thingData.props[propName] = wordsFrom(words,2);
 			}
 		} else {
-			return do_error(lineN, 'didn\'t understand "'+firstwd+'" in thing declaration');
+			return do_error(lineN, 'Didn\'t understand "'+firstwd+'" in thing declaration');
 		}
 	}
 	return thingData;
@@ -2133,7 +2188,7 @@ function buildThings() {
 			return false;
 		}
 		if(GameIn.things[thing.name]) {
-			return do_error(thing.lineN, 'duplicate thing name "'+thing.name+'"');
+			return do_error(thing.lineN, 'Duplicate thing name "'+thing.name+'"');
 		}
 		GameIn.things[thing.name] = Object.assign({}, thing);
 	}
@@ -2154,6 +2209,9 @@ function buildVerb(block, isSetverb) {
 
 		if(i==0) {
 			verbData.lineN = lineN;
+			if(!words[1]) {
+				return do_error(lineN, '"verb" cannot appear on its own');
+			}
 			if(!legal_name(words[1])) {
 				return do_error(lineN, '"'+words[1]+'" is not a valid verb name');
 			}
@@ -2165,7 +2223,7 @@ function buildVerb(block, isSetverb) {
 				verbData.thing = words[2];
 			}
 			if(words[3]) {
-				return do_error(lineN, '"'+(isSetverb?'set':'')+'verb" should only have one or two words (verb and optional thing/\'intransitive\')');
+				return do_error(lineN, '"'+(isSetverb?'set':'')+'verb" should only have one or two words (verb and optional thing/'+(GameIn.conversation?'topic/':'')+'\'intransitive\')');
 			}
 		} else if(firstwd=='display') {
 			var displayKey = verbData.thing ? (verbData.verb + ' ' + verbData.thing) : verbData.verb;
@@ -2217,7 +2275,17 @@ function buildVerbs() {
 	}
 	for(var i=0;i<VerbsIn.length;++i) {
 		var thisVerb = VerbsIn[i];
-		if(thisVerb.verb=='go') {
+		var conv = check_conversation_verb(thisVerb.verb, true);
+		if(conv && !GameIn.conversation && thisVerb.verb.substring('_')!=-1) {
+			do_warning(thisVerb.lineN, '"'+thisVerb.verb+'" looks like a conversation verb. Did you mean to include "conversation on" in your game block?');
+		}
+		if(GameIn.conversation && conv) {
+			// conversation verbs can take any value, but check the conversation-ee
+			if(conv.person && !GameIn.things[conv.person]) {
+				return do_error(thisVerb.lineN, '"'+conv.person+'" is not a thing');
+			}
+			continue;
+		} else if(thisVerb.verb=='go') {
 			// 'go' can take ANY 'noun' as long as it can be a direction
 			continue;
 		} else if(thisVerb.thing && !GameIn.things[thisVerb.thing]) {
@@ -2241,7 +2309,16 @@ function buildSetverbs() {
 	}
 	for(var i=0;i<SetverbsIn.length;++i) {
 		var thisSetverb = SetverbsIn[i];
-		if(thisSetverb.thing && thisSetverb.thing!='intransitive' && !GameIn.things[thisSetverb.thing]) {
+		var conv = check_conversation_verb(thisSetverb.verb, true);
+		if(conv && !GameIn.conversation && thisSetverb.verb.substring('_')!=-1) {
+			do_warning(thisSetverb.lineN, '"'+thisSetverb.verb+'" looks like a conversation verb. Did you mean to include "conversation on" in your game block?');
+		}
+		if(conv && GameIn.conversation) {
+			// conversation verbs can take any value, but check the conversation-ee
+			if(conv.person && !GameIn.things[conv.person]) {
+				return do_error(thisSetverb.lineN, '"'+conv.person+'" is not a thing');
+			}
+		} else if(thisSetverb.thing && thisSetverb.thing!='intransitive' && !GameIn.things[thisSetverb.thing]) {
 			return do_error(thisSetverb.lineN, '"'+thisSetverb.thing+'" is not a thing');
 		}
 	}
@@ -2348,7 +2425,7 @@ function buildVariables() {
 					return do_error(lineN, '"'+varname+'" is not a valid variable name');
 				}
 				if(!words[2]) {
-					do_warning(lineN, 'variable "'+varname+'" has not been given a value (it will be 0)');
+					do_warning(lineN, 'Variable "'+varname+'" has not been given a value (it will be 0)');
 				}
 				var varvalue = wordsFrom(words,2);
 				if(!varvalue) {
@@ -2384,47 +2461,6 @@ function buildTags() {
 		}
 	}
 	return true;
-}
-
-function buildExit(block) {
-	// for verb OR setverb
-	var exitData = {};
-	for(var i=0;i<block.code.length;++i) {
-		var thisLine = block.code[i];
-		var lineN = block.lineN + i;
-		var words = getWords(thisLine);
-		if(!words.length) {
-			continue;
-		}
-		var firstwd = words[0];
-
-		if(i==0) {
-			exitData.lineN = lineN;
-			if(!words[1]) {
-				return do_error(lineN, '"exit" must specify a room and direction');
-			}
-			if(!GameIn.rooms[words[1]]) {
-				return do_error(lineN, '"'+words[1]+'" is not a room');
-			}
-			exitData.room = words[1];
-			if(!words[2]) {
-				return do_error(lineN, '"exit" must specify a room and direction');
-			}
-			exitData.direction = words[2];
-			if(!GameIn.rooms[exitData.room].directions || !GameIn.rooms[exitData.room].directions[words[2]]) {
-				return do_error(lineN, 'room "'+exitData.room+'" has no "'+exitData.direction+'" direction');
-			}
-			if(words[3]) {
-				return do_error(lineN, '"exit" should only have two words (room and direction) after it');
-			}
-		} else {
-			if(!exitData.steps) {
-				exitData.steps = [];
-			}
-			exitData.steps.push(thisLine);
-		}
-	}
-	return Object.assign({}, exitData);
 }
 
 function buildGame(runP) {
@@ -2651,6 +2687,55 @@ function get_point_for(gamevar) {
 
 function describe_room() {
 	
+	if(Game.conversation && Game.vars.conversation) {
+		
+		var html = '';
+		
+		var talkee = Game.vars.conversation
+		
+		html += '<div class="conversation">\n';
+		
+		html += 'Talking to: ' + name(talkee) + '<br/>\n'
+		
+		if(Game.conv.ask && Game.conv.ask.length) {
+			html += 'Ask about: ';
+			for(var i in Game.conv.ask) {
+				var topic = Game.conv.ask[i];
+				html += draw_button(display_verb('ask_'+talkee, topic), "do_verb('ask_" + talkee + "','" + topic + "')");
+			}
+			html += '<br/>\n';
+		}
+		
+		if(Game.conv.tell && Game.conv.tell.length) {
+			html += 'Tell about: ';
+			for(var i in Game.conv.tell) {
+				var topic = Game.conv.tell[i];
+				html += draw_button(display_verb('tell_'+talkee, topic), "do_verb('tell_" + talkee + "','" + topic + "')");
+			}
+			html += '<br/>\n';
+		}
+		
+		if(Game.conv.say && Game.conv.say.length) {
+			html += 'Say: ';
+			for(var i in Game.conv.say) {
+				var topic = Game.conv.say[i];
+				html += draw_button(display_verb('say_'+talkee, topic), "do_verb('say_" + talkee + "','" + topic + "')");
+			}
+			html += '<br/>\n';
+		}
+		
+		html += draw_button('end conversation', "do_verb('end_conversation', '"+talkee+"')");
+		
+		html += '</div>' // conversation
+		
+		$('#conversation').html(html);
+		if($('#conversation').css('display')=='none') {
+			$('#conversation').slideDown();
+		}
+	} else if($('#conversation').css('display')=='block') {
+		$('#conversation').slideUp();
+	}
+	
 	var html = '<div class="im_in">';
 	
 	var lit = can_see() && is_lit(Game.vars.room);
@@ -2660,7 +2745,7 @@ function describe_room() {
 	} else {
 		html += "It's dark.";
 	}
-	html += '</div>';
+	html += '</div>\n';
 	
 	var exitOrder = ['north', 'northeast', 'east', 'southeast',
 	                 'south', 'southwest', 'west', 'northwest',
@@ -2684,7 +2769,7 @@ function describe_room() {
 	
 	if(exits.length) {
 		
-		html += 'Exits: ' + exits.join(' ') + '<br/>';
+		html += 'Exits: ' + exits.join(' ') + '<br/>\n';
 	}
 	
 	if(hero_location().active_verbs && hero_location().active_verbs.length) {
@@ -2694,7 +2779,7 @@ function describe_room() {
 		} else {
 			html += "Actions: "
 		}
-		html += list_verbs(Game.vars.room, true) + '<br/>';
+		html += list_verbs(Game.vars.room, true) + '<br/>\n';
 	}
 	
 	var things_here = [];
@@ -2740,7 +2825,7 @@ function describe_room() {
 	}
 	
 	if(Game.wait) {
-		html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">wait</button></div>';
+		html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">wait</button></div>\n';
 	}
 	
 	document.getElementById('room_description').innerHTML = html;
@@ -2758,7 +2843,7 @@ function describe_room_in_scroller() {
 		////console.log(Game.vars.room+' is lit');
 		
 		if(!hero_location().props.desc) {
-			do_runtime_warning("room '" + Game.vars.room + "' has no description");
+			do_runtime_warning("Room '" + Game.vars.room + "' has no description");
 		}
 		
 		if(!Game.suppress_room_message) {
@@ -3015,7 +3100,7 @@ function expandBraces(txt) {
 	variableValue = expandBraces(variableValue);
 	
 	if(rtError) {
-		do_runtime_error('couldn\'t evaluate braced expression "'+txt+'"');
+		do_runtime_error('Couldn\'t evaluate braced expression "'+txt+'"');
 	}
 	var rest = expandBraces(txtAfter);
 	////console.log('variableValue is '+variableValue);
@@ -3085,7 +3170,7 @@ function refer_to(article, thing, capsForThing) {
 		case 'REF':
 			return pronoun(thing,4,false).toUpperCase();
 		default:
-			return do_runtime_error('unknown article or pronoun "'+article+'"');
+			return do_runtime_error('Unknown article or pronoun "'+article+'"');
 	}
 }
 
@@ -3130,14 +3215,28 @@ function find_verbs(verb, thing) {
 	var withObject = [];
 	var noObject = [];
 	
+	var noTopic = []; // for conversations only -
+	// allow ask, tell and say verbs to match ask_*/tell_*/say_*
+	
 	// keep separate arrays for thing-specific verbs
 	// (if a thing is supplied) and general (thingless) verbs
 	// - the thing-specific ones should be returned first.
 	//
 	// native verbs (take, drop, etc) will always come last
 	// due to how Verbs is built by the gs interpreter.
+	
+	var conv = null;
+	if(Game.conversation) {
+		conv = check_conversation_verb(verb, true);
+	}
+	
 	for(var i in Verbs) {
-		if(Verbs[i].verb==verb)  {
+		var thisverb = Verbs[i].verb;
+		var foundconv = check_conversation_verb(thisverb, true);
+		if(conv && conv.conv_type && foundconv && !foundconv.person && conv.conv_type==foundconv.conv_type) {
+			noTopic.push(Verbs[i]);
+		}
+		if(thisverb==verb) {
 			if(!Verbs[i].thing) {
 				noObject.push(Verbs[i]);
 			} else if(thing && Verbs[i].thing==thing) {
@@ -3146,7 +3245,7 @@ function find_verbs(verb, thing) {
 		}
 	}
 	
-	return withObject.concat(noObject);
+	return withObject.concat(noObject).concat(noTopic);
 }
 
 
@@ -3252,11 +3351,53 @@ function display_verb(verb, thing, forPrompt) {
 		}
 	}
 	
-	if(thing && forPrompt) {
-		return verb + ' ' + name(thing);
+	if(Game.conversation) {
+		if(verb=='talk') {
+			return forPrompt && thing ? 'talk to ' + name(thing) : 'talk';
+		} else if(verb=='end_conversation') {
+			return 'end conversation';
+		}
 	}
 	
-	return verb;
+	var conv = check_conversation_verb(verb);
+	if(Game.conversation && conv) {
+		if(forPrompt) {
+			if(conv.conv_type=='say') {
+				return 'say '+ display_word(thing);
+			}
+			var ref_pronoun = null;
+			if(thing==Game.vars.conversation) {
+				ref_pronoun = pronoun(thing,4); // reflexive pronoun 
+			}
+			return conv.conv_type + ' ' + name(Game.vars.conversation) + ' about ' +
+				(ref_pronoun ? ref_pronoun : display_word(thing));
+		} else {
+			return display_word(thing);
+		}
+	}
+	
+	if(thing && forPrompt) {
+		return verb.replaceAll('_',' ') + ' ' + name(thing);
+	}
+	
+	return verb.replaceAll('_', ' ');
+}
+function check_conversation_verb(verb, allow_verb_only) {
+	if(allow_verb_only && ['ask','tell','say'].includes(verb)) {
+		return { conv_type: verb, person: null };
+	}
+	// assumes verb is a string
+	var isAsk = verb.substring(0,4)==='ask_';
+	var isTell = verb.substring(0,5)==='tell_';
+	var isSay = verb.substring(0,4)==='say_';
+	if(!isAsk && !isTell && !isSay) {
+		return null;
+	}
+	var person = verb.substring(isTell ? 5 : 4);
+	return {
+		conv_type: (isAsk ? 'ask' : isTell ? 'tell' : 'say'),
+		person: person
+	}
 }
 
 function do_verb(verb, thing, not_a_turn) {
@@ -3270,7 +3411,7 @@ function do_verb(verb, thing, not_a_turn) {
 	var found_verbs = find_verbs(verb, thing);
 	
 	if(!found_verbs.length) {
-		return do_runtime_error('couldn\'t find verb "' + verb + '"');
+		return do_runtime_error('Couldn\'t find verb "' + verb + '"');
 	}
 	
 	if(!not_a_turn) {
@@ -3346,6 +3487,10 @@ function do_rules() {
 	for(var i in Rules) {
 		runSteps(Rules[i].steps, null, Rules[i].lineN);
 	}
+	if(Game.conversation && Game.vars.conversation && !in_scope(Game.vars.conversation)) {
+		delete Game.vars.conversation;
+		Game.conv = {ask:[],tell:[],say:[]};
+	}
 }
 
 THISES = [];
@@ -3392,11 +3537,49 @@ function do_setverbs() {
 	var alreadyset = {};
 	////console.log('things in scope: ' +things.join(' '));
 	
+	if(Game.vars.conversation) {
+		Game.conv.ask = [];
+		Game.conv.tell = [];
+		Game.conv.say = [];
+	}
+	
 	for(var i=0;i<Setverbs.length;++i) {
 		gs_log(Setverbs[i].lineN, "setverb");
 		var verb = Setverbs[i].verb;
-		if(Setverbs[i].thing) {
-			var thing = Setverbs[i].thing;
+		var thing = Setverbs[i].thing;
+		
+		if(Game.conversation) {
+			var conv = check_conversation_verb(verb, true);
+			if(conv) {
+				if(!Game.vars.conversation) {
+					continue;
+				}
+				
+				if(!conv.person || Game.vars.conversation==conv.person) {
+					
+					if(thing) {
+						if(!Game.conv[conv.conv_type].includes(thing) && runSteps(Setverbs[i].steps)) {
+							Game.conv[conv.conv_type].push(thing);
+						}
+					}
+					
+					else {
+						for(var topic in Game.things) {
+							Game.vars['this'] = topic;
+							if(!Game.conv[conv_type].includes(topic) && runSteps(Setverbs[i].steps)) {
+								Game.conv[conv.conv_type].push(topic);
+							}
+						}
+					}
+					
+				}
+				
+				continue;
+			}
+		}
+		
+		if(thing) {
+			
 			////console.log('this is'+thing);
 			
 			var def_active;
@@ -3460,6 +3643,7 @@ function do_setverbs() {
 	}
 	
 	// native verbs take, drop, wear and remove get set by their own logic
+	// (and talk, if 'conversation' is on)
 	for(var i in things) {
 		var thing = things[i];
 		var isCarried = carried(thing);
@@ -3470,8 +3654,12 @@ function do_setverbs() {
 		set_active(thing,'drop',(isCarried && !isWorn)||alreadyset['drop '+thing]);
 		set_active(thing,'wear',(isWearable && !isWorn && (!isPortable || isCarried))||alreadyset['wear '+thing]);
 		set_active(thing,'remove',isWorn||alreadyset['remove '+thing]);
-	}
-	
+		if(Game.conversation) {
+			set_active(thing,'talk', alreadyset['talk '+thing]||(
+				Game.vars.conversation != thing &&
+				has_tag(thing,'conversation')));
+		}
+	}	
 }
 
 function list_verbs(thing, is_room) {
@@ -3582,6 +3770,10 @@ function initialise() {
 	if(!PLAYED) {
 		INITIAL_GAME = JSONfn.stringify(Game);
 		PLAYED = true;
+	}
+	
+	if(Game.conversation) {
+		Game.conv = {ask:[],tell:[],say:[]};
 	}
 	
 	if(Game.initialise) {
@@ -3707,7 +3899,7 @@ function restart_game() {
 function is_lit(room) {
 	
 	if(!Game.rooms[room]) {
-		do_runtime_error("tried to check lit status of nonexistent room '" + room + "'??");
+		do_runtime_error("Tried to check lit status of nonexistent room '" + room + '"');
 	}
 	
 	if(!has_tag(room, 'dark')) {
@@ -3858,7 +4050,7 @@ function swap(thing1, thing2) {
 function add_tag(thingOrRoom, tag) {
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);	
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t add tag "'+tag+'" to "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t add tag "'+tag+'" to "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
@@ -3877,7 +4069,7 @@ function add_tag(thingOrRoom, tag) {
 function remove_tag(thingOrRoom, tag) {
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t remove tag "'+tag+'" from "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t remove tag "'+tag+'" from "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
@@ -3902,7 +4094,7 @@ function in_things_or_rooms(thingOrRoom) {
 function clear_tags(thingOrRoom) {
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t clear tags from "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t clear tags from "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
@@ -3916,7 +4108,7 @@ function has_tag(thingOrRoom, tag) {
 	}
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t check tag "'+tag+'" for "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t check tag "'+tag+'" for "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
@@ -3928,7 +4120,7 @@ function has_tag(thingOrRoom, tag) {
 function set_tags(thingOrRoom, tag) {
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t set tags for "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t set tags for "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
@@ -3941,12 +4133,20 @@ function set_tags(thingOrRoom, tag) {
 function get_tags(thingOrRoom) {
 	var thingsOrRooms = in_things_or_rooms(thingOrRoom);
 	if(!thingsOrRooms) {
-		do_runtime_error('couldn\'t get tags for "'+thingOrRoom+'" because "' +
+		do_runtime_error('Couldn\'t get tags for "'+thingOrRoom+'" because "' +
 			thingOrRoom + '" is not a thing or room');
 		return false;
 	}
 
 	return Game[thingsOrRooms][thingsOrRoom].tags;
+}
+
+function display_word(word) {
+	if(Game.things[word]) {
+		return name(word);
+	} else {
+		return word.replaceAll('_', ' ');
+	}
 }
 
 function name(thing) {
@@ -4092,14 +4292,14 @@ function held_thing() {
 
 function carried(thing) {
 	if(!Game.things[thing]) {
-		do_runtime_error('tried to check carried status of nonexistent thing "' + thing + '"??');
+		do_runtime_error('Tried to check carried status of nonexistent thing "' + thing + '"');
 	}
 	return (Game.held == thing) || Game.inventory.includes(thing);
 }
 
 function worn(thing) {
 	if(!Game.things[thing]) {
-		do_runtime_error('tried to check worn status of nonexistent thing "' + thing + '"??');
+		do_runtime_error('Tried to check worn status of nonexistent thing "' + thing + '"');
 	}
 	return has_tag(thing, 'worn');
 }
@@ -4929,6 +5129,42 @@ NativeVerbs = [
 			say("Time passes...");
 			return true;
 		}
+	},
+	
+	{
+		verb: 'talk',
+		primitive: true,
+		func: function(thing) {
+			if(!Game.conversation) {
+				return false;
+			}
+			if(has_tag(thing,'conversation')) {
+				Game.vars.conversation = thing;
+				Game.conv = {};
+				if(Game.things[thing].props.start_conversation) {
+					say(Game.things[thing].props.start_conversation);
+				} else {
+					say(I(true)+' start talking to '+the_thing(thing)+'.');
+				}
+			}
+		}
+	},
+	
+	{
+		verb: 'end_conversation',
+		primitive: true,
+		func: function(thing) {
+			if(!Game.conversation) {
+				return false;
+			}
+			delete Game.vars.conversation;
+			Game.conv = {ask:[],tell:[],say:[]};
+			if(Game.things[thing].props.end_conversation) {
+				say(Game.things[thing].props.end_conversation);
+			} else {
+				say(I(true)+' stop talking to '+the_thing(thing)+'.');
+			}
+		}
 	}
 	
 ];
@@ -4952,28 +5188,30 @@ NativeVerbs = [
 
 			<div id="scroller">
 				<div id="scroller_content">
-					<span class="prompt">&gt; do thing</span><br/>
-					A thing happens!
+					<p><span class="old_message">This is the main scroller. Messages to the player go here, with mock command prompts...</span></p>
+					<p><span class="prompt old_prompt">&gt; lke this</span></p>
+					<p><span class="new_message">See?</span></p>
 				</div>
+			</div>
+
+			<div id="conversation">
 			</div>
 
 			<div id="room_description_container">
 				<div id="room_description">
-					<p>Room description goes here</p>
+					<p>Room description goes here.</p>
 				</div>
 			</div>
 
-
 			<div id="holding_container">
 				<div id="holding">
-					I'm holding:
-					<ul><li>nothing</li></ul>
 				</div>
 			</div>
 
 			<div id="savefix">
 				<div id="inventory_container">
 					<div id="inventory">
+						Inventory
 					</div>
 				</div>
 			</div>

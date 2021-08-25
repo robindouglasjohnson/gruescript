@@ -62,6 +62,7 @@ $(document).ready(function() {
 	
 	if(load_from_browser(true)) {
 		gs_console('restored from previous session');
+		buildGame(true);
 	} else {
 		loadExample("Cloak of Darkness");
 	}
@@ -194,7 +195,7 @@ function doHighlighting() {
 		// instructions (& other things) with a string as their first argument
 		line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
 		// instructions with a string as their second argument, and block names that include a printed message
-		line = line.replace(/(^\s*(write|is|room|thing|tagdesc)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
+		line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
 		var str = '';
 		var strIx = line.indexOf('<span class="string">');
 		if(strIx>=0) {
@@ -204,9 +205,9 @@ function doHighlighting() {
 		
 		// commands
 		// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
-		line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
+		line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
 		// assertions
-		line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
+		line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|contains|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
 		// iterators
 		line = line.replaceAll(/(^\s*)(!?(sequence|select|all))(?=\s|$)/g,'$1<span class="iterator">$2</span>');
 		// block types
@@ -216,7 +217,7 @@ function doHighlighting() {
 		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 		// properties and directions
-		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|wait|tags|dir|loc|verbs|cverbs|display|prompt|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
+		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|wait|tags|dir|loc|verbs|cverbs|display|prompt|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
 
 		// variables and numbers
 		line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
@@ -505,108 +506,92 @@ EXAMPLES.NPCs = `game NPCs example
 author Robin Johnson
 id EXAMPLE_NPCs
 examine on
+conversation on # use conversation system
 
-############# conversation system ############
-
-# you can try to talk to any human, if you're not having a conversation already
-setverb talk
-hasany $this human conversation
-eq $talking 0
-
-verb talk
-has $this conversation: {The $this} takes no notice.
-prompt talk to {$this}
-assign talkee $thing
-assign talking 1
-# openconv, endconv and noreply will be set by the specific talk verb for each npc,
-# but if they aren't, use default messages
-!eq $openconv 0: You strike up a conversation with {the $talkee}.
-say {$openconv}
-
-# ...and stop talking at any time
-setverb stoptalk
-eq $this $talkee
-eq $talking 1
-
-verb stoptalk
-display stop talking
-prompt stop talking to {$this}
-assign talking 0
-!eq $endconv 0: You stop talking to {the $talkee}.
-say {$endconv}
-
-#conversation ends automatically with no message if the talkee is no longer in scope
-#(probably because you left the room)
-rule
-eq $talking 1
-!inscope $talkee
-assign talking 0
-
-# clean up variables when conversation is over
-rule
-eq $talking 0
-assign endconv 0
-assign talkee 0
-assign noreply 0
-
-# when talking, you can "ask about" anything in scope
-setverb ask
-eq $talking 1
-
-verb ask
-display ask about
-prompt ask {$talkee} about {$this}
-!eq $noreply 0: {The $talkee} isn't interested in talking about {a $this}. # default message
-say {$noreply} # character-specifc "no reply" message
-
-
-# then everyone who can talk should have:
-# - the tag 'conversation'
-# - a specific verb 'talk' like that writes the 'openconv', 'noreply'
-#    and 'endconv' variables
-# then use specific verbs 'ask foo' for anything you can ask ABOUT,
-# with a line 'eq talkee
-
+# initialise thiefdir randomly, and opposite_thiefdir to its opposite
+assign opposite_thiefdir east
+pick thiefdir these east west
+eq $thiefdir east
+assign opposite_thiefdir west
 
 room statue_room You're in a studio scattered with chips of stone.
 east painting_room
 tags start
 
 thing statue
-desc It's a giant statue of a crocodile. \
-Or maybe it's a normal-size statue of a giant crocodile, who can say?
+desc It's a giant statue of a crocodile. Or maybe it's a normal-size statue of a giant crocodile, who can say?
 tags art
 prop creator sculptor
 loc statue_room
 
 thing sculptor
 loc statue_room
-tags human male conversation
+tags alive male conversation
 prop creation statue
+prop start_conversation {The sculptor} pauses from sharpening his chisel, and looks at you.
+prop end_conversation {The sculptor} nods, and goes back to sharpening his chisel.
+prop met_name Hogmolion
 
-verb talk sculptor
-write openconv {The sculptor} pauses from sharpening his chisel, and looks at you.
-write noreply {The sculptor} doesn't seem to be paying attention.
-write endconv {The sculptor} nods, and goes back to sharpening his chisel.
-continue
+# a procedure for 'meeting', an NPC, and changing their name
+# (and grammar) accordingly
 
-verb ask sculptor # what you're asking about
-eq $talkee sculptor # who you're asking
+proc meet
+assign $npc.name $npc.met_name
+assign $npc.display $npc.met_name
+tag $npc proper_name
+tag $npc met
+
+
+# If your game has "conversation on",
+# - any thing with the "conversation" tag will
+#   have the verb "talk", which opens a
+#   conversation (if you're not currently talking
+#   to that thing)
+# - the verbs "ask", "tell" and "say", and any
+#   verbs beginning "ask_", "tell_" or say_",
+#   followed by a noun, become special, and can
+#   take anything (or non-thing) as an object
+# - the variable "conversation" contains the
+#   thing (usually a person) you're talking to
+
+setverb ask_sculptor sculptor
+verb ask_sculptor sculptor
 !has sculptor met
-say "The name's Hogmolion," says the$ sculptor. "I'm the finest sculptor on the block. Little sculpting joke, there."
-assign sculptor.name Hogmolion
-assign sculptor.display Hogmolion
-tag sculptor proper_name
-tag sculptor met
-verb ask sculptor
-is talkee sculptor
-has sculptor met
-say "I've already introduced myself," says {the sculptor}. "It's Hogmolion, remember?"
+say "The name's Hogmolion," says the sculptor. "I'm the finest \
+    sculptor on the block. Little sculpting joke, there."
+assign npc sculptor
+run meet
 
-verb ask statue
-is talkee sculptor
-say "That's my masterpiece, <i>Alegata</i>," says {the sculptor}.
+verb ask_sculptor sculptor
+say "I told you, it's Hogmolion."
 
+setverb ask_sculptor statue
+verb ask_sculptor statue
+here statue
+say "That's my masterpiece, <i>Alegata</i>, says the sculptor, looking proudly at the statue.
+
+verb ask_sculptor statue
+say "That's my m&ndash;" the sculptor looks round, then gapes. "Where did it go??"
+
+# 'tell' (or ask or say) on its own will match for whoever you're talking to
+setverb tell thief
+!eq $conversation thief
+here thief
+
+verb tell thief
+assign shooer sculptor
+run shoo_thief
+
+proc shoo_thief
+say {The $shooer} looks at the thief.
+has $shooer.creation stolen
+say "Oi!" {nom $shooer} shouts. "Put back my {$shooer.creation}!"
+say With a guilty look, the thief removes {the $shooer.creation} from his sack and puts it back.
+bring $shooer.creation
+untag $shooer.creation stolen
+proc shoo_thief
+say "Oi!" {nom $shooer} shouts. "Get out!"
+run move_thief
 
 room painting_room You're in a paint-splattered studio.
 west statue_room
@@ -618,52 +603,55 @@ tags art
 prop creator painter
 
 thing painter
-tags human female conversation
+tags alive female conversation
 loc painting_room
 prop creation painting
+prop met_name The Great Acylicia
 
-verb talk painter
-write openconv {The painter} looks at you brightly.
-write noreply {The painter} hums to herself, oblivious to you.
-write endconv {The painter} nods you away hastily.
-continue
-
-verb ask painter
-eq $talkee painter
+setverb ask_painter painter
+verb ask_painter painter
 !has painter met
-say {The painter} bows and says "I am the Great Acrylica!"
-write painter.display The Great Acrylica
-write painter.name Great Acrylica
-tag painter met
-# but not proper_name, so "The/the Great Acrylica" will work
+say "The Great Acrylicia," she says. "Pleased to meet you."
+assign npc painter
+run meet
+verb ask_painter painter
+say "You already asked, but I don't mind. I love talking about \
+myself. I'm The Great Acrylicia," she says.
 
-verb ask painter
-eq $talkee painter
-# we don't actually need "!has painter met", because if that's true,
-# the verb block above will have succeeded by now
-say {The painter} bows again and says "I am STILL the Great Acrylica!"
+setverb ask_painter painting
+verb ask_painter painting
+here painting
+say "I call it <i>Collection of Brightly-Coloured Splodges</i>," she says proudly.
+verb ask_painter painting
+say She looks round, confused. "My painting! Where is it?"
 
-verb ask painting
-eq $talkee painter
-say "I call it 'Collection of Brightly Coloured Splodges'," says {the painter}.
-
+setverb tell_painter thief
+here thief
 
 # a more active npc
 thing thief art thief
 desc A lean and hungry gentleman, eyeing the place for potential swag.
 loc painting_room
+tags alive male conversation
 
-# keep track of which way the thief is moving
-var thiefdir west
-var opposite_thiefdir east
+setverb ask_thief
+has $this art
 
-# 'animate' the thief every turn
+verb ask_thief
+!has $this stolen
+say "Cor, I wouldn't mind half-inchin' that..."
+verb ask_thief
+say "I don't know nuffin' about it"
+
+# 'animate' the thief, but not when you're taking to him
 rule
+!eq $conversation thief
 assign thiefloc thief.loc
 random thief_behaviour 3
 rule
 eq $thief_behaviour 1
-run movethief
+!has thief just_moved
+run move_thief
 rule
 eq $thief_behaviour 2
 # thief does nothing
@@ -672,15 +660,18 @@ rule
 eq $thief_behaviour 3
 run attempt_theft
 
-proc movethief
+proc move_thief
 # if the thief can't go any further in this direction, reverse it
+assign thiefloc thief.loc
 eq $thiefloc.dir.$thiefdir 0
 run flip_thiefdir
+continue
 
-proc movethief
-sayat $thiefloc The thief sneaks away to the {$thiefdir}.
+proc move_thief
+sayat $thiefloc The thief sneaks away to {the $thiefdir}.
 put thief $thiefloc.dir.$thiefdir
-sayat thief.loc The thief sneaks in from the {$opposite_thiefdir}.
+sayat thief.loc The thief sneaks in from {the $opposite_thiefdir}.
+tag thief just_moved
 
 proc flip_thiefdir
 assign olddir $thiefdir
@@ -699,7 +690,7 @@ sayat thief.loc The thief reaches out a bony hand towards {the $stealing}...
 !here $stealing.creator # succeeds if the creator isn't there to guard it, otherwise we'll try the next proc block
 
 proc steal_art # creator present
-eq $talkee $stealing.creator # if they're busy talking to the player...
+eq $conversation $stealing.creator # if they're busy talking to the player...
 sayat thief.loc {The $stealing.creator} is too distracted to notice! # theft succeeds
 sayat thief.loc The thief picks up {the $stealing} and puts it into a sack marked "SWAG".
 hide $stealing
@@ -707,7 +698,10 @@ tag $stealing stolen
 
 proc steal_art # creator present, not talking
 sayat thief.loc {The $stealing.creator} slaps the thief's hand away!
-continue # fails!`;
+continue # fails!
+
+rule
+untag thief just_moved`;
 
 /*
  *
