@@ -579,7 +579,7 @@ setverb tell thief
 here thief
 
 verb tell thief
-assign shooer sculptor
+assign shooer $conversation
 run shoo_thief
 
 proc shoo_thief
