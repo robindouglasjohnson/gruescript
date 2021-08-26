@@ -745,11 +745,25 @@ say But you've only just arrived!
 
 room bar You're in the bar.
 north foyer
-tags dark # this room is dark
 
-# rules run every turn
-rule
+# set the state of the bar BEFORE entering it
+verb go south
+at foyer
+run check_bar
+continue # fails, so default movement behaviour will always happen
+
+proc check_bar
+carried cloak
+tag bar dark # 'dark' is a special tag
+
+proc check_bar
+thingat cloak bar
 tag bar dark
+
+# both 'carried cloak' and 'thingat cloak bar' must have failed
+proc check_bar
+untag bar dark
+
 !thingat cloak bar # ! means not. the rule will stop here if the assertion fails
 untag bar dark
 

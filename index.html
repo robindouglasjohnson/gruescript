@@ -2837,10 +2837,8 @@ function describe_room_in_scroller() {
 		Game.suppress_room_message = false;
 		return;
 	}
-	
-	if(can_see() && is_lit(Game.vars.room)) {
 		
-		////console.log(Game.vars.room+' is lit');
+	if(can_see() && is_lit(Game.vars.room)) {
 		
 		if(!hero_location().props.desc) {
 			do_runtime_warning("Room '" + Game.vars.room + "' has no description");
