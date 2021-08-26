@@ -764,9 +764,6 @@ tag bar dark
 proc check_bar
 untag bar dark
 
-!thingat cloak bar # ! means not. the rule will stop here if the assertion fails
-untag bar dark
-
 rule
 at bar
 has bar dark
