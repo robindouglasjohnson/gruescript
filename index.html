@@ -1903,7 +1903,8 @@ function buildroom(block) {
 	var roomData = {
 		active_verbs: [],
 		permanent_verbs: [],
-		props: {}
+		props: {},
+		tags: []
 	};
 	for(var i=0;i<block.code.length;++i) {
 		var thisLine = block.code[i];
@@ -1966,9 +1967,6 @@ function buildroom(block) {
 				do_error(lineN, 'There shouldn\'t be more than two words (a direction and a room) after "dir"');
 			}
 		} else if(firstwd=='tags') {
-			if(!roomData.hasOwnProperty('tags')) {
-				roomData.tags = [];
-			}
 			if(words.length==1) {
 				do_warning(lineN, '"tags" property doesn\'t include any tags');
 			}
@@ -2060,7 +2058,8 @@ function buildThing(block) {
 		active_verbs: [],
 		permanent_verbs: [],
 		props: {},
-		active_when_carried: []
+		active_when_carried: [],
+		tags: []
 	};
 	for(var i=0;i<block.code.length;++i) {
 		var thisLine = block.code[i];
