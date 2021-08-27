@@ -802,7 +802,8 @@ has $this hooked # if an assertion 'fails', control will move to the native verb
 untag $this hooked
 continue # always 'fails', 'take' will pick up the action
 
-thing dust dust (on floor)
+thing dust dust (on the floor)
+tags mass_noun # i.e. 'some dust', not 'a dust'
 loc bar
 
 rule

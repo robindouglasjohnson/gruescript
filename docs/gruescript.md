@@ -310,7 +310,7 @@ your game from Gruescript to an HTML page, the engine code itself will
 be marked with that licence, but you are free to apply whatever licence
 you wish to your script.
 
-##Rooms
+## Rooms
 
 The locations in your game world are called **rooms**; a game will not
 work at all without at least one room. Of course, a room doesn't have to
@@ -455,8 +455,9 @@ Going through this example line by line:
 	thing top_hat blue top hat
 
 The beginning of the `thing` block: this thing has the internal name
-`top_hat`, and the *short description* "blue top hat", which is how it
-appears in a room or player inventory during gameplay.
+`top_hat`, and the *short description*  (or 'display name') "blue top 
+hat", which is how it appears in a room or player inventory during 
+gameplay.
 
 	name hat
 
@@ -585,6 +586,15 @@ is correct (as its screen name will be "flowers", plural),
 
 should *not* have `plural`, or it may get referred to as "some bouquet".
 
+`mass_noun`
+: The name of the thing is a mass noun, like 'salt' or 'mud' -- not
+plural, but not a discrete singular item. By default, Gruescript will
+use 'some' instead of 'a/an' when referring to this noun in the indefinite
+case. The indefinite form is based on the thing's *short description*,
+not its screen name, so `thing sugar bag of sugar` should *not* have this
+tag ("a bag of sugar"), but `thing grass tall grass` should have it
+("some tall grass").
+
 `male`, `female`, `nonbinary`
 : This thing has gendered pronouns: 'he/him' for male, 'she/her' for
 female, or 'they/them' for nonbinary. If a thing has none of these
@@ -634,10 +644,11 @@ number 2".
 
 `indef`
 : How the thing should be referred to by the indefinite article ('a' or
-'an').  By default, Gruescript will prepend the thing's short description (*not* its screen name)
-with 'a', 'an' if  it begins with a vowel (which won't always be
-right!), 'some' if it is plural,  or omit the article if it is a
-`proper_name`. Examples: "a unicorn", "lots of  beer".
+'an').  By default, Gruescript will prepend the thing's short description 
+(*not* its screen name) with 'a', 'an' if  it begins with a vowel (which 
+won't always be right!), 'some' if it is plural or a mass noun,  or omit 
+the article if it is a `proper_name`. Examples: "a unicorn", "lots of 
+beer".
 
 Note that some of these, such as `name` and `desc`, overlap in purpose
 with lines  in the `thing` block that have already been explained. This
@@ -1159,10 +1170,9 @@ if appropriate; otherwise 'a' will be changed to 'an' if the
 screen name begins with a vowel (or 'an' to 'a' if it doesn't
 -- 'an' behaves exactly the same as 'a' but can be used for
 capitalisation, as explained below), or 'some' for plural
-things; 'your' will be changed to 'my' if the game is in first
-person; and the article will be omitted entirely if the
-principal word is (or references) a thing with the
-`proper_name` tag.
+things or mass nouns; 'your' will be changed to 'my' if the game is in 
+first person; and the article will be omitted entirely if the
+principal word is (or references) a thing with the `proper_name` tag.
 
 If the prefix is a pronoun reference, a pronoun will be used
 instead of the thing's name. The choice of pronoun depends on

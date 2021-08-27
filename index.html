@@ -4249,7 +4249,7 @@ function a_thing(thing, caps, capsForThing) {
 		return caps ? capitalise(indef) : indef;
 	} else if(isThing && has_tag(thing, 'proper_name')) {
 		return caps ? capitalise(desc) : desc;
-	} else if(isThing && has_tag(thing, 'plural')) {
+	} else if(isThing && (has_tag(thing, 'plural') || has_tag(thing,'mass_noun'))) {
 		return (caps ? 'Some ' : 'some ') + desc;
 	} else if('aeiou'.indexOf(desc.charAt(0).toLowerCase())!=-1) {
 		return (caps ? 'An ' : 'an ') + desc;
