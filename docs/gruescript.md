@@ -536,7 +536,7 @@ If a thing block contains a line with the single word
 
 it will start the game in the player's inventory.
 
-## Special tags
+### Special tags
 
 The following tags have special meanings for things in Gruescript:
 
@@ -612,7 +612,7 @@ listing in the  room window. It's intended to be used for things that
 are duplicated in the  room description, so the player won't see
 something like " You are next to a  church. You can also see a church."
 
-## Special properties
+### Special properties
 
 The following properties of things have special meaning to Gruescript.
 
@@ -662,6 +662,23 @@ player, with `assign giraffe.name Jeffrey` (don't  forget to change its
 `display` property too.) There will be more on this in the  chapter on
 instructions.
 
+### Pronouns
+
+If you want to give a thing a set of pronouns that is not covered
+by the standard `male`, `female`, `nonbinary` or `pronoun` sets, you
+can use `pronoun` lines in its block like this:
+
+	pronoun nom xe
+	pronoun obj xem
+	pronoun pos xyr
+	pronoun ind xyrs
+	pronoun ref xemself
+
+where `nom`, `obj`, `pos`, `ind` and `ref` mean the nominative, objective
+(or accusative), possessive (or pronomial possessive), independent 
+possessive (or predicative possessive) and reflexive pronouns. These
+are the same references used in braced expressions (see the chapter on
+instructions.)
 
 ## Instructions
 
@@ -1175,20 +1192,30 @@ first person; and the article will be omitted entirely if the
 principal word is (or references) a thing with the `proper_name` tag.
 
 If the prefix is a pronoun reference, a pronoun will be used
-instead of the thing's name. The choice of pronoun depends on
+instead of the thing's name. If the thing has that pronoun
+specified in its `thing` block, the appropriate one of those will
+be used. Otherwise, the default choice of pronoun depends on
 the thing's gender and/or plurality (i.e. whether it has any of
 the `male`, `female`, `nonbinary` or `plural` tags; if none are
 present, the thing is assumed to be singular and neuter, i.e.
-'it'). The pronoun references are:
+'it'). In addition to the English pronoun cases, Gruescript adds
+a few special references for common constructs and contractions,
+like "it has" or "they're".
+
+The pronoun references are:
 
 
 | Ref | Case                   | Pronouns (neuter, male, female, nb, plural)      |
 | --- | ---------------------- | ------------------------------------------------ |
-| nom | nominative             | it, he, she, they, they                          |
-| obj | objective              | it, him, her, them, them                         |
-| pos | possessive             | its, his, her, their, their                              |
-| ind | independent possessive | its, his, hers, theirs, theirs                   |
-| ref | reflexive              | itself, himself, herself, themself\*, theirselves  |
+| `nom` | nominative             | it, he, she, they, they                          |
+| `obj` | objective              | it, him, her, them, them                         |
+| `pos` | possessive             | its, his, her, their, their                              |
+| `ind` | independent possessive | its, his, hers, theirs, theirs                   |
+| `ref` | reflexive              | itself, himself, herself, themself\*, theirselves  |
+| `nom_is` | nominative + is/are | it is, he is, she is, they are, they are |
+| `noms` | nominative + is/are (abbreviated) | it's, he's, she's, they're, they're |
+| `nom_have` | nominative + has/have | it has, he has, she has, they have, they have |
+| `nomve` | nominative + has/have (abbreviated) | it's, he's, she's, they've, they've |
 
 <sub>\* I ran a thoroughly non-rigorous twitter straw poll asking
 nonbinary folk what they preferred for this; most chose
@@ -1217,6 +1244,31 @@ or even (using a `def` property)
 
 depending on the value of the variable `victim` and the tags of
 the thing that its value points to.
+
+Second-person pronoun references (the word `you` and its relatives) are
+handled specially in braced expressions. If a second-person pronoun
+reference appears in a braced expression (and does not match a variable
+or thing name) it will refer to the player, changing to first person if
+the game has `person 1`. These are the only pronoun references that can
+(and must) appear between the braces on their own, without a principal
+word. The second-person pronoun references are:
+
+| Ref | Case | First person | Second person |
+| --- | ---- | ------------- | ------------- |
+| `you` | nominative | I | you |
+| `youm` | objective | me | you |
+| `your` | possessive | my | your |
+| `yours` | independent possessive | mine | yours |
+| `yourself` | reflexive | myself | yourself |
+| `you_are` | nominative + am/are | I am | you are |
+| `youre` | nominative + am/are (abbreviated) | I'm | you're |
+| `you_have` | nominative + have | I have | you have |
+| `youve` | nominative + have (abbreviated) | I've | you've |
+
+As the player's pronouns generally don't change during play, these are 
+mostly useful in localisation of default messages (see the appendix on 
+localisation). These can be capitalised in the same way as other pronou
+references.
 
 When a braced expression is written as part of a string into a
 variable, property, tag description or the status line, the
@@ -1953,7 +2005,69 @@ elements that Gruescript uses: `topbar_left`, `topbar_right`,
 `save_prompt`, `restart_prompt`, `save_load`, `saved_games` and
 `options`.
 
-## Appendix II: Cloak of Darkness
+## Appendix II: Localisation
+
+The `game` block may contain localisation lines which replace the default English messages and button labels. These lines take the form:
+<pre>
+	localise <i>message-key string</i></u>
+</pre>
+You can spell the first word `localize` if you like. <i><code>
+message-key</code></i> is one of the localisation keys listed below, and
+the string is the message that will be printed in its place. The 
+localisation keys, and the English default values, are:
+
+| localisation key | default English value |
+|----------|----------|
+| `talking_to` | Talking to: |
+| `ask_about` | Ask about: |
+| `tell_about` | Tell about: |
+| `say` | Say: |
+| `its_dark` | It's dark. |
+| `you_can_also_see` | `{You}` can also see: |
+| `you_can_also_see_scroller` | `{You}` can also see |
+| `youre_holding` | `{Youre}` holding: |
+| `youre_carrying` | `{Youre}` carrying: |
+| `youre_wearing` | `{Youre}` wearing: |
+| `taken` | Taken. |
+| `you_cant_carry_any_more` | `{You}` can't carry any more. |
+| `dropped` | Dropped. |
+| `exits` | Exits: |
+| `you_cant_see` | `{You}` can't see! |
+| `its_too_dark_to_see_clearly` | It's too dark to see clearly. |
+| `{You_see_nothing_special_about_that | You}` see nothing special about `{`the` $this}`. |
+| `ok_youre_wearing_it` | OK, `{youre}` wearing `{obj $this}`. |
+| `ok_youve_taken_it_off` | OK, `{youve}` taken `{obj $this}` off. |
+| `time_passes` | Time passes... |
+| `you_start_talking_to` | `{You}` start talking to `{the $this}`. |
+| `you_stop_talking_to` | `{You}` stop talking to `{the $this}`. |
+| `you_are_dead` | `{You_are}` dead |
+| `and` | and |
+| `save_button` | save game |
+| `restore_button` | restore game |
+| `restart_button` | restart game |
+| `undo` | undo |
+| `cant_undo` | Can't undo, sorry |
+| `undone` | Undone "`{$this}`" |
+| `restart_prompt` | Really restart this game? |
+| `restart_confirm` | Restart |
+| `restart_cancel` | Continue |
+| `save_prompt` | Save game as: |
+| `save_confirm` | Save |
+| `save_cancel` | Cancel |
+| `options` | options |
+| `credits` | credits |
+| `font` | font |
+| `font_size` | font_size |
+| `print_room_title_in_scroller` | Print room title in scroller: |
+| `list_objects_in_scroller` | List objects in scroller: |
+| `options_title` | Display options |
+| `options_always` | Always |
+| `options_landscape_only` | Landscape only |
+| `options_never` | Never |
+| `options_done` | done |
+
+
+## Appendix III: Cloak of Darkness
 
 Roger Firth's *Cloak of Darkness* is a small game that has become a
 sort of reverse Rosetta stone for interactive fiction authoring

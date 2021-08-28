@@ -454,6 +454,82 @@ div#credits button {
 		</script>
 		<script language="JavaScript" type="text/javascript" id="exportableJS">
 
+Localise_English = {
+	talking_to: "Talking to:",
+	ask_about: "Ask about:",
+	tell_about: "Tell about:",
+	say: "Say:",
+	its_dark: "It's dark.",
+	you_can_also_see: "{You} can also see:",
+	you_can_also_see_scroller: "{You} can also see",
+	youre_holding: "{Youre} holding:",
+	youre_carrying: "{Youre} carrying:",
+	youre_wearing: "{Youre} wearing:",
+	taken: "Taken.",
+	you_cant_carry_any_more: "{You} can't carry any more.",
+	dropped: "Dropped.",
+	exits: "Exits:",
+	you_cant_see: "{You} can't see!",
+	its_too_dark_to_see_clearly: "It's too dark to see clearly.",
+	you_see_nothing_special_about_that: "{You} see nothing special about {the $this}.",
+	ok_youre_wearing_it: "OK, {youre} wearing {obj $this}.",
+	ok_youve_taken_it_off: "OK, {youve} taken {obj $this} off.",
+	time_passes: "Time passes...",
+	you_start_talking_to: "{You} start talking to {the $this}.",
+	you_stop_talking_to: "{You} stop talking to {the $this}.",
+	you_are_dead: "{You_are} dead",
+	and: 'and',
+	save_button: "save game",
+	restore_button: "restore game",
+	restart_button: "restart game",
+	undo: "undo",
+	cant_undo: "Can't undo, sorry",
+	undone: 'Undone "{$this}"',
+	restart_prompt: "Really restart this game?",
+	restart_confirm: "Restart",
+	restart_cancel: "Continue",
+	save_prompt: "Save game as:",
+	save_confirm: "Save",
+	save_cancel: "Cancel",
+	options: "options",
+	credits: "credits",
+	font: "font",
+	font_size: "font_size",
+	print_room_title_in_scroller: "Print room title in scroller:",
+	list_objects_in_scroller: "List objects in scroller",
+	options_title: "Display options",
+	options_always: "Always",
+	options_landscape_only: "Landscape only",
+	options_never: "Never",
+	options_done: "done"
+};
+Localise = Object.assign({}, Localise_English);
+
+function localise_priority(keys) {
+	for(var i=0;i<keys.length;++i) {
+		if(Game.localisation[keys[i]]) {
+			return Game.localisation[keys[i]];
+		}
+	}
+	return Localise[keys[0]];
+}
+
+function localise_elements() {
+	for(var locKey in Localise) {
+		$("[data-localisation_key='" + locKey +"']").html();
+	}
+}
+
+function do_localisation() {
+	if(Game.localisation) {
+		for(var locKey in Localise) {
+			if(Game.localisation[locKey]) {
+				Localise[locKey] = Game.localisation[locKey];
+			}
+		}
+	}
+}
+
 IS_EXPORT = false;
  
 Gruescript = {};
@@ -1152,7 +1228,7 @@ function check_args(words, argtypes, commandName, lineN) {
 			return do_runtime_error('Not enough arguments for "'+commandName+'"');
 		}
 		if(!verifyWord(thisword, thistype)) {
-			var allowedtypes = (typeof thistype==='string') ? thistype : join_with_or(thistype, true);
+			var allowedtypes = (typeof thistype==='string') ? thistype : join_with_or(thistype, true, true);
 			do_error(lineN, '"'+thisword+'" is not a '+allowedtypes);
 			return false;
 		}
@@ -1366,8 +1442,8 @@ function evalVar(word, useDisplayName, article) {
 	if(Game.vars.hasOwnProperty(varname)) {
 		vvalue = Game.vars[varname];
 	}
+
 	// allow patterns of capitalisation to change the return value of string variables
-	
 	else if(/^[A-Z_]+$/.test(varname)) {
 		if(Game.vars.hasOwnProperty(lvarname)) {
 			vvalue = Game.vars[lvarname];
@@ -1856,6 +1932,21 @@ function getGameData() {
 					colour = '#' + colour;
 				}
 				$('html > head').append('\n<style>' + cssSelector + ' { '+ cssProperty + ' : ' + colour + ' !important}</style>');
+			} else if(firstwd=='localise'||firstwd=='localize') {
+				var localisationKey = words[1];
+				if(!localisationKey) {
+					return do_error(lineN, '"'+firstwd+'" must have a localisation key after it');
+				}
+				if(!Localise.hasOwnProperty(localisationKey)) {
+					return do_error(lineN, 'unknown localisation key "'+localisationKey+'"');
+				}
+				if(!words[2]) {
+					return do_error('no localisation string found after "'+firstwd+' '+words[1]+'"');
+				}
+				if(!gameData.localisation) {
+					gameData.localisation = {};
+				}
+				gameData.localisation[localisationKey] = wordsFrom(words,2);
 			} else if(is_instruction(firstwd)) {
 				if(!gameData.intro) {
 					gameData.intro = [];
@@ -2171,6 +2262,18 @@ function buildThing(block) {
 				var propName = words[1];
 				thingData.props[propName] = wordsFrom(words,2);
 			}
+		} else if(firstwd=='pronoun') {
+			var pronounRef = words[1];
+			if(!pronounRef || !PronounRefs.includes(pronounRef)) {
+				return do_error(lineN, '"pronoun" must have a pronoun reference ("nom", "obj", "pos", "ind" or "ref") and pronoun after it');
+			}
+			if(!thingData.hasOwnProperty('pronouns')) {
+				thingData.pronouns = {};
+			}
+			if(!words[2]) {
+				return do_error(lineN, 'no pronoun specified for "pronoun '+pronounRef+'"')
+			}
+			thingData.pronouns[pronounRef] = wordsFrom(words,2);
 		} else {
 			return do_error(lineN, 'Didn\'t understand "'+firstwd+'" in thing declaration');
 		}
@@ -2536,7 +2639,7 @@ function buildGame(runP) {
 	
 	if(runP) {
 		INITIAL_GAME = JSONfn.stringify(GameIn);
-		Verbs = [].concat(VerbsIn, NativeVerbs);
+		Verbs = [].concat(VerbsIn, NativeVerbs, (GameIn.conversation ? ConversationVerbs : []));
 		VerbDisplays = Object.assign({}, VerbDisplaysIn);
 		Rules = [].concat(RulesIn);
 		Procs = Object.assign({}, ProcsIn);
@@ -2694,10 +2797,10 @@ function describe_room() {
 		
 		html += '<div class="conversation">\n';
 		
-		html += 'Talking to: ' + name(talkee) + '<br/>\n'
+		html += Localise.talking_to + ' ' + name(talkee) + '<br/>\n'
 		
 		if(Game.conv.ask && Game.conv.ask.length) {
-			html += 'Ask about: ';
+			html += Localise.ask_about + ' ';
 			for(var i in Game.conv.ask) {
 				var topic = Game.conv.ask[i];
 				html += draw_button(display_verb('ask_'+talkee, topic), "do_verb('ask_" + talkee + "','" + topic + "')");
@@ -2706,7 +2809,7 @@ function describe_room() {
 		}
 		
 		if(Game.conv.tell && Game.conv.tell.length) {
-			html += 'Tell about: ';
+			html += Localise.tell_about + ' ';
 			for(var i in Game.conv.tell) {
 				var topic = Game.conv.tell[i];
 				html += draw_button(display_verb('tell_'+talkee, topic), "do_verb('tell_" + talkee + "','" + topic + "')");
@@ -2715,7 +2818,7 @@ function describe_room() {
 		}
 		
 		if(Game.conv.say && Game.conv.say.length) {
-			html += 'Say: ';
+			html += Localise.say + ' ';
 			for(var i in Game.conv.say) {
 				var topic = Game.conv.say[i];
 				html += draw_button(display_verb('say_'+talkee, topic), "do_verb('say_" + talkee + "','" + topic + "')");
@@ -2723,7 +2826,7 @@ function describe_room() {
 			html += '<br/>\n';
 		}
 		
-		html += draw_button('end conversation', "do_verb('end_conversation', '"+talkee+"')");
+		html += draw_button(display_verb('end_conversation'), "do_verb('end_conversation', '"+talkee+"')");
 		
 		html += '</div>' // conversation
 		
@@ -2742,7 +2845,7 @@ function describe_room() {
 	if(lit) {
 		html += hero_location().props.desc;
 	} else {
-		html += "It's dark.";
+		html += Localise.its_dark
 	}
 	html += '</div>\n';
 	
@@ -2755,7 +2858,7 @@ function describe_room() {
 	exitOrder.forEach(function(dir) {
 		if(hero_location().directions[dir]) {
 			//exits.push('<a onclick="go(\'' + dir + '\')" href="javascript:void(0);">' + dir + '</a>');
-			exits.push(draw_button(dir, "go('" + dir + "')", false, true, true));
+			exits.push(draw_button(display_verb('go',dir,false,true), "go('" + dir + "')", false, true, true));
 		}
 		/* else push an unavailable exit marker of same width? */
 	});
@@ -2768,7 +2871,7 @@ function describe_room() {
 	
 	if(exits.length) {
 		
-		html += 'Exits: ' + exits.join(' ') + '<br/>\n';
+		html += Localise.exits + ' ' + exits.join(' ') + '<br/>\n';
 	}
 	
 	if(hero_location().active_verbs && hero_location().active_verbs.length) {
@@ -2816,7 +2919,7 @@ function describe_room() {
 	}
 
 	if(lit && things_here.length) {
-		html += I(true) + ' can also see:\n<ul>';
+		html += expandBraces(Localise.you_can_also_see) + '\n<ul>';
 		things_here.forEach(function(description) {
 			html += '\n<li>' + description + '</li>';
 		})
@@ -2851,7 +2954,7 @@ function describe_room_in_scroller() {
 			if(listobj_in_scroller()) {
 				var things = things_here(Game.vars.room);
 				if(things != "") {
-					txt += (" "+I(true)+" can also see " + things + ".");
+					txt += (" "+localise_priority(['you_can_also_see_scroller','you_can_also_see'])+" " + things + ".");
 				}
 			}
 			say(txt);
@@ -2892,7 +2995,7 @@ function describe_room_in_scroller() {
 		}
 		
 	} else {
-		say("It's dark.");
+		say(Localise.its_dark);
 	}
 };
 
@@ -2946,7 +3049,7 @@ function show_holding() {
 	var html = '';
 	if(Game.held) {
 		//var itemHtml = Game.things[Game.held].props.display + ' ' + list_verbs(Game.held);
-		html = Im(true) + " holding:\n<ul><li>" + draw_noun(Game.held) + ' ' + list_verbs(Game.held) + '</li></ul>';
+		html = expandBraces(Localise.youre_holding) + "\n<ul><li>" + draw_noun(Game.held) + ' ' + list_verbs(Game.held) + '</li></ul>';
 	}
 	
 	// also show worn things in here
@@ -2960,14 +3063,14 @@ function show_holding() {
 		if(html) {
 			html += '<br />\n'
 		}
-		html += Im(true) + " wearing:\n<ul><li>" + worn.join('</li>\n<li>') + "</li></ul>";
+		html += expandBraces(Localise.youre_wearing) + "\n<ul><li>" + worn.join('</li>\n<li>') + "</li></ul>";
 	}
 	
 	document.getElementById('holding').innerHTML = html;
 }
 
 function show_inventory() {
-	var html = Im(true) + " " /* + (Game.held ? "also " : "") */ + "carrying:\n"; //<ul><li>";
+	var html = expandBraces(Localise.youre_carrying) + "\n"; //<ul><li>";
 	var carried = [];
 	Game.inventory.forEach(function(thing) {
 		if(!has_tag(thing, 'worn')) {
@@ -3047,20 +3150,20 @@ function expandBraces(txt) {
 		return '';
 	}
 	txt = ''+txt;
-	////console.log('expanding braces: "'+txt+'"');
+	// console.log('expanding braces: "'+txt+'"');
 	var lbix = txt.indexOf('{');
 	if(lbix==-1) {
-		////console.log('no left brace, returning same text');
+		// console.log('no left brace, returning same text');
 		return txt;
 	}
 	var rbix = txt.indexOf('}');
 	if(rbix==-1) {
-		////console.log('no right brace, returning same text');
+		// console.log('no right brace, returning same text');
 		return txt;
 	}
 	var txtBefore = txt.substring(0, lbix);
 	var txtBetween = txt.substring(1+lbix, rbix);
-	////console.log('evaluating "'+txtBetween+'"');
+	// console.log('evaluating "'+txtBetween+'"');
 	var txtAfter = txt.substring(1+rbix);
 
 	var wordsBetween = txtBetween.trim().split(/\s+/);
@@ -3069,12 +3172,12 @@ function expandBraces(txt) {
 
 	if(!wordsBetween.length || (wordsBetween.length==1&&wordsBetween[0]=='')) {
 		rtError = true;
-		////console.log('expression contains no words; error');
+		// console.log('expression contains no words; error');
 	}
 	
 	if(wordsBetween.length > 2) {
 		rtError = true;
-		////console.log('expression contains more than one word; error');
+		// console.log('expression contains more than one word; error');
 	}
 	
 	var article = null;
@@ -3092,7 +3195,7 @@ function expandBraces(txt) {
 	}
 	
 	var variableValue = ''+evalProps(variableName, true, article);
-	////console.log('variableValue evaluated as "'+variableValue+'"');
+	// console.log('variableValue evaluated as "'+variableValue+'"');
 	
 	variableValue = expandBraces(variableValue);
 	
@@ -3100,8 +3203,8 @@ function expandBraces(txt) {
 		do_runtime_error('Couldn\'t evaluate braced expression "'+txt+'"');
 	}
 	var rest = expandBraces(txtAfter);
-	////console.log('variableValue is '+variableValue);
-	////console.log(txtBefore,variableValue,rest);
+	// console.log('variableValue is '+variableValue);
+	// console.log(txtBefore,variableValue,rest);
 	return txtBefore + variableValue + rest;
 }
 
@@ -3112,7 +3215,11 @@ function refer_to(article, thing, capsForThing) {
 	if(!article) {
 		if(Game.things[thing]) {
 			thing = name(thing);
-		}
+		} else if(PlayerPronounRefs[thing]) {
+			var pronounRef = PlayerPronounRefs[thing];
+			thing = first_person() ? FstPersonPronouns[pronounRef] :
+				SndPersonPronouns[pronounRef];
+	}
 		return capsForThing ? capitalise(thing) : thing;
 	}
 	switch(article) {
@@ -3137,35 +3244,35 @@ function refer_to(article, thing, capsForThing) {
 		case 'YOUR':
 			return your_thing(thing,false).toUpperCase();
 		case 'nom': // he, she, it, they, they
-			return pronoun(thing,0,false);
+			return pronoun(thing,'nom',false);
 		case 'Nom':
-			return pronoun(thing,0,true);
+			return pronoun(thing,'nom',true);
 		case 'NOM':
-			return pronoun(thing,0,false).toUpperCase();
+			return pronoun(thing,'nom',false).toUpperCase();
 		case 'obj': // him, her, it, them, them
-			return pronoun(thing,1,false);
+			return pronoun(thing,'obj',false);
 		case 'Obj':
-			return pronoun(thing,1,true);
+			return pronoun(thing,'obj',true);
 		case 'OBJ':
-			return pronoun(thing,1,false).toUpperCase();
+			return pronoun(thing,'obj',false).toUpperCase();
 		case 'pos': // his, her, its, their, their
-			return pronoun(thing,2,false);
+			return pronoun(thing,'pos',false);
 		case 'Pos':
-			return pronoun(thing,2,true);
+			return pronoun(thing,'pos',true);
 		case 'POS':
-			return pronoun(thing,2,false).toUpperCase();
+			return pronoun(thing,'pos',false).toUpperCase();
 		case 'ind': // his, hers, its, theirs, theirs
-			return pronoun(thing,3,false);
+			return pronoun(thing,'ind',false);
 		case 'Ind':
-			return pronoun(thing,3,true);
+			return pronoun(thing,'ind',true);
 		case 'IND':
-			return pronoun(thing,3,false).toUpperCase();
+			return pronoun(thing,'ind',false).toUpperCase();
 		case 'ref': // himself, herself, itself, themselves, themself
-			return pronoun(thing,4,false);
+			return pronoun(thing,'ref',false);
 		case 'Ref':
-			return pronoun(thing,4,true);
+			return pronoun(thing,'ref',true);
 		case 'REF':
-			return pronoun(thing,4,false).toUpperCase();
+			return pronoun(thing,'ref',false).toUpperCase();
 		default:
 			return do_runtime_error('Unknown article or pronoun "'+article+'"');
 	}
@@ -3197,14 +3304,14 @@ function dim_old_messages() {
 function die(message) {
 	update_display(); // one last time
 	if(!message) {
-		message = I_am(true) + " dead";
+		message = Localise.you_are_dead;
 	}
 	say("*** " + message + " ***");
 	
 	delete_stored_game();
 	
 	$('#room_description button, #holding button, #inventory button').prop('disabled', 'true');
-	GAME_OVER = true;	
+	GAME_OVER = true;
 }
 
 
@@ -3260,7 +3367,7 @@ function go(direction) {
 
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; ' + direction + '</span>');
+	say('<span class="prompt">&gt; ' + display_verb('go', direction, true, true) + '</span>');
 	
 	Game.vars.verb = 'go';
 	Game.vars.direction = direction;
@@ -3325,7 +3432,7 @@ function verbose() {
 	return $('#verbose').prop('checked') 
 }
 
-function display_verb(verb, thing, forPrompt) {
+function display_verb(verb, thing, forPrompt, isDirection) {
 	var verb_display = null;
 	
 	if(thing) {	
@@ -3371,6 +3478,10 @@ function display_verb(verb, thing, forPrompt) {
 		} else {
 			return display_word(thing);
 		}
+	}
+	
+	if(isDirection) {
+		return thing.replaceAll('_', ' ');
 	}
 	
 	if(thing && forPrompt) {
@@ -3491,6 +3602,15 @@ function do_rules() {
 }
 
 THISES = [];
+function push_this(new_this) {
+	THISES.push(getVariableValue('this'));
+	Game.vars['this'] = new_this;
+}
+function pop_this() {
+	Game.vars['this'] = THISES.pop();
+	return Game.vars['this'];
+}
+
 function iterate(steps, iterees, mode, lineN) {
 	THISES.push(getVariableValue('this'));
 	var broke = false;
@@ -3764,6 +3884,9 @@ var PLAYED = false;
 var GAME_OVER = false;
 
 function initialise() {
+	do_localisation();
+	localise_elements();
+	
 	if(!PLAYED) {
 		INITIAL_GAME = JSONfn.stringify(Game);
 		PLAYED = true;
@@ -4191,7 +4314,7 @@ function your_thing(thing, caps, capsForThing) {
 }
 
 function capitalise(str) {
-	if(str == '') {
+	if(!str) {
 		return ''
 	} else {
 		return str.substring(0,1).toUpperCase() + str.substring(1);
@@ -4326,24 +4449,50 @@ function can_see() {
 	return getVariableValue('cantsee')==0;
 }
 
-function pronoun(thing, n, caps) {
+PronounRefs = ['nom','obj','pos','ind','ref','noms'];
+PlayerPronounRefs = {
+	you:'nom',
+	youm:'obj',
+	your:'pos',
+	yours:'ind',
+	yourself:'ref',
+	you_are:'nom_is',
+	youre:'noms',
+	you_have:'nom_have',
+	youve:'nomve'
+};
+FstPersonPronouns={nom:'I',   obj:'me',  pos:'my',   ind:'mine',  ref:'myself',
+	nom_is:"I am", noms:"I'm", nom_have:"I have", nomve:"I've"};
+SndPersonPronouns={nom:'you', obj:'you', pos:'your', ind:'yours', ref:'yourself',
+	nom_is:"you are", noms:"you're", nom_have:"you have", nomve:"you've"};
+MalePronouns =    {nom:'he',  obj:'him', pos:'his',  ind:'his',   ref:'himself',
+	nom_is:"he is", noms:"he's", nom_have:"he has", nomve:"he's"};
+FemalePronouns =  {nom:'she', obj:'her', pos:'her',  ind:'hers',  ref:'herself',
+	nom_is:"she is", noms:"she's", nom_have:"she has", nomvs:"she's"};
+EnbyPronouns =    {nom:'they',obj:'them',pos:'their',ind:'theirs',ref:'themself',
+	nom_is:"they are", noms:"they're", nom_have:"they have", nomve:"they've"};
+NeuterPronouns =  {nom:'it',  obj:'it',  pos:'its',  ind:'its',   ref:'itself',
+	nom_is:"it is", noms:"it's", nom_have:"it has", nomve:"it's"};
+PluralPronouns =  {nom:'they',obj:'them',pos:'their',ind:'theirs',ref:'themselves',
+	nom_is:"they are", noms:"they're", nom_have:"they have", nomve: "they've"};
+
+function pronoun(thing, ref, caps) {
 	var pronoun = '';
 	if(!Game.things[thing]) {
 		do_runtime_warning('Couldn\'t find pronoun for "'+thing+'" because it is not a thing; assuming "it"');
-		pronoun = ["it","it","its","its","itself"][n];
-	}
-	if(Game.things[thing].pronouns) {
-		pronoun = Game.things[thing].pronouns[n];
+		pronoun = NeuterPronouns[ref];
+	} else if(Game.things[thing].pronouns && Game.things[thing].pronouns[ref]) {
+		pronoun = Game.things[thing].pronouns[ref];
 	} else if(has_tag(thing,'plural')) {
-		pronoun = ["they", "them", "their", "theirs", "themselves"][n];
+		pronoun = PluralPronouns[ref];
 	} else if(has_tag(thing,'male')) {
-		pronoun = ["he","him","his","his", "himself"][n];
+		pronoun = MalePronouns[ref];
 	} else if(has_tag(thing,'female')) {
-		pronoun = ["she","her","her","hers", "herself"][n];
+		pronoun = FemalePronouns[ref];
 	} else if(has_tag(thing,'nonbinary')) {
-		pronoun = ["they","them","their","theirs", "themself"][n];
+		pronoun = EnbyPronouns[ref];
 	} else {
-		pronoun = ["it", "it", "its", "its", "itself"][n];
+		pronoun = NeuterPronouns[ref];
 	}
 	return caps ? capitalise(pronoun) : pronoun;
 }
@@ -4410,12 +4559,12 @@ function undo() {
 	
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; undo</span>');
+	say('<span class="prompt">&gt; '+Localise.undo+'</span>');
 
 	var popped_state = pop_undo_state();
 	
 	if(popped_state == '') {
-		say("Can't undo, sorry");
+		say(Localise.cant_undo);
 		return;
 	}
 	
@@ -4425,7 +4574,10 @@ function undo() {
 	autosave_game();
 	do_setverbs();
 	update_display();
-	say('Undone "' + Game.undo_message + '"');
+	
+	push_this(Game.undo_message);
+	say(Localise.undone);
+	pop_this();
 	
 }
 
@@ -4934,7 +5086,7 @@ $(document).ready(function() {
 
 
 
-function join_with_and(words, noOxfordComma) {
+function join_with_and(words, noOxfordComma, dontLocalise) {
 	if(!words.length) {
 		return '';
 	}
@@ -4944,13 +5096,13 @@ function join_with_and(words, noOxfordComma) {
 	}
 	
 	if(words.length == 2) {
-		return words[0] + (!noOxfordComma ? ',' : '') + ' and ' + words[1];
+		return words[0] + (!noOxfordComma ? ',' : '') + ' ' +(dontLocalise ? 'and' : Localise.and) + ' ' + words[1];
 	}
 	
-	return words[0] + ', ' + join_with_and(words.slice(1), noOxfordComma);
+	return words[0] + ', ' + join_with_and(words.slice(1), noOxfordComma, dontLocalise);
 }
 
-function join_with_or(words, noOxfordComma) {
+function join_with_or(words, noOxfordComma, dontLocalise) {
 	if(!words.length) {
 		return '';
 	}
@@ -4960,10 +5112,10 @@ function join_with_or(words, noOxfordComma) {
 	}
 	
 	if(words.length == 2) {
-		return words[0] + (!noOxfordComma ? ',' : '') + ' or ' + words[1];
+		return words[0] + (!noOxfordComma ? ',' : '') + ' ' + (dontLocalise ? 'or' : localise.or) + ' '+ words[1];
 	}
 	
-	return words[0] + ', ' + join_with_or(words.slice(1), noOxfordComma);
+	return words[0] + ', ' + join_with_or(words.slice(1), noOxfordComma, dontLocalise);
 }
 
 
@@ -4998,13 +5150,13 @@ NativeVerbs = [
 		func: function(thing) {
 			var maxinv = getVariableValue('maxinv');
 			if(maxinv && (Game.inventory.length > maxinv)) {
-				say(I(true) + " can't carry any more.");
+				say(Localise.you_cant_carry_any_more);
 				return true;
 			}
 		
 			Game.things[thing].props.loc = 0;
 			
-			say('Taken.');
+			say(Localise.taken);
 			hold(thing);
 
 			/*
@@ -5057,7 +5209,7 @@ NativeVerbs = [
 
 			removeFrom(Game.inventory, thing);
 			
-			say('Dropped.');
+			say(Localise.dropped);
 			return true;
 		}
 		
@@ -5069,19 +5221,21 @@ NativeVerbs = [
 		func: function(thing) {
 			
 			if(!can_see()) {
-				say(I(true) + " can't see!");
+				say(Localise.you_cant_see);
 				return true;
 			}
 			
 			if(!is_lit(Game.vars.room)) {
-				say("It's too dark to see clearly.");
+				say(Localise.its_too_dark_to_see_clearly);
 				return true;
 			}
 			
 			if(Game.things[thing].props.desc) {
 				say(Game.things[thing].props.desc);
 			} else {
-				say(I(true) + " see nothing special about " + the_thing(thing) + ".");
+				push_this(thing);
+				say(Localise.you_see_nothing_special_about_that);
+				pop_this();
 			}
 			return true;
 		}
@@ -5098,7 +5252,9 @@ NativeVerbs = [
 //			deactivate_verb(thing, 'drop');
 //			deactivate_verb(thing, 'wear');
 //			activate_verb(thing, 'remove');
-			say("OK, "+Im(false)+" wearing "+pronoun(thing,1)+".");
+			push_this(thing);
+			say(Localise.ok_youre_wearing_it);
+			pop_this();
 			return true;
 		}
 		
@@ -5113,7 +5269,9 @@ NativeVerbs = [
 			//activate_verb(thing, 'wear'); // assume it's wearable, else how are you removing it?
 			//deactivate_verb(thing, 'remove');
 			hold(thing);
-			say("OK, "+Ive()+" taken "+pronoun(thing,1)+" off.");
+			push_this(thing);
+			say(Localise.ok_youve_taken_it_off);
+			pop_this();
 			return true;
 		}
 	},
@@ -5123,11 +5281,12 @@ NativeVerbs = [
 		primitive: true,
 		intransitive: true,
 		func: function(thing) {
-			say("Time passes...");
+			say(Localise.time_passes);
 			return true;
 		}
-	},
-	
+	}
+];
+ConversationVerbs = [
 	{
 		verb: 'talk',
 		primitive: true,
@@ -5141,7 +5300,9 @@ NativeVerbs = [
 				if(Game.things[thing].props.start_conversation) {
 					say(Game.things[thing].props.start_conversation);
 				} else {
-					say(I(true)+' start talking to '+the_thing(thing)+'.');
+					push_this(thing);
+					say(Localise.you_start_talking_to);
+					pop_this();
 				}
 			}
 		}
@@ -5159,11 +5320,34 @@ NativeVerbs = [
 			if(Game.things[thing].props.end_conversation) {
 				say(Game.things[thing].props.end_conversation);
 			} else {
-				say(I(true)+' stop talking to '+the_thing(thing)+'.');
+				push_this(thing);
+				say(Localise.you_stop_talking_to);
+				pop_this();
 			}
 		}
-	}
+	},
 	
+	{
+		verb: 'ask',
+		primitive: true,
+		func: function(thing) {
+			say("There is no reply.");
+		}
+	},
+	{
+		verb: 'tell',
+		primitive: true,
+		func: function(thing) {
+			say("There is no reply.");
+		}
+	},
+	{
+		verb: 'say',
+		primitive: true,
+		func: function(thing) {
+			say("There is no reply.");
+		}
+	},
 ];
 
 		</script>
@@ -5214,22 +5398,22 @@ NativeVerbs = [
 			</div>
 			<div id="save_load_container">
 				<div id="save_prompt" class="save_prompt">
-					Save game as: <input type="text" id="save_name" /><br/>
-					<button type="button" id="confirm_save" onClick="confirm_save()">Save</button>
-					<button type="button" onClick="cancel_save()">Cancel</button>
+					<label for="save_name" data-localisation_key="save_prompt">Save game as:</label> <input type="text" id="save_name" /><br/>
+					<button type="button" id="confirm_save" onClick="confirm_save()" data-localisation_key="save_confirm">Save</button>
+					<button type="button" onClick="cancel_save()" data-localisation_key="save_cancel">Cancel</button>
 				</div>
 			
 				<div id="restart_prompt" class="save_prompt">
-					Really restart this game?<br/>
+					<span data-localisation_key="restart_prompt">Really restart this game?</span><br/>
 					<button type="button" id="confirm_restart" onClick="really_restart()">Restart</button>
 					<button type="button" onClick="cancel_restart()">Continue</button>
 				</div>
 			
 				<div id="save_load">
-					<button type="button" onClick="save_game()">save game</button>
-					<button type="button" onClick="goto_loader()">restore game</button>
-					<button type="button" onClick="confirm_restart()">restart game</button>
-					<button type="button" onClick="undo()">undo</button>
+					<button type="button" onClick="save_game()" data-localisation_key="save_button">save game</button>
+					<button type="button" onClick="goto_loader()" data-localisation_key="restore_button">restore game</button>
+					<button type="button" onClick="confirm_restart()" data-localisation_key="restart_button">restart game</button>
+					<button type="button" onClick="undo()" data-localisation_key="undo_button">undo</button>
 					<br/>
 					
 					<p style="text-align: center;"><button type="button" onclick="show_options()">options</button>
@@ -5246,7 +5430,7 @@ NativeVerbs = [
 			
 			<div id="options">
 			
-				<p style="text-decoration: underline;">Display options</p>
+				<p style="text-decoration: underline;" data-localisation_key="options_title">Display options</p>
 			
 				<p>font:
 					<select id="font_select" onChange="change_font()">
@@ -5263,19 +5447,19 @@ NativeVerbs = [
 				</p>
 				
 				<p>
-					Print room title in scroller:
-					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_always" name="roomdesc_always" /><label for="roomdesc_always">Always</label></div>
-					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="roomdesc_landscape" name="roomdesc_landscape" /><label for="roomdesc_landscape">Landscape&nbsp;only</label></div>
-					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_never" name="roomdesc_never" /><label for="roomdesc_never">Never</label></div>
+					<span data-localisation_key="print_room_title_in_scroller">Print room title in scroller</span>
+					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_always" name="roomdesc_always" /><label for="roomdesc_always"data-localisation_key="options_always">Always</label></div>
+					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="roomdesc_landscape" name="roomdesc_landscape" /><label for="roomdesc_landscape"data-localisation_key="options_landscape_only">Landscape&nbsp;only</label></div>
+					<div style="display: inline-block;"><input type="checkbox" id="roomdesc_never" name="roomdesc_never" /><label for="roomdesc_never"data-localisation_key="options_never">Never</label></div>
 				</p>
 				<p>
-					List objects in scroller:
-					<div style="display: inline-block;"><input type="checkbox" id="listobj_always" name="listobj_always" /><label for="listobj_always">Always</label></div>
-					<div style="display: inline-block;"><input type="checkbox" id="listobj_landscape" name="listobj_landscape" /><label for="listobj_landscape">Landscape&nbsp;only</label></div>
-					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="listobj_never" name="listobj_never" /><label for="listobj_never">Never</label></div>
+					<spandata-localisation_key="list_objects_in_scroller">List objects in scroller</span>
+					<div style="display: inline-block;"><input type="checkbox" id="listobj_always" name="listobj_always" /><label for="listobj_always"data-localisation_key="options_always">Always</label></div>
+					<div style="display: inline-block;"><input type="checkbox" id="listobj_landscape" name="listobj_landscape" /><label for="listobj_landscape"data-localisation_key="options_landscape_only">Landscape&nbsp;only</label></div>
+					<div style="display: inline-block;"><input checked="checked" type="checkbox" id="listobj_never" name="listobj_never" /><label for="listobj_never"data-localisation_key="options_never">Never</label></div>
 				</p>
 				
-				<p style="text-align: center;"><button type="button" onClick="hide_options()">done</button></p>
+				<p style="text-align: center;"><button type="button" onClick="hide_options()" data-localisation_key="options_done">done</button></p>
 				
 			</div>
 

@@ -195,7 +195,7 @@ function doHighlighting() {
 		// instructions (& other things) with a string as their first argument
 		line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
 		// instructions with a string as their second argument, and block names that include a printed message
-		line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
+		line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
 		var str = '';
 		var strIx = line.indexOf('<span class="string">');
 		if(strIx>=0) {
@@ -217,7 +217,7 @@ function doHighlighting() {
 		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 		// properties and directions
-		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|wait|tags|dir|loc|verbs|cverbs|display|prompt|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
+		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
 
 		// variables and numbers
 		line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
