@@ -2041,7 +2041,8 @@ localisation keys, and the English default values, are:
 | `you_start_talking_to` | `{You}` start talking to `{the $this}`. |
 | `you_stop_talking_to` | `{You}` stop talking to `{the $this}`. |
 | `you_are_dead` | `{You_are}` dead |
-| `and` | and |
+| `and` | and *(when listing room contents in scroller)* |
+| `or` | or *(not currently used)* |
 | `save_button` | save game |
 | `restore_button` | restore game |
 | `restart_button` | restart game |

@@ -479,6 +479,7 @@ Localise_English = {
 	you_stop_talking_to: "{You} stop talking to {the $this}.",
 	you_are_dead: "{You_are} dead",
 	and: 'and',
+	or: 'or',
 	save_button: "save game",
 	restore_button: "restore game",
 	restart_button: "restart game",
@@ -5112,7 +5113,7 @@ function join_with_or(words, noOxfordComma, dontLocalise) {
 	}
 	
 	if(words.length == 2) {
-		return words[0] + (!noOxfordComma ? ',' : '') + ' ' + (dontLocalise ? 'or' : localise.or) + ' '+ words[1];
+		return words[0] + (!noOxfordComma ? ',' : '') + ' ' + (dontLocalise ? 'or' : Localise.or) + ' '+ words[1];
 	}
 	
 	return words[0] + ', ' + join_with_or(words.slice(1), noOxfordComma, dontLocalise);
