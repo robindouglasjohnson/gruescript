@@ -2034,7 +2034,7 @@ localisation keys, and the English default values, are:
 | `exits` | Exits: |
 | `you_cant_see` | `{You}` can't see! |
 | `its_too_dark_to_see_clearly` | It's too dark to see clearly. |
-| `{You_see_nothing_special_about_that | You}` see nothing special about `{`the` $this}`. |
+| `you_see_nothing_special_about_that | {You}` see nothing special about `{`the` $this}`. |
 | `ok_youre_wearing_it` | OK, `{youre}` wearing `{obj $this}`. |
 | `ok_youve_taken_it_off` | OK, `{youve}` taken `{obj $this}` off. |
 | `time_passes` | Time passes... |
