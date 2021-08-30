@@ -454,57 +454,59 @@ div#credits button {
 		</script>
 		<script language="JavaScript" type="text/javascript" id="exportableJS">
 
-Localise_English = {
-	talking_to: "Talking to:",
-	ask_about: "Ask about:",
-	tell_about: "Tell about:",
-	say: "Say:",
-	its_dark: "It's dark.",
-	you_can_also_see: "{You} can also see:",
-	you_can_also_see_scroller: "{You} can also see",
-	youre_holding: "{Youre} holding:",
-	youre_carrying: "{Youre} carrying:",
-	youre_wearing: "{Youre} wearing:",
-	taken: "Taken.",
-	you_cant_carry_any_more: "{You} can't carry any more.",
-	dropped: "Dropped.",
-	exits: "Exits:",
-	you_cant_see: "{You} can't see!",
-	its_too_dark_to_see_clearly: "It's too dark to see clearly.",
-	you_see_nothing_special_about_that: "{You} see nothing special about {the $this}.",
-	ok_youre_wearing_it: "OK, {youre} wearing {obj $this}.",
-	ok_youve_taken_it_off: "OK, {youve} taken {obj $this} off.",
-	time_passes: "Time passes...",
-	you_start_talking_to: "{You} start talking to {the $this}.",
-	you_stop_talking_to: "{You} stop talking to {the $this}.",
-	you_are_dead: "{You_are} dead",
-	and: 'and',
-	or: 'or',
-	save_button: "save game",
-	restore_button: "restore game",
-	restart_button: "restart game",
-	undo: "undo",
-	cant_undo: "Can't undo, sorry",
-	undone: 'Undone "{$this}"',
-	restart_prompt: "Really restart this game?",
-	restart_confirm: "Restart",
-	restart_cancel: "Continue",
-	save_prompt: "Save game as:",
-	save_confirm: "Save",
-	save_cancel: "Cancel",
-	options: "options",
-	credits: "credits",
-	font: "font",
-	font_size: "font_size",
-	print_room_title_in_scroller: "Print room title in scroller:",
-	list_objects_in_scroller: "List objects in scroller",
-	options_title: "Display options",
-	options_always: "Always",
-	options_landscape_only: "Landscape only",
-	options_never: "Never",
-	options_done: "done"
+Localisation = {
+	English: {
+		talking_to: "Talking to:",
+		ask_about: "Ask about:",
+		tell_about: "Tell about:",
+		say: "Say:",
+		its_dark: "It's dark.",
+		you_can_also_see: "{You} can also see:",
+		you_can_also_see_scroller: "{You} can also see",
+		youre_holding: "{Youre} holding:",
+		youre_carrying: "{Youre} carrying:",
+		youre_wearing: "{Youre} wearing:",
+		taken: "Taken.",
+		you_cant_carry_any_more: "{You} can't carry any more.",
+		dropped: "Dropped.",
+		exits: "Exits:",
+		you_cant_see: "{You} can't see!",
+		its_too_dark_to_see_clearly: "It's too dark to see clearly.",
+		you_see_nothing_special_about_that: "{You} see nothing special about {the $this}.",
+		ok_youre_wearing_it: "OK, {youre} wearing {obj $this}.",
+		ok_youve_taken_it_off: "OK, {youve} taken {obj $this} off.",
+		time_passes: "Time passes...",
+		you_start_talking_to: "{You} start talking to {the $this}.",
+		you_stop_talking_to: "{You} stop talking to {the $this}.",
+		you_are_dead: "{You_are} dead",
+		and: 'and',
+		or: 'or',
+		save_button: "save game",
+		restore_button: "restore game",
+		restart_button: "restart game",
+		undo: "undo",
+		cant_undo: "Can't undo, sorry",
+		undone: 'Undone "{$this}"',
+		restart_prompt: "Really restart this game?",
+		restart_confirm: "Restart",
+		restart_cancel: "Continue",
+		save_prompt: "Save game as:",
+		save_confirm: "Save",
+		save_cancel: "Cancel",
+		options: "options",
+		credits: "credits",
+		font: "font",
+		font_size: "font_size",
+		print_room_title_in_scroller: "Print room title in scroller:",
+		list_objects_in_scroller: "List objects in scroller",
+		options_title: "Display options",
+		options_always: "Always",
+		options_landscape_only: "Landscape only",
+		options_never: "Never",
+		options_done: "done"
+	}
 };
-Localise = Object.assign({}, Localise_English);
+Localise = Object.assign({}, Localisation.English);
 
 function localise_priority(keys) {
 	for(var i=0;i<keys.length;++i) {
@@ -655,11 +657,11 @@ COLOURS = {
 	},
 	conversation_background: {
 		selector: '.conversation',
-		property: 'background-color',
+		property: 'background-color'
 	},
 	conversation_text: {
 		selector: '.conversation',
-		property: 'color',
+		property: 'color'
 	},
 	conversation_button: {
 		selector: '.conversation button',
@@ -667,7 +669,7 @@ COLOURS = {
 	},
 	conversation_button_text: {
 		selector: '.conversation button',
-		property: 'color',
+		property: 'color'
 	},
 	save_background: {
 		selector: '#save_load_container',
@@ -4907,11 +4909,11 @@ function change_font_size(n) { // if n==1, make bigger; if n==-1, make smaller; 
 
 BLACK_AND_WHITE = {
 	color: '#000000',
-	'background-color': '#ffffff',
+	'background-color': '#ffffff'
 };
 NOT_PLAIN = {
 	color: '',
-	'background-color': '',
+	'background-color': ''
 }
 function set_plain_colours(plainp) {
 	/*
@@ -5348,7 +5350,7 @@ ConversationVerbs = [
 		func: function(thing) {
 			say("There is no reply.");
 		}
-	},
+	}
 ];
 
 		</script>
