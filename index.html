@@ -470,6 +470,7 @@ Localisation = {
 		you_cant_carry_any_more: "{You} can't carry any more.",
 		dropped: "Dropped.",
 		exits: "Exits:",
+		actions: "Actions:",
 		you_cant_see: "{You} can't see!",
 		its_too_dark_to_see_clearly: "It's too dark to see clearly.",
 		you_see_nothing_special_about_that: "{You} see nothing special about {the $this}.",
@@ -528,6 +529,8 @@ function do_localisation() {
 		for(var locKey in Localise) {
 			if(Game.localisation[locKey]) {
 				Localise[locKey] = Game.localisation[locKey];
+			} else {
+				Localise[locKey] = Localisation.English[locKey];
 			}
 		}
 	}
@@ -1831,7 +1834,7 @@ function getGameData() {
 	
 	var gameBlock = gameBlocks[0];
 	
-	var gameData = { gameBlockLineN: gameBlock.lineN };
+	var gameData = { gameBlockLineN: gameBlock.lineN, localisation: {} };
 	for(var i=0;i<gameBlock.code.length;++i) {
 		var thisLine = gameBlock.code[i];
 		var lineN = gameBlock.lineN + i;
@@ -1945,9 +1948,6 @@ function getGameData() {
 				}
 				if(!words[2]) {
 					return do_error('no localisation string found after "'+firstwd+' '+words[1]+'"');
-				}
-				if(!gameData.localisation) {
-					gameData.localisation = {};
 				}
 				gameData.localisation[localisationKey] = wordsFrom(words,2);
 			} else if(is_instruction(firstwd)) {
@@ -2882,7 +2882,7 @@ function describe_room() {
 		if(hero_location().actions_name) {
 			html += hero_location().actions_name + ': ';
 		} else {
-			html += "Actions: "
+			html += Localise.actions + " "
 		}
 		html += list_verbs(Game.vars.room, true) + '<br/>\n';
 	}
