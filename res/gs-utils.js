@@ -236,15 +236,28 @@ function doHighlighting() {
 
 // save to local storage
 function save_to_browser() {
-	window.localStorage.gruescriptSave = $('#gsEdit').val();
-	GRUESCRIPT_SAVED = true;
-	gs_console('saved to browser local storage');
+	try {
+		window.localStorage.gruescriptSave = $('#gsEdit').val();
+		GRUESCRIPT_SAVED = true;
+		gs_console('saved to browser local storage');
+	} catch(e) {
+		gs_console("Couldn't access local storage")
+	}
 }
 
 // autosave to local storage
 AUTOSAVE_TIMEOUT = null;
+AUTOSAVE_ERROR = false;
 function autosave(forceP) {
-	window.localStorage.gruescriptAutosave = $('#gsEdit').val();
+	try {
+		window.localStorage.gruescriptAutosave = $('#gsEdit').val();
+		AUTOSAVE_ERROR = false;
+	} catch(e) {
+		if(!AUTOSAVE_ERROR) {
+			gs_console("Couldn't access local storage");
+		}
+		AUTOSAVE_ERROR = true;
+	}
 }
 
 function load_from_browser(from_autosave) {
@@ -253,26 +266,30 @@ function load_from_browser(from_autosave) {
 			return;
 		}
 	}
-	var savedGs = from_autosave ? window.localStorage.gruescriptAutosave :
-		window.localStorage.gruescriptSave;
-	
-	if(from_autosave && !savedGs) {
-		return false;
-	}
-	
-	if(!savedGs && !from_autosave) {
-		gs_console("couldn't restore - no saved content found in local storage");
-		return false;
-	}
-	
-	$('#gsEdit').val(savedGs);
-	highlight();
-	readGruescript();
-	GRUESCRIPT_CHANGED = false;
-	if(from_autosave) {
-		return true;
-	} else {
-		GRUESCRIPT_SAVED = true;
+	try {
+		var savedGs = from_autosave ? window.localStorage.gruescriptAutosave :
+			window.localStorage.gruescriptSave;
+		
+		if(from_autosave && !savedGs) {
+			return false;
+		}
+		
+		if(!savedGs && !from_autosave) {
+			gs_console("couldn't restore - no saved content found in local storage");
+			return false;
+		}
+		
+		$('#gsEdit').val(savedGs);
+		highlight();
+		readGruescript();
+		GRUESCRIPT_CHANGED = false;
+		if(from_autosave) {
+			return true;
+		} else {
+			GRUESCRIPT_SAVED = true;
+		}
+	} catch(e) {
+		gs_console("Couldn't access local storage");
 	}
 }
 

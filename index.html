@@ -1313,7 +1313,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 		} else {
 			var nextword = words[isIterator ? 2+i : 1+i];
 			if(!nextword) {
-				return do_error(lineN, 'Not enough arguments for "'+commandName+'" (expected '+command.args[i].join(', ')+')');
+				return do_error(lineN, 'Not enough arguments for "'+commandName+'" (expected '+command.args[i]+')');
 			}
 			passedArgs.push(evalProps(nextword));
 		}
@@ -4657,17 +4657,21 @@ function load_game(game_name, suppress_message) {
 	}
 
 	GAME_OVER = false;
-	Game = JSONfn.parse(localStorage.getItem(Game.id + '_' + game_name));
-	$('#saved_games').fadeOut();
-	$('#editor').fadeIn();
-	$('#room_description').html('');
-	say_if(!suppress_message, "Game restored from '" + game_name.replaceAll('_',' ') + "'");
-	clear_undo_stack();
-	do_setverbs();
-	
-	if(suppress_message) {
-		$('#scroller_content').html('');
-		say('Game restored from previous session.\n&nbsp;');
+	try {
+		Game = JSONfn.parse(localStorage.getItem(Game.id + '_' + game_name));
+		$('#saved_games').fadeOut();
+		$('#editor').fadeIn();
+		$('#room_description').html('');
+		say_if(!suppress_message, "Game restored from '" + game_name.replaceAll('_',' ') + "'");
+		clear_undo_stack();
+		do_setverbs();
+		
+		if(suppress_message) {
+			$('#scroller_content').html('');
+			say('Game restored from previous session.\n&nbsp;');
+		}
+	} catch(e) {
+		gs_console("Couldn't restore previous session");
 	}
 	
 	describe_room_in_scroller();
@@ -4686,7 +4690,11 @@ function delete_game(game_name) {
 }
 DONE_DELETIONS = false;
 function really_delete_game(game_name, suppress_message) {
-	localStorage.removeItem(Game.id + '_' + game_name);
+	try {
+		localStorage.removeItem(Game.id + '_' + game_name);
+	} catch(e) {
+		gs_console("Couldn't access local storage");
+	}
 	//$('#saved_games').fadeOut();
 	if(game_name!='AUTOSAVE') { goto_loader(); }
 	if(!suppress_message) {
@@ -4697,7 +4705,11 @@ function really_delete_game(game_name, suppress_message) {
 }
 
 function continue_game() {
-	load_game('AUTOSAVE', true);
+	try {
+		load_game('AUTOSAVE', true);
+	} catch(e) {
+		gs_console("Couldn't continue game");
+	}
 }
 function autosave_game() {
 	//say('autosaved');
@@ -4715,19 +4727,21 @@ function goto_loader() {
 	var html = 'Restore saved game<br/><br/>';
 	
 	var i=0;
-	for(var key in localStorage) {
-		
-		if(key.indexOf(Game.id + '_')==0) {
+	if(localStorage) {
+		for(var key in localStorage) {
 			
-			game_name = key.substring(1 + Game.id.length);
-			
-			if(game_name != 'AUTOSAVE') {
-				++i
-				// html += '<a onClick="load_game(\'' + game_name + '\')" href="javascript:void(0)">' + game_name + '</a> ' +
-				//  '[<a onClick="delete_game(\'' + game_name + '\')" href="javascript:void(0)">delete</a>]<br/>';
-				html +=  draw_button(game_name.replaceAll('_',' '), "load_game('" + game_name + "')") +
-						draw_button("delete", "delete_game('" + game_name + "')") + 
-						draw_button("confirm delete", "really_delete_game('" + game_name + "')",false,false,false,false,'confirm_delete', 'confirm_delete_'+game_name) + "<br/>\n";
+			if(key.indexOf(Game.id + '_')==0) {
+				
+				game_name = key.substring(1 + Game.id.length);
+				
+				if(game_name != 'AUTOSAVE') {
+					++i
+					// html += '<a onClick="load_game(\'' + game_name + '\')" href="javascript:void(0)">' + game_name + '</a> ' +
+					//  '[<a onClick="delete_game(\'' + game_name + '\')" href="javascript:void(0)">delete</a>]<br/>';
+					html +=  draw_button(game_name.replaceAll('_',' '), "load_game('" + game_name + "')") +
+							draw_button("delete", "delete_game('" + game_name + "')") + 
+							draw_button("confirm delete", "really_delete_game('" + game_name + "')",false,false,false,false,'confirm_delete', 'confirm_delete_'+game_name) + "<br/>\n";
+				}
 			}
 		}
 	}
@@ -4802,7 +4816,11 @@ $(document).ready(function() {
 		$('#listobj_landscape').prop('checked', !checked);
 		$('#listobj_never').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_listobj', 'always');
+			try {
+				localStorage.setItem(Game.id + 'options_listobj', 'always');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 		if(checked && !$('#roomdesc_always').prop('checked')) {
 			$('#roomdesc_always').prop('checked', true);
@@ -4814,7 +4832,11 @@ $(document).ready(function() {
 		$('#listobj_always').prop('checked', !checked);
 		$('#listobj_never').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_listobj', 'landscape');
+			try {
+				localStorage.setItem(Game.id + 'options_listobj', 'landscape');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 		if(checked && $('#roomdesc_never').prop('checked')) {
 			$('#roomdesc_landscape').prop('checked', true);
@@ -4826,7 +4848,11 @@ $(document).ready(function() {
 		$('#listobj_landscape').prop('checked', !checked);
 		$('#listobj_always').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_listobj', 'never');
+			try {
+				localStorage.setItem(Game.id + 'options_listobj', 'never');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 	});
 	$('#roomdesc_always').change(function() {
@@ -4834,7 +4860,11 @@ $(document).ready(function() {
 		$('#roomdesc_landscape').prop('checked', !checked);
 		$('#roomdesc_never').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_roomdesc', 'always');
+			try {
+				localStorage.setItem(Game.id + 'options_roomdesc', 'always');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 	});
 	$('#roomdesc_landscape').change(function() {
@@ -4842,7 +4872,11 @@ $(document).ready(function() {
 		$('#roomdesc_always').prop('checked', !checked);
 		$('#roomdesc_never').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_roomdesc', 'landscape');
+			try {
+				localStorage.setItem(Game.id + 'options_roomdesc', 'landscape');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 		if(checked && $('#listobj_always').prop('checked')) {
 			$('#listobj_landscape').prop('checked', true);
@@ -4854,7 +4888,11 @@ $(document).ready(function() {
 		$('#roomdesc_landscape').prop('checked', !checked);
 		$('#roomdesc_always').prop('checked', !checked);
 		if(checked) {
-			localStorage.setItem(Game.id + 'options_roomdesc', 'never');
+			try {
+				localStorage.setItem(Game.id + 'options_roomdesc', 'never');
+			} catch(e) {
+				gs_console("Couldn't save options.");
+			}
 		}
 		if(checked && !$('#listobj_never').prop('checked')) {
 			$('#listobj_never').prop('checked', true);
@@ -4865,17 +4903,29 @@ $(document).ready(function() {
 	$('#verbose').change(function() {
 		var checked = $('#verbose').prop('checked');
 		$('#noverbose').prop('checked', !checked);
-		localStorage.setItem(Game.id + 'option_verbose', checked?1:0);
+		try {
+			localStorage.setItem(Game.id + 'option_verbose', checked?1:0);
+		} catch(e) {
+			gs_console("Couldn't save options.");
+		}
 	});
 	$('#noverbose').change(function() {
 		var checked = $('#noverbose').prop('checked');
 		$('#verbose').prop('checked', !checked);
-		localStorage.setItem(Game.id + 'option_verbose', checked?0:1);
+		try {
+			localStorage.setItem(Game.id + 'option_verbose', checked?0:1);
+		} catch(e) {
+			gs_console("Couldn't save options.");
+		}
 	});
 	
 	$('#plain_colours').change(function() {
 		var checked = $('#plain_colours').prop('checked');
-		localStorage.setItem(Game.id + 'option_plain_colours', checked?0:1);
+		try {
+			localStorage.setItem(Game.id + 'option_plain_colours', checked?0:1);
+		} catch(e) {
+			gs_console("Couldn't save options.");
+		}
 		set_plain_colours(checked);
 	});
 
@@ -4902,7 +4952,11 @@ function change_font_size(n) { // if n==1, make bigger; if n==-1, make smaller; 
 	
 	$('body').css('font-size', set_to + 'pt');
 	
-	localStorage.setItem(Game.id + 'options_fontsize', set_to);
+	try {
+		localStorage.setItem(Game.id + 'options_fontsize', set_to);
+	} catch(e) {
+		gs_console("Couldn't save options.");
+	}
 	
 	update_display();
 }
@@ -4941,7 +4995,11 @@ function change_font() {
 	var font = $('#font_select').val();
 	$('body').css('font-family', font);
 	
-	localStorage.setItem(Game.id + 'options_font', font);
+	try {
+		localStorage.setItem(Game.id + 'options_font', font);
+	} catch(e) {
+		gs_console("Couldn't save options.");
+	}
 	
 	update_display();
 }
@@ -5125,11 +5183,6 @@ function join_with_or(words, noOxfordComma, dontLocalise) {
 $(document).ready(function() {
 	//setTimeout(animate_heights, 500);
 	//setInterval(set_heights, 10000);
-	if(localStorage && localStorage[Game.id + "_AUTOSAVE"]) {
-		$('#continue_button').removeAttr('disabled');
-	} else {
-		$('#continue_button').attr('disabled', 'disabled');
-	}
 	//$('#continue_button').prop('disabled', !localStorage[Game.id + "currentgame"]);
 });
 
