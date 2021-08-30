@@ -2032,6 +2032,7 @@ localisation keys, and the English default values, are:
 | `you_cant_carry_any_more` | `{You}` can't carry any more. |
 | `dropped` | Dropped. |
 | `exits` | Exits: |
+| `actions` | Actions: |
 | `you_cant_see` | `{You}` can't see! |
 | `its_too_dark_to_see_clearly` | It's too dark to see clearly. |
 | `you_see_nothing_special_about_that | {You}` see nothing special about `{`the` $this}`. |
