@@ -1529,7 +1529,9 @@ function runSteps(steps, lineN) {
 		
 		// iterators are special
 		var words = getWords(thisstep);
-		var iterating = !!Gruescript.iterators[words[0]];
+		var iterating = !!(Gruescript.iterators[words[0]] || (
+			words[0].charAt(0)=='!' && Gruescript.iterators[words[0].substring(1)]
+		));
 		var iteratorSteps = null;
 		if(iterating) {
 			iteratorSteps = steps.slice(i+1);
