@@ -899,7 +899,7 @@ Gruescript.commands = {
 	open: { // add a new exit to a room
 		args: ['room', 'value', 'room'],
 		func: function(room, direction, destination) {
-			if(!Game.room[room].directions) {
+			if(!Game.rooms[room].directions) {
 				Game.rooms[room].directions = {};
 			}
 			Game.rooms[room].directions[direction] = destination;
