@@ -217,7 +217,7 @@ function doHighlighting() {
 		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 		// properties and directions
-		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
+		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
 
 		// variables and numbers
 		line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
@@ -335,6 +335,7 @@ function export_game() {
 	var html =
 `<html>
 	<head>
+		<meta charset="UTF-8" />
 		<style type="text/css">
 			${ $('#exportableCSS').text() }
 		</style>
@@ -662,6 +663,7 @@ say "I don't know nuffin' about it"
 
 # 'animate' the thief, but not when you're taking to him
 rule
+assign thief_behaviour 0
 !eq $conversation thief
 assign thiefloc thief.loc
 random thief_behaviour 3
@@ -2820,3 +2822,193 @@ tag band crumbled
 hide band
 tag roadie crumbled
 hide roadie`;
+
+EXAMPLES["El manto de la oscuridad"] = `# '#' significa que esta linea es un comentario
+# (si necesitas escribir '#' en tu juego, usa "&num;")
+game El manto de la oscuridad # Título del juego
+id EMDLO # ID del juego (usado para identificar cookies; debería ser único en tu web)
+author Roger Firth, adaptada a Gruescript por Robin Johnson. Traducida por Ruber Eaglenest.
+version 0.0.2
+person 2 # 2ª persona, i.e. "Estás en..."
+examine off # si está a 'on', el verbo 'examinar' estará implementado clicando en los nombres
+status { $Room } | { $cloaked } # '|' divide la parte izquierda y derecha de la barra de estado
+localise talking_to Hablando con: #Aquí comienza la traducción
+localise ask_about Pregunta sobre: #de los mensajes del 
+localise tell_about Habla sobre:   #sistema.
+localise say	Decir:
+localise its_dark	Está oscuro.
+localise you_can_also_see Además, puedes ver:
+localise you_can_also_see_scroller Además puedes ver
+localise youre_holding	En las manos:
+localise youre_carrying	Llevas:
+localise youre_wearing	Llevas puesto:
+localise taken	Hecho. #Para evitar coger malsonante en latino
+localise you_cant_carry_any_more No puedes llevar más cosas.
+localise dropped	Hecho. #Se podría poner Dejado.
+localise exits	Salidas:
+localise actions	Acciones:
+localise you_cant_see	¡No puedes ver!
+localise its_too_dark_to_see_clearly	Está demasiado oscuro para ver con claridad.
+localise you_see_nothing_special_about_that No ves nada especial en {the $this}.
+localise ok_youre_wearing_it OK, ahora llevas puesto {obj $this}.
+localise ok_youve_taken_it_off OK, ahora te has quitado {obj $this}.
+localise time_passes	El tiempo pasa...
+localise you_start_talking_to	Empiezas a hablar con {the $this}.
+localise you_stop_talking_to	Paras de hablar con {the $this}.
+localise you_are_dead	Estás muerto
+localise and	y # (when listing room contents in scroller)
+localise or	o # (not currently used)
+localise save_button	guardar partida
+localise restore_button	restaurar partida
+localise restart_button	reiniciar juego
+localise undo	deshacer
+localise cant_undo	No se puede deshacer, lo siento
+localise undone	Desecho "{$this}"
+localise restart_prompt	¿Reiniciar el juego?
+localise restart_confirm Reiniciar
+localise restart_cancel	Continuar
+localise save_prompt	Guardar partida como:
+localise save_confirm	Guardar
+localise save_cancel	Cancelar
+localise options	opciones
+localise credits	créditos
+localise font	fuente
+localise font_size	tamaño_fuente
+localise print_room_title_in_scroller Imprimir título de localización en scroll:
+localise list_objects_in_scroller Listar objetos en scroll:
+localise options_title	Mostrar opciones
+localise options_always	Siempre
+localise options_landscape_only	Solo panorámico
+localise options_never	Nunca
+localise options_done	hecho
+
+# Traducción de las salidas.
+verb go north
+display norte
+continue
+
+verb go south
+display sur
+continue
+
+verb go east
+display este
+continue
+
+verb go west
+display oeste
+continue
+
+# Traducción de verbos
+verb wait
+display esperar
+continue
+
+verb remove
+display desvestir #esto sí ha funcionado
+continue
+
+verb wear
+display vestir
+continue
+
+verb drop
+display dejar
+continue
+
+verb take
+display tomar #Se podría poner Coger, si lo prefieres
+continue
+
+# un objeto portable
+thing manto manto de ópera negro como la noche
+carried # comienza en el inventario
+prop def el manto # definimos el texto del objeto con "el" español, sino pondría "the manto"
+prop indef un manto
+tags portable wearable worn # etiquetas especiales reconocidas por el motor Gruescript
+
+# asignar "cloaked" cambiará la barra de estado
+var cloaked Embozado
+rule
+assign cloaked Embozado
+!has manto worn
+assign cloaked Desembozado
+
+# a room
+room vestibulo Estás en el vestíbulo de la Ópera. # nombre interno y descripción
+tags start # el jugador comienza aquí
+south bar
+west guardarropa
+north vestibulo
+
+# bloquear una salida
+verb go norte
+at vestibulo
+say ¡Pero si acabas de llegar!
+
+room bar Estás en el bar.
+north vestibulo
+tags dark # esta habitación está oscura
+
+# las reglas se evalúan en cada turno
+rule
+tag bar dark
+!thingat manto bar # ! significa NO. la regla parará aquí si la aserción falla
+untag bar dark
+
+rule
+at bar
+has bar dark
+add mess 1
+!eq $mess 2: Deberías volver al vestíbulo &ndash; no querrás perturbar accidentalmente algo en la oscuridad. # el mensaje se imprime si la aserción falla
+
+room guardarropa Estás en un pequeño guardarropa.
+east vestibulo
+
+# objeto no portable
+thing percha percha de bronce
+loc guardarropa # la localización donde comienza
+prop def la percha
+prop indef una percha
+
+# el bloque setverb determina cuando se activan los verbos para los objetos
+setverb colgar percha # activar 'hang' para la percha
+has $held wearable
+# nota: vamos a colocar el verbo 'colgar' en la percha, en vez de en manto.
+# en un juego de parser escribiríamos "colgar manto" (o "colgar manto en la percha")
+# así que podríamos haber puesto el verbo en el manto. Pero es más intruitivo
+# ver el verbo al lado de la percha: sostienes el mando, miras alrededor
+# de la habitación, como en una aventura gráfica, y cambiaremos el 'display'
+# para que el jugador vea el 'prompt' como "colgar manto"
+
+verb colgar
+display colgar {$held} # cómo se muestra el botón
+prompt colgar {$held} en {$this} # cómo se muestra el comando en el prompt
+tag $held hooked # añadir una etiqueta definida por el autor
+say Cuelgas {the $held} en {the $this}.
+put $held $this.loc # 'held' y 'this' son variables especiales contextuales
+
+tagdesc hooked en la percha # será monstrado con el objeto
+
+# tomar algo que está 'hooked' (colgado) elimina la etiqueta
+verb take
+has $this hooked # si la aserción 'falla', el control se dará al verbo nativo 'take'
+untag $this hooked
+continue # siempre 'falla', 'take' continuará con la acción
+
+thing polvo polvo (en el suelo)
+loc bar
+
+rule
+at bar
+!has bar dark # si el bar no está a oscuras
+lt $mess 3 # si el valor de la variable 'mess' (follón) es menor que 3
+say Hay un mensaje escrito en el suelo! Dice&colon;
+die Has ganado # finaliza el juego
+
+rule
+at bar
+!has bar dark # las reglas se procesan en el orden de declaración
+say Hay un mensaje escrito en el suelo!
+say Pero qué pena, está demasiado emborronado como para leerlo.
+die Has perdido`;

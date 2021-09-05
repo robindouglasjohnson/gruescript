@@ -2067,6 +2067,10 @@ localisation keys, and the English default values, are:
 | `options_landscape_only` | Landscape only |
 | `options_never` | Never |
 | `options_done` | done |
+| `intro_by` | By *(*Title*/By *Author*)* |
+| `intro_for_instructions_click` | For instructions, click: |
+| `intro_instructions_button` | instructions |
+| `instructions` | *(Instructions text)* |
 
 
 ## Appendix III: Cloak of Darkness

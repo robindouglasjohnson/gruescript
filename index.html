@@ -30,6 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  -->
 	<head>
+		<meta charset="UTF-8" />
 		<title>Gruescript</title>
 		<!-- all the css and JS needs to be embedded in the page, so it can be liften from element innerText and exported -->
 		<style type="text/css" id="exportableCSS">
@@ -504,7 +505,21 @@ Localisation = {
 		options_always: "Always",
 		options_landscape_only: "Landscape only",
 		options_never: "Never",
-		options_done: "done"
+		options_done: "done",
+		intro_by: "By",
+		intro_for_instructions_click: "For instructions, click:",
+		intro_instructions_button: "instructions",
+		instructions: "This is a keyboardless text adventure game. You \
+			are taking part in an interactive story - I will tell you \
+			what is going on in this pane. In the panes below, I'll \
+			tell you where {you_are}, what {you} can see, and what \
+			{youre} carrying. To give me an instruction, click or \
+			touch one of the <button type=\"button\">buttons</button> \
+			there &ndash; either a direction telling me where to go, \
+			or an action applying to something {you} can see. Click an \
+			item in the \"{Youre} carrying\" list to hold that item, \
+			which may make more actions available. Have fun, and happy \
+			adventuring!"
 	}
 };
 Localise = Object.assign({}, Localisation.English);
@@ -520,7 +535,7 @@ function localise_priority(keys) {
 
 function localise_elements() {
 	for(var locKey in Localise) {
-		$("[data-localisation_key='" + locKey +"']").html();
+		$("[data-localisation_key='" + locKey +"']").html(Localise[locKey]);
 	}
 }
 
@@ -1922,6 +1937,34 @@ function getGameData() {
 				if(!gameData.hasOwnProperty('conversation')||words[2]) {
 					return do_error('"conversation" must have only "on" or "off" after it');
 				}
+			} else if(firstwd=='show_title') {
+				if(gameData.hasOwnProperty('show_title')) {
+					return do_error(lineN, '"game" block must only contain one "show_title" line');
+				} else if(!words[1]) {
+					do_warning(lineN, '"show_title" must have "on" or "off" after it (assuming you meant "show_title on")');
+					gameData.show_title = true;
+				} else if(words[1] == 'on') {
+					gameData.show_title = true;
+				} else if(words[1] == 'off') {
+					gameData.show_title = false;
+				}
+				if(!gameData.hasOwnProperty('show_title')||words[2]) {
+					return do_error(lineN, '"show_title" must have only "on" or "off" after it');
+				}
+			} else if(firstwd=='instructions') {
+				if(gameData.hasOwnProperty('instructions')) {
+					return do_error(lineN, '"game" block must only contain one "instructions" line');
+				} else if(!words[1]) {
+					do_warning(lineN, '"instructions" must have "on" or "off" after it (assuming you meant "instructions on")');
+					gameData.instructions = true;
+				} else if(words[1] == 'on') {
+					gameData.instructions = true;
+				} else if(words[1] == 'off') {
+					gameData.instructions = false;
+				}
+				if(!gameData.hasOwnProperty('instructions')||words[2]) {
+					return do_error(lineN, '"instructions" must have only "on" or "off" after it');
+				}
 			} else if(firstwd=='colour'||firstwd=='color') {
 				if(!words[1]) {
 					return do_error(lineN, 'No area name found after "colour"');
@@ -1978,6 +2021,12 @@ function getGameData() {
 	}
 	if(!gameData.hasOwnProperty('wait')) {
 		gameData.wait = true;
+	}
+	if(!gameData.hasOwnProperty('show_title')) {
+		gameData.show_title = true;
+	}
+	if(!gameData.hasOwnProperty('instructions')) {
+		gameData.instructions = true;
 	}
 	
 	return gameData;
@@ -2932,7 +2981,9 @@ function describe_room() {
 	}
 	
 	if(Game.wait) {
-		html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">wait</button></div>\n';
+		html += '<div class="wait"><button type="button" onClick="do_verb(\'wait\', \'\')">' +
+			display_verb('wait')
+		+ '</button></div>\n';
 	}
 	
 	document.getElementById('room_description').innerHTML = html;
@@ -3688,7 +3739,7 @@ function do_setverbs() {
 					else {
 						for(var topic in Game.things) {
 							Game.vars['this'] = topic;
-							if(!Game.conv[conv_type].includes(topic) && runSteps(Setverbs[i].steps)) {
+							if(!Game.conv[conv.conv_type].includes(topic) && runSteps(Setverbs[i].steps)) {
 								Game.conv[conv.conv_type].push(topic);
 							}
 						}
@@ -3970,10 +4021,15 @@ function initialise() {
 		runSteps(Game.intro, Game.gameBlockLineN);
 	}
 	
-	say("<u>" + Game.title.toUpperCase() + (Game.author ? "</u><br/>By " + Game.author + "" : ""));
+	if(Game.show_title) {
+		say("<u>" + Game.title.toUpperCase() + (Game.author ? "</u><br/>" +
+			Localise.intro_by + " " + Game.author + "" : ""));
+	}
 
 	//say('For instructions, touch: <a href="javascript:void(0)" onClick="instructions()">instructions</a>\n');
-	say("For instructions, click: <button class=\"instructions\" onClick=\"instructions();\">instructions</button>\n", true);
+	if(Game.instructions) {
+		say(Localise.intro_for_instructions_click + " <button class=\"instructions\" onClick=\"instructions();\">"+Localise.intro_instructions_button+"</button>\n", true);
+	}
 	
 	restore_checkboxes();
 	if(roomdesc_in_scroller()) {
@@ -5127,18 +5183,8 @@ function set_heights() { // no animation
 function instructions() {
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; instructions</span>');
-	say("This is a keyboardless text adventure game. You are taking part in an interactive story - \
-	    I will tell you what is going on in this pane. In the panes below, I'll tell you " + (
-			first_person() ? "where I am, what I can see, and what I\'m carrying." :
-				"where you are, what you can see, and what you're carrying."
-		) + " To give me an instruction, \
-	    click or touch one of the <button type=\"button\">buttons</button> there &ndash; either a direction telling \
-	    me where to go, or an action applying to something " + I() + " can see." +
-		// " Click on the name of an item in a \
-		// <button class=\"examine\">square-cornered button</button> to examine the item for a longer description." +
-		" Click an item in the \"" + Im(true) + " carrying\" list to hold that item, \
-		which may make more actions available. Have fun, and happy adventuring!", true);
+	say('<span class="prompt">&gt; '+Localise.instructions_button+'</span>');
+	say(Localise.instructions, true);
 }
 
 /* set_heights() doesn't work at first, I don't know why! 
@@ -5471,10 +5517,10 @@ ConversationVerbs = [
 					<button type="button" onClick="save_game()" data-localisation_key="save_button">save game</button>
 					<button type="button" onClick="goto_loader()" data-localisation_key="restore_button">restore game</button>
 					<button type="button" onClick="confirm_restart()" data-localisation_key="restart_button">restart game</button>
-					<button type="button" onClick="undo()" data-localisation_key="undo_button">undo</button>
+					<button type="button" onClick="undo()" data-localisation_key="undo">undo</button>
 					<br/>
 					
-					<p style="text-align: center;"><button type="button" onclick="show_options()">options</button>
+					<p style="text-align: center;"><button type="button" onclick="show_options()" data-localisation_key="options">options</button>
 					
 					<!-- to add a 'credits' page to your game, uncomment: -->
 					<!-- <button type="button" onclick="show_credits();">credits</button> -->
@@ -5545,6 +5591,7 @@ ConversationVerbs = [
 						<a onClick="loadExample('Locks and keys');">Locks and keys</a>
 						<a onClick="loadExample('NPCs');">NPCs</a>
 						<a onClick="loadExample('Cloak of Darkness');">Cloak of Darkness</a>
+						<a onClick="loadExample('El manto de la oscuridad');">El manto de la oscuridad<br/>(Spanish language)</a>
 						<a onClick="loadExample('The Party Line');">The Party Line<br/>(full game)</a>
 					</div>
 				</div>
