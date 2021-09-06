@@ -2897,7 +2897,7 @@ function describe_room() {
 	var lit = can_see() && is_lit(Game.vars.room);
 	
 	if(lit) {
-		html += hero_location().props.desc;
+		html += expandBraces(hero_location().props.desc);
 	} else {
 		html += Localise.its_dark
 	}
