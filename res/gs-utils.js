@@ -879,7 +879,7 @@ tags quiet
 verbs knock
 
 verb knock front_door
-prompt knock on $this
+prompt knock on {$this}
 say An elderly doorman answers the door, ushers you in, and locks the \\
     door behind you.
 goto foyer
