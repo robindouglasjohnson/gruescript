@@ -3716,6 +3716,10 @@ function do_setverbs() {
 		Game.conv.say = [];
 	}
 	
+	for(var i in things) {
+		Game.things[things[i]].active_verbs = [];
+	}
+	
 	for(var i=0;i<Setverbs.length;++i) {
 		gs_log(Setverbs[i].lineN, "setverb");
 		var verb = Setverbs[i].verb;
