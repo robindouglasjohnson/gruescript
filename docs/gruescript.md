@@ -2099,15 +2099,15 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	# The game ID is used to identify saved games in
 	# browser storage. This should be different for
 	# each of the Gruescript games on your site, so
-	# they don’t interfere with each others’ saves.
+	# they don't interfere with each others' saves.
 	author Roger Firth, adapted to Gruescript by Robin Johnson
 	version 0.0.1
 	person 2 # "You are in..."
 	examine off
 	# custom status line. On the left, display the
-	# player’s current room; on the right, whether
-	# they are wearing the cloak – we’ll use a
-	# variable called ‘cloaked’ for this.
+	# player's current room; on the right, whether
+	# they are wearing the cloak – we'll use a
+	# variable called 'cloaked' for this.
 	status { $Room | $cloaked }
 
 	# a portable item, the cloak
@@ -2116,12 +2116,12 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	tags portable wearable worn
 	# These are all special engine-recognised tags:
 
-	# ‘portable’ means it can be picked up and
-	# dropped; ‘wearable’ means it can be worn (if
-	# carried) and removed (when worn); ‘worn’ means
+	# 'portable' means it can be picked up and
+	# dropped; 'wearable' means it can be worn (if
+	# carried) and removed (when worn); 'worn' means
 	# the player is wearing it at the start of the game.
 
-	# the ‘cloaked’ variable, which we are displaying
+	# the 'cloaked' variable, which we are displaying
 	# on the status bar, and a rule to set it
 	var cloaked Cloaked # its initial value
 	rule
@@ -2136,14 +2136,14 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	south bar
 	west cloakroom
 	north foyer
-	# ‘north foyer’ is a dummy direction, so that the
+	# 'north foyer' is a dummy direction, so that the
 	# button appears: attempting to go north will be
 	# caught by the following verb block:
 
 	verb go north
 	at foyer
 	say But you've only just arrived!
-	# This verb block always ‘succeeds’, effectively
+	# This verb block always 'succeeds', effectively
 	# blocking the action.
 
 	room bar You're in the bar.
@@ -2159,11 +2159,11 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	rule
 	tag bar dark
 	!thingat cloak bar # includes carried/worn
-	# The ‘!’ prefix negates the assertion, so if the
+	# The '!' prefix negates the assertion, so if the
 	# cloak is NOT at the bar, the rule will continue:
 	untag bar dark
 
-	# If we are in the bar and it’s dark, increase the ‘mess’.
+	# If we are in the bar and it's dark, increase the 'mess'.
 	# The player gets one warning.
 	rule
 	at bar
@@ -2179,19 +2179,19 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	thing hook brass hook
 	loc cloakroom
 
-	# determine when to activate the verb ‘hang’.
+	# determine when to activate the verb 'hang'.
 	# In a parser game, the player would type
-	# “hang cloak”, not “hang hook”. We’ll use
-	# ‘display’ and ‘prompt’ to make the mock prompt
-	# look like that, but we’ll actually attach the
+	# “hang cloak”, not “hang hook”. We'll use
+	# 'display' and 'prompt' to make the mock prompt
+	# look like that, but we'll actually attach the
 	# verb to the hook, not the cloak.
-	# This is a little more intuitive: you ‘hold’ the
-	# cloak, and then look round the ‘room’ for
+	# This is a little more intuitive: you 'hold' the
+	# cloak, and then look round the 'room' for
 	# something to attach it to.
 
 	setverb hang hook # when to activate 'hang' verb for the hook
-	!eq $held 0 # check we’re holding *something*
-	# (the contextual variable ‘held’ contains the
+	!eq $held 0 # check we're holding *something*
+	# (the contextual variable 'held' contains the
 	# item being held, or 0 if none.)
 	has $held wearable
 	# *any* wearable garment(s) can be hung on the
@@ -2201,17 +2201,17 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	verb hang
 	display hang {$held}
 	prompt hang {$held} on {$this}
-	# we’ll use an author-defined tag, ‘hooked’, to
-	# make something show if it’s currently hanging
-	# on the hook. It doesn’t change any other
+	# we'll use an author-defined tag, 'hooked', to
+	# make something show if it's currently hanging
+	# on the hook. It doesn't change any other
 	# behaviour (you can still pick it back up
-	# normally with ‘take’), so this is
+	# normally with 'take'), so this is
 	# straightforward.
 	tag $held hooked
 	say You hang {the $held} on {the $this}.
 	put $held $this.loc
 
-	# create a ‘visible tag’
+	# create a 'visible tag'
 	tagdesc hooked on hook
 
 	# taking anything that is 'hooked' removes that
@@ -2219,15 +2219,15 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	verb take
 	untag $this hooked
 	continue
-	# ‘continue’ forces this verb block to fail, so
-	# the native verb ‘take’ will pick it up
+	# 'continue' forces this verb block to fail, so
+	# the native verb 'take' will pick it up
 
 	thing dust dust (on floor)
 	loc bar
 
 	# The game ends when the player is in the bar and
-	# the bar isn’t dark; whether they win or lose
-	# depends on how much mess they’ve made in the
+	# the bar isn't dark; whether they win or lose
+	# depends on how much mess they've made in the
 	# bar.
 	rule
 	at bar
