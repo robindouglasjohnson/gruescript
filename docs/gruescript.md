@@ -2106,7 +2106,7 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	examine off
 	# custom status line. On the left, display the
 	# player's current room; on the right, whether
-	# they are wearing the cloak – we'll use a
+	# they are wearing the cloak -- we'll use a
 	# variable called 'cloaked' for this.
 	status { $Room | $cloaked }
 
@@ -2154,7 +2154,7 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	# elsewhere. Because a rule block will fail when
 	# an assertion inside it fails, the easiest way to
 	# do this in a single rule is to make the bar
-	# dark, then “un-make it dark” if the conditions
+	# dark, then "un-make it dark" if the conditions
 	# are met.
 	rule
 	tag bar dark
@@ -2181,7 +2181,7 @@ A Gruescript version of Cloak of Darkness goes something like this...
 
 	# determine when to activate the verb 'hang'.
 	# In a parser game, the player would type
-	# “hang cloak”, not “hang hook”. We'll use
+	# "hang cloak", not "hang hook". We'll use
 	# 'display' and 'prompt' to make the mock prompt
 	# look like that, but we'll actually attach the
 	# verb to the hook, not the cloak.
@@ -2239,7 +2239,7 @@ A Gruescript version of Cloak of Darkness goes something like this...
 	rule
 	at bar
 	!has bar dark
-	# There is no need to check $mess here – if it is
+	# There is no need to check $mess here -- if it is
 	# less than three, the assertion in the above rule
 	# would already have passed, and the game ended.
 	say A message is scrawled in the dust!
