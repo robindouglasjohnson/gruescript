@@ -836,11 +836,19 @@ Gruescript.commands = {
 			
 			var dotIx = variable.indexOf('.');
 			if(dotIx==-1) {
-				Game.vars[variable] = vval;
+				if(vval==0) {
+					delete Game.vars[variable];
+				} else {
+					Game.vars[variable] = vval;
+				}
 			} else {
 				var thingOrRoom = getThingOrRoom(evalVar(variable.substring(0,dotIx)));
 				var propName = evalVar(variable.substring(1+dotIx));
-				thingOrRoom.props[propName] = vval;
+				if(vval==0) {
+					delete thingOrRoom.props[propName];
+				} else {
+					thingOrRoom.props[propName] = vval;
+				}
 			}
 		}
 	},
@@ -3651,7 +3659,7 @@ function do_rules() {
 	for(var i in Rules) {
 		runSteps(Rules[i].steps, null, Rules[i].lineN);
 	}
-	if(Game.conversation && Game.vars.conversation && !in_scope(Game.vars.conversation)) {
+	if(Game.conversation && (getVariableValue('conversation')==0 || !in_scope(Game.vars.conversation))) {
 		delete Game.vars.conversation;
 		Game.conv = {ask:[],tell:[],say:[]};
 	}
