@@ -862,7 +862,7 @@ Gruescript.commands = {
 	          // so that its value stays static from now on
 		args: ['variable'],
 		func: function(variable) {
-			Gruescript.commands.assign(variable, expandBraces(getVariableValue(variable)));
+			Gruescript.commands.assign.func(variable, expandBraces(getVariableValue(variable)));
 		}
 	},
 	add: { // add to a variable
