@@ -356,7 +356,7 @@ function export_game() {
 		whatever licence terms they wish. (Author, put your licence terms here, or as comments in your code, if you like.)
 	-->
 	<textarea id="gsEdit" style="display: none;">
-${ $('#gsEdit').val() }
+${ $('#gsEdit').val().replaceAll('&', '&amp;') }
 	</textarea>
 </html>`;
 	

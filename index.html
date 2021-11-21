@@ -58,6 +58,11 @@ div#game p {
 	margin: 0;
 }
 
+span.game_title {
+	font-decoration: underline;
+	text-transform: uppercase;
+}
+
 ul {
 	padding-top: 0px;
 	margin-top: 0px;
@@ -1433,7 +1438,7 @@ function evalProps(word, useDisplayName, article) {
 		//console.log('refer_to("'+article+'", "'+propval+'", '+initcap+')');
 		propval = refer_to(article, propval, initcap);
 		if(allcaps) {
-			propval = propval.toUpperCase();
+			propval = propval.toUpperCaseExceptEntities();
 		}
 	} else if(useDisplayName) {
 		propval = setcaps(getName(propval), initcap, allcaps);
@@ -1454,7 +1459,7 @@ function evalVar(word, useDisplayName, article) {
 		
 		if(useDisplayName) {
 			var displayName = refer_to(article, capsPattern.lcase, capsForThing);
-			return capsPattern.allcaps ? displayName.toUpperCase() : displayName;
+			return capsPattern.allcaps ? displayName.toUpperCaseExceptEntities() : displayName;
 		} else {
 			return setcaps(capsPattern.lcase, capsPattern.initcap, capsPattern.allcaps);
 		}
@@ -1490,11 +1495,11 @@ function evalVar(word, useDisplayName, article) {
 		vvalue = article ? refer_to(article, vvalue, initcap) : getName(vvalue);
 	}
 	
-	return allcaps ? vvalue.toUpperCase() : (initcap ? capitalise(vvalue) : vvalue);
+	return allcaps ? vvalue.toUpperCaseExceptEntities() : (initcap ? capitalise(vvalue) : vvalue);
 }
 function setcaps(txt, initcap, allcaps) {
 	if(allcaps) {
-		return txt.toUpperCase();
+		return txt.toUpperCaseExceptEntities();
 	} else if(initcap) {
 		return capitalise(txt);
 	} else {
@@ -1529,6 +1534,15 @@ function getCapsPattern(txt) {
 	} else {
 		return {lcase: txt, initcap: false, allcaps: false};
 	}
+}
+
+// uppercase a string but ignore named HTML entities
+String.prototype.toUpperCaseExceptEntities = function(txt) {
+	if(!/\&\w+\;/.test(this)) {
+		return this.toUpperCase();
+	}
+
+	return this.replaceAll(/(.*?)(\&\w+?\;)(.*)/g, function(match,p1,p2,p3) {return p1.toUpperCase() + p2 + p3.toUpperCaseExceptEntities()});
 }
 
 function runSteps(steps, lineN) {
@@ -3294,49 +3308,49 @@ function refer_to(article, thing, capsForThing) {
 		case 'An':
 			return a_thing(thing, true, capsForThing);
 		case 'AN':
-			return a_thing(thing, false).toUpperCase();
+			return a_thing(thing, false).toUpperCaseExceptEntities();
 		case 'the':
 			return the_thing(thing, false, capsForThing);
 		case 'The':
 			return the_thing(thing, true, capsForThing);
 		case 'THE':
-			return the_thing(thing, false).toUpperCase();
+			return the_thing(thing, false).toUpperCaseExceptEntities();
 		case 'your':
 			return your_thing(thing, false, capsForThing);
 		case 'Your':
 			return your_thing(thing, true, capsForThing);
 		case 'YOUR':
-			return your_thing(thing,false).toUpperCase();
+			return your_thing(thing,false).toUpperCaseExceptEntities();
 		case 'nom': // he, she, it, they, they
 			return pronoun(thing,'nom',false);
 		case 'Nom':
 			return pronoun(thing,'nom',true);
 		case 'NOM':
-			return pronoun(thing,'nom',false).toUpperCase();
+			return pronoun(thing,'nom',false).toUpperCaseExceptEntities();
 		case 'obj': // him, her, it, them, them
 			return pronoun(thing,'obj',false);
 		case 'Obj':
 			return pronoun(thing,'obj',true);
 		case 'OBJ':
-			return pronoun(thing,'obj',false).toUpperCase();
+			return pronoun(thing,'obj',false).toUpperCaseExceptEntities();
 		case 'pos': // his, her, its, their, their
 			return pronoun(thing,'pos',false);
 		case 'Pos':
 			return pronoun(thing,'pos',true);
 		case 'POS':
-			return pronoun(thing,'pos',false).toUpperCase();
+			return pronoun(thing,'pos',false).toUpperCaseExceptEntities();
 		case 'ind': // his, hers, its, theirs, theirs
 			return pronoun(thing,'ind',false);
 		case 'Ind':
 			return pronoun(thing,'ind',true);
 		case 'IND':
-			return pronoun(thing,'ind',false).toUpperCase();
+			return pronoun(thing,'ind',false).toUpperCaseExceptEntities();
 		case 'ref': // himself, herself, itself, themselves, themself
 			return pronoun(thing,'ref',false);
 		case 'Ref':
 			return pronoun(thing,'ref',true);
 		case 'REF':
-			return pronoun(thing,'ref',false).toUpperCase();
+			return pronoun(thing,'ref',false).toUpperCaseExceptEntities();
 		default:
 			return do_runtime_error('Unknown article or pronoun "'+article+'"');
 	}
@@ -4034,7 +4048,7 @@ function initialise() {
 	}
 	
 	if(Game.show_title) {
-		say("<u>" + Game.title.toUpperCase() + (Game.author ? "</u><br/>" +
+		say("<span class=\"game_title\">" + Game.title.toUpperCaseExceptEntities() + (Game.author ? "</span><br/>" +
 			Localise.intro_by + " " + Game.author + "" : ""));
 	}
 
@@ -4390,7 +4404,7 @@ function capitalise(str) {
 	if(!str) {
 		return ''
 	} else {
-		return str.substring(0,1).toUpperCase() + str.substring(1);
+		return str.substring(0,1).toUpperCaseExceptEntities() + str.substring(1);
 	}
 }
 
