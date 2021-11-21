@@ -104,8 +104,24 @@ $(document).ready(function() {
 	
 });
 function syncScroll() {
+	if(!SYNTAX_HIGHLIGHTING) {
+		return;
+	}
 	SYNTAX_DIV.scrollTop = GSEDIT.scrollTop;
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
+}
+
+SYNTAX_HIGHLIGHTING = true;
+function toggleHighlighting() {
+	if(SYNTAX_HIGHLIGHTING) {
+		SYNTAX_HIGHLIGHTING = false;
+		$('#toggleHighlightingButton').html('Syntax highlighting off');
+		$('#gsEdit').addClass('waiting');
+	} else {
+		SYNTAX_HIGHLIGHTING = true;
+		$('#toggleHighlightingButton').html('Syntax highlighting on');
+		highlight();
+	}
 }
 
 DOING_HIGHLIGHTING = false;
@@ -116,6 +132,10 @@ HILITE_TIMEOUT = 100;
 MIN_LENGTH_TO_WORRY = 10000;
 WORRYING = false;
 function highlight() {
+	if(!SYNTAX_HIGHLIGHTING) {
+		return;
+	}
+	
 	syncScroll();
 	if(!WORRYING && GSEDIT.value.length >= MIN_LENGTH_TO_WORRY) {
 		WORRYING = true;
@@ -366,6 +386,34 @@ ${ $('#gsEdit').val().replaceAll('&', '&amp;') }
 	gs_console("Downloading Gruescript game. This is an HTML page which you can open in your browser, or upload to your own itch page or elsewhere.");
 	download(get_export_filename(), html);
 }
+
+
+OPTIONS_SHOWN = false;
+function doOptionsMenu() {
+	if(OPTIONS_SHOWN) {
+		$('#options_label').html("Options &darr;");
+		$('#optionsMenu').slideUp();
+		OPTIONS_SHOWN = false;
+	} else {
+		$('#options_label').html("Options &uarr;");
+		$('#optionsMenu').slideDown();
+		OPTIONS_SHOWN = true;
+		// if user leaves the menu open for 10s,
+		// check the mouse isn't still over it,
+		// and if it isn't, hide it
+		setTimeout(()=>{hideOptions();},10000);
+	}
+}
+function hideOptions() {
+	// if mouse isn't currently over the menu, hide it
+	if(!$('#optionsMenu:hover').length && !$('#optionsButton:hover').length) {
+		$('#optionsMenu').slideUp();
+		OPTIONS_SHOWN = false;
+	} else { // otherwise check again in 2s
+		setTimeout(()=>{hideOptions();},2000);
+	}
+}
+
 
 
 /*

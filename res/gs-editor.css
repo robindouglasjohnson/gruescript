@@ -200,6 +200,14 @@ div#gs_controls {
 	padding: 8px;
 	border-radius: 8px;
 }
+span#syntax_highlighting_control {
+	font-size: 8pt;
+	display: block;
+	margin-top: -4px;
+}
+span#syntax_highlighting_control input {
+	margin-top: 2px;
+}
 div#console_container {
 	margin: 0 8px 0 0;
 	padding: 4px 0 4px 0;
@@ -290,10 +298,28 @@ div#examplesMenu a:hover {
 	color: #ccccff;
 }
 
-div#toggleDarkButton {
-	float: right;
-	margin-right: 8px;
+div#optionsMenu {
+	display: none;
+	position: absolute;
+	width: max-content;
+	z-index: 2;
+	background-color: #000033;
+	border: 1px solid #333399;
+	left: -2px;
 }
+div#optionsMenu a {
+	text-decoration: none;
+	display: block;
+	padding: 2px 4px;
+}
+div#optionsMenu a:not(:first-of-type) {
+	border-top: 1px solid #333399;
+}
+div#optionsMenu a:hover {
+	background-color: #333366;
+	color: #ccccff;
+}
+
 
 /* tooltips */
 /* Tooltip container */

@@ -5621,7 +5621,12 @@ ConversationVerbs = [
 						<a onClick="loadExample('The Party Line');">The Party Line<br/>(full game)</a>
 					</div>
 				</div>
-				<div class="fileButton" id="toggleDarkButton" onClick="toggleDark();">Dark</div>
+				<div class="fileButton tooltip" id="optionsButton" onClick="doOptionsMenu();"><span id="options_label">Options &darr;</span>
+					<div id="optionsMenu">
+						<a id="toggleDarkButton" onClick="toggleDark(); event.stopPropagation();">Dark</a>
+						<a id="toggleHighlightingButton" onClick="toggleHighlighting(); event.stopPropagation();">Syntax highlighting on</a>
+					</div>
+				</div>
 			</div>
 			<div id="editContainer">
 				<textarea id="gsEdit" class="gsEdit" spellcheck="false">
