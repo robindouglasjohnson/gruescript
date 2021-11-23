@@ -5279,7 +5279,7 @@ NativeVerbs = [
 		
 		func: function(thing) {
 			var maxinv = getVariableValue('maxinv');
-			if(maxinv && (Game.inventory.length > maxinv)) {
+			if(maxinv && (Game.inventory.length >= maxinv)) {
 				say(Localise.you_cant_carry_any_more);
 				return true;
 			}

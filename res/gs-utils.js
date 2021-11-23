@@ -104,9 +104,6 @@ $(document).ready(function() {
 	
 });
 function syncScroll() {
-	if(!SYNTAX_HIGHLIGHTING) {
-		return;
-	}
 	SYNTAX_DIV.scrollTop = GSEDIT.scrollTop;
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
 }
@@ -132,11 +129,8 @@ HILITE_TIMEOUT = 100;
 MIN_LENGTH_TO_WORRY = 10000;
 WORRYING = false;
 function highlight() {
-	if(!SYNTAX_HIGHLIGHTING) {
-		return;
-	}
-	
 	syncScroll();
+	
 	if(!WORRYING && GSEDIT.value.length >= MIN_LENGTH_TO_WORRY) {
 		WORRYING = true;
 	}
@@ -171,6 +165,24 @@ function done_highlighting() {
 	}
 }
 
+NUM_LINES = 0;
+
+function syncNumbers() {
+	// draw line numbers only, for when syntax highlighting is off
+	var editorContent = GSEDIT.value;
+	var editorLines = editorContent.split('\n');
+	if(editorLines.length != NUM_LINES) {
+		var lines = [];
+		var ln = 0;
+		for(var i in editorLines) {
+			++ln;
+			lines.push('<div class="line"><div id="ln_'+ln+'" class="lineNumber">'+ln+'&nbsp;</div></div>');
+		}
+		SYNTAX_DIV.innerHTML = lines.join('');
+		NUM_LINES = ln;
+	}
+}
+
 function doHighlighting() {
 
 	var editorContent = GSEDIT.value;
@@ -196,58 +208,62 @@ function doHighlighting() {
 		
 		// & < and > will break the display
 		line = line.replaceAll('&', '&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-		
-		
-		var hashIx = line.indexOf('#');
-		var comment = '';
-		if(hashIx>=0) {
-			comment = '<span class="comment">' + line.substring(hashIx)+'</span>';
-			line = line.substring(0,hashIx);
-		}
-		
-		var colonIx = line.indexOf(':');
-		var message = '';
-		if(colonIx>=0) {
-			message = ':<span class="string">' + line.substring(colonIx+1) + '</span>';
-			line = line.substring(0, colonIx);
-		}
-		
-		// instructions (& other things) with a string as their first argument
-		line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
-		// instructions with a string as their second argument, and block names that include a printed message
-		line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
 		var str = '';
-		var strIx = line.indexOf('<span class="string">');
-		if(strIx>=0) {
-			str = line.substring(strIx);
-			line = line.substring(0,strIx);
+		var message = '';
+		var comment = '';
+		
+		if(SYNTAX_HIGHLIGHTING) {
+			
+			var hashIx = line.indexOf('#');
+			if(hashIx>=0) {
+				comment = '<span class="comment">' + line.substring(hashIx)+'</span>';
+				line = line.substring(0,hashIx);
+			}
+			
+			var colonIx = line.indexOf(':');
+			if(colonIx>=0) {
+				message = ':<span class="string">' + line.substring(colonIx+1) + '</span>';
+				line = line.substring(0, colonIx);
+			}
+			
+			// instructions (& other things) with a string as their first argument
+			line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
+			// instructions with a string as their second argument, and block names that include a printed message
+			line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
+			var str = '';
+			var strIx = line.indexOf('<span class="string">');
+			if(strIx>=0) {
+				str = line.substring(strIx);
+				line = line.substring(0,strIx);
+			}
+			
+			// commands
+			// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
+			line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
+			// assertions
+			line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|contains|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
+			// iterators
+			line = line.replaceAll(/(^\s*)(!?(sequence|select|all))(?=\s|$)/g,'$1<span class="iterator">$2</span>');
+			// block types
+			line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
+			
+			// special tags, variables and property names, and iterator lists
+			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+
+			// properties and directions
+			line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
+
+			// variables and numbers
+			line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
+			line = line.replaceAll(/\s([0-9]+)(?=\s|$)/g,' <span class="number">$1</span>');
 		}
-		
-		// commands
-		// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
-		line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
-		// assertions
-		line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|contains|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
-		// iterators
-		line = line.replaceAll(/(^\s*)(!?(sequence|select|all))(?=\s|$)/g,'$1<span class="iterator">$2</span>');
-		// block types
-		line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
-		
-		// special tags, variables and property names, and iterator lists
-		line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
-
-		// properties and directions
-		line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
-
-		// variables and numbers
-		line = line.replaceAll(/\s(\$[a-zA-Z_]+)(?=\s|$)/g,' <span class="variable">$1</span>');
-		line = line.replaceAll(/\s([0-9]+)(?=\s|$)/g,' <span class="number">$1</span>');
-		
+			
 		var lineContent = (line + str + message + comment);
 		if(!lineContent) lineContent = '&nbsp;'; // '<span style="color: #660000">#blank line</span>';
 		lines.push('<div class="line"><div id="ln_'+ln+'" class="lineNumber">'+ln+'&nbsp;</div>' + lineContent + '</div>');
 	}
 	SYNTAX_DIV.innerHTML = lines.join('');
+	NUM_LINES = ln;
 	setTimeout(()=>{
 		done_highlighting();
 	},0);
@@ -390,6 +406,9 @@ ${ $('#gsEdit').val().replaceAll('&', '&amp;') }
 
 OPTIONS_SHOWN = false;
 function doOptionsMenu() {
+	if(EXAMPLES_SHOWN) {
+		hideExamples();
+	}
 	if(OPTIONS_SHOWN) {
 		$('#options_label').html("Options &darr;");
 		$('#optionsMenu').slideUp();
@@ -424,6 +443,9 @@ function hideOptions() {
 
 EXAMPLES_SHOWN = false;
 function doExamplesMenu() {
+	if(OPTIONS_SHOWN) {
+		hideOptions();
+	}
 	if(EXAMPLES_SHOWN) {
 		$('#examples_label').html("Examples &darr;");
 		$('#examplesMenu').slideUp();
