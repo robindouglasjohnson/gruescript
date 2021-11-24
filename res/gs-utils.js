@@ -104,6 +104,9 @@ $(document).ready(function() {
 	
 });
 function syncScroll() {
+	if(!SYNTAX_HIGHLIGHTING) {
+		return;
+	}
 	SYNTAX_DIV.scrollTop = GSEDIT.scrollTop;
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
 }
@@ -113,9 +116,12 @@ function toggleHighlighting() {
 	if(SYNTAX_HIGHLIGHTING) {
 		SYNTAX_HIGHLIGHTING = false;
 		$('#toggleHighlightingButton').html('Syntax highlighting off');
-		$('#gsEdit').addClass('waiting');
+		$('#gsEdit').addClass('waiting').addClass('noHighlighting');
+		$('#syntaxHighlighting').addClass('noNumbers').html('');
 	} else {
 		SYNTAX_HIGHLIGHTING = true;
+		$('#gsEdit').removeClass('noHighlighting');
+		$('#syntaxHighlighting').removeClass('noNumbers');
 		$('#toggleHighlightingButton').html('Syntax highlighting on');
 		highlight();
 	}
@@ -129,6 +135,11 @@ HILITE_TIMEOUT = 100;
 MIN_LENGTH_TO_WORRY = 10000;
 WORRYING = false;
 function highlight() {
+	
+	if(!SYNTAX_HIGHLIGHTING) {
+		return;
+	}
+	
 	syncScroll();
 	
 	if(!WORRYING && GSEDIT.value.length >= MIN_LENGTH_TO_WORRY) {

@@ -53,6 +53,10 @@ textarea#gsEdit.waiting {
 	color: #ffffff;
 	background-color: #000000;
 }
+textarea#gsEdit.noHighlighting {
+	left: 0;
+	padding-left: 2px;
+}
 div.light textarea#gsEdit.waiting {
 	color: #000000;
 	background-color: #ffffff;
@@ -74,6 +78,9 @@ textarea#gsEdit:focus-visible {
 	left: 0;
 	display: inline-block;
 	padding: 0px;
+}
+.gsEdit.noHighlighting {
+	width: 100%;
 }
 div.light .gsEdit {
 	color: #000000;
