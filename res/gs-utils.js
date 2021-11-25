@@ -1798,7 +1798,7 @@ say "Can't talk, or the boss will be furious with me."
 
 verb talk sous_chef
 !has chefs_hat worn
-"Can't talk, the boss could be back any minute."
+say "Can't talk, the boss could be back any minute."
 
 verb talk sous_chef # while wearing chef's hat
 !lt sous_chef.anger 4
