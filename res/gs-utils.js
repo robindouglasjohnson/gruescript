@@ -939,7 +939,7 @@ die You lose`;
  */
 
 EXAMPLES['The Party Line'] = `game The Party Line
-id TPLGS
+id TPLGS2
 author Robin Johnson
 version 2.0
 examine off
@@ -2823,7 +2823,7 @@ tag boombox boombox_playing: Click.
 
 verb stop boombox
 untag boombox boombox_playing: Click.
-
+	
 # pseudo-things can be used in weird hacky ways!
 thing bad_song_1
 tags bad_song

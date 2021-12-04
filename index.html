@@ -1301,32 +1301,31 @@ function check_args(words, argtypes, commandName, lineN) {
 }
  
 function do_instruction(commandName, words, message, lineN, isAssertion, isNot, isIterator, iteratorSteps) {
-	if(isIterator) {
+	//if(isIterator) {
 		//console.log('isIterator: ' + isIterator);
 		//console.log('iteratorSteps: ' + iteratorSteps);
 		//console.log('message: ' + message);
-	}
+	//}
 	
 	//gs_console('"this" is ' + Game.vars['this'])
 	
 	// verify arguments
 	var command;
+	iteratorOrder = null;
 	if(isIterator) {
 		//console.log('iterator_list is: '+words[1]);
 		var iterator_list = words[1];
 		
-		if(Gruescript.orderers[iterator_list]) { // reorder the rest of the words
-			var iterator_order = iterator_list;
+		if(Gruescript.orderers[iterator_list]) {
+			iteratorOrder = iterator_list;
 			iterator_list = words[2];
-			var wordsToReorder = words.slice(3);
-			var reorderedWords = Gruescript.orderers[iterator_order].func(wordsToReorder);
-			words = [words[0], words[2]].concat(reorderedWords);
+			words.splice(1,1);
 		}
 		
 		if(!Gruescript.listers[iterator_list]) {
 			return do_error(lineN, '"'+words[1]+'" is not a valid lister');
 		}
-		// for the purposes of verifying argumnets, treat the iterator_list as a command
+		// for the purposes of verifying arguments, treat the iterator_list as a command
 		command = Gruescript.listers[iterator_list];
 	} else {
 		command = Gruescript[isAssertion ? 'assertions' : 'commands'][commandName];
@@ -1334,7 +1333,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 
 	var passedArgs = [];
 	var numArgs = command.args.length;
-	//console.log('command is ', command);
+	//console.log('command is ', command, 'words is', words, 'iteratorOrder is', iteratorOrder);
 	var passedArgs = [];
 	for(var i=0;i<command.args.length;++i) {
 		if(command.args[i]==='string') {
@@ -1397,6 +1396,9 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	var preResult;
 	if(isIterator) {
 		var iterees = command.func.apply(this, passedArgs);
+		if(iteratorOrder) {
+			iterees = Gruescript.orderers[iteratorOrder].func(iterees);
+		}
 		var iterate_mode = Gruescript.iterators[commandName].mode;
 		preResult = iterate(iteratorSteps, iterees, iterate_mode, lineN);
 	} else {
@@ -1824,7 +1826,7 @@ function getBlocks(blockname) {
 	return blocks;
 };
 function do_error(lineN, msg) {
-	// todo: print this out in the nice web interface I'm gonna make
+	lineN += 1;
 	var linemsg = lineN ? 'Error on line '+lineN : 'Error';
 	gs_console('<span class="error">' + linemsg +': ' + msg + '</span>');
 	$('#ln_'+lineN).addClass('error');
