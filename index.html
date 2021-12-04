@@ -1723,7 +1723,7 @@ $(document).ready(function() {
 function readGruescript() {
 	GRUESCRIPT_SRC = $('#gsEdit').val().replaceAll('\r\n','\n').replaceAll('\r','\n').split('\n');
 	GRUESCRIPT_SRC.unshift('');
-	gs_console('read ' + GRUESCRIPT_SRC.length + ' lines of gruescript');
+	gs_console('read ' + (GRUESCRIPT_SRC.length - 1) + ' lines of gruescript');
 }
 
 // download a text file
@@ -5500,7 +5500,7 @@ ConversationVerbs = [
 			<div id="scroller">
 				<div id="scroller_content">
 					<p><span class="old_message">This is the main scroller. Messages to the player go here, with mock command prompts...</span></p>
-					<p><span class="prompt old_prompt">&gt; lke this</span></p>
+					<p><span class="prompt old_prompt">&gt; like this</span></p>
 					<p><span class="new_message">See?</span></p>
 				</div>
 			</div>
@@ -5607,11 +5607,12 @@ ConversationVerbs = [
 		
 		<div id="editor">
 			<div id="fileOpsContainer">
-				<label id="import" class="tooltip" for="chooseFile">Load from file<span class="tooltiptext">Load a gruescript source file from your computer</span></label>
+				<a class="filebutton tooltip" type="button" id="newFile" onClick="new_file();">New<span class="tooltiptext">Clear gruescript and begin new project</span></a>
+				<label id="import" class="tooltip" for="chooseFile">Load file<span class="tooltiptext">Load a gruescript source file from your computer</span></label>
 				<input id="chooseFile" type="file" name="file" style="display: none;"/>
-				<a class="fileButton tooltip" type="button" id="download_gs" onClick="download_gruescript();">Save to file<span class="tooltiptext">Download this gruescript source file to your computer</span></a>
-				<a class="fileButton tooltip" type="button" id="loadFromBrowser" onClick="load_from_browser();">Load from browser<span class="tooltiptext">Load previously saved gruescript from your browser</span></a>
-				<a class="fileButton tooltip" type="button" id="saveToBrowser" onClick="save_to_browser();">Save to browser<span class="tooltiptext">Save this gruescript to your browser</span></a>
+				<a class="fileButton tooltip" type="button" id="download_gs" onClick="download_gruescript();">Save file<span class="tooltiptext">Download this gruescript source file to your computer</span></a>
+				<a class="fileButton tooltip" type="button" id="loadFromBrowser" onClick="load_from_browser();">Load cookie<span class="tooltiptext">Restore previously saved gruescript from browser</span></a>
+				<a class="fileButton tooltip" type="button" id="saveToBrowser" onClick="save_to_browser();">Save cookie<span class="tooltiptext">Save this gruescript to browser</span></a>
 				<div class="fileButton tooltip" id="examplesButton" onClick="doExamplesMenu();"><span id="examples_label">Examples &darr;</span>
 					<div id="examplesMenu">
 						<a onClick="loadExample('Locks and keys');">Locks and keys</a>

@@ -281,6 +281,19 @@ function doHighlighting() {
 }
 
 
+// new project (clear gruescript)
+function new_file() {
+	if(!confirm("Really clear gruescript and begin new project?")) {
+		return false;
+	}
+	
+	$('#gsEdit').val('');
+	highlight();
+	readGruescript();
+	GRUESCRIPT_CHANGED = false;
+}
+
+
 // save to local storage
 function save_to_browser() {
 	try {
