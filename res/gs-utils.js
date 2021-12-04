@@ -1131,7 +1131,7 @@ eq $x 1
 assign catroom housecat.loc
 run pick_catdir
 sayat $catroom The cat walks {$catdir}.
-isroom $catroom.dir.$catdir # leave this in till I've made all the rooms!
+isroom $catroom.dir.$catdir
 put housecat $catroom.dir.$catdir
 run get_opposite
 sayat housecat.loc The cat walks in from the {$opposite}.
