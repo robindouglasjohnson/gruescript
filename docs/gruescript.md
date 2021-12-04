@@ -1438,6 +1438,46 @@ printed if the assertion fails -- that is, if the whole
 *iterator* fails. The message will appear in its own paragraph,
 after any output from the iterated instructions.
 
+### Changing the order of iteration
+
+An iterator command may include an *orderer*, which changes the
+order in which the items in the iterator list are processed. This
+appears immediately after the iterator keyword itself, before the lister.
+The three orderers are:
+
+`forward`
+: Do not change the order. This has no effect, but is included anyway.
+
+`backward`
+: Reverses the order of iteration.
+
+`shuffle`
+: Randomise the order of iteration.
+
+So, the iterator
+
+	all these backward Larry Curly Moe
+	say { $this }
+
+will print:
+
+	Moe
+	Curly
+	Larry
+
+but
+
+	all these shuffle Larry Curly Moe
+	say { $this }
+	
+might print the names in this order:
+	
+	Curly
+	Larry
+	Moe
+
+or any other order (but each name will be printed exactly once.)
+
 ## Verbs
 
 Verbs are the basic unit of interaction in Gruescript games. The
