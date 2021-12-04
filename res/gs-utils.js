@@ -939,9 +939,9 @@ die You lose`;
  */
 
 EXAMPLES['The Party Line'] = `game The Party Line
-id TPLGS2
+id TPLGS21
 author Robin Johnson
-version 2.0
+version 2.1
 examine off
 person 2
 assign maxscore 5
