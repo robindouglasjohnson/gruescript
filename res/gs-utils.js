@@ -258,8 +258,8 @@ function doHighlighting() {
 			// block types
 			line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
 			
-			// special tags, variables and property names, and iterator lists
-			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+			// special tags, variables and property names, iterator lists & orderers
+			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 			// properties and directions
 			line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
@@ -2786,7 +2786,7 @@ verbs talk
 
 proc meet_celebria
 assign celebria.name Celebria
-assign celebria.display Celebria, goddess of partying
+write celebria.display Celebria, goddess of partying
 tag celebria proper_name
 
 verb talk celebria
@@ -2801,6 +2801,7 @@ say "Very well, mortal. I shall give you the means to lift the curse. Use \\
     this artefact wisely, for it holds diabolical power!
 say She lifts Her arms, and a devilish boombox descends from on high.
 bring boombox
+run shuffle_tracks
 tag boombox got
 
 verb talk celebria
@@ -2823,52 +2824,146 @@ tag boombox boombox_playing: Click.
 verb stop boombox
 untag boombox boombox_playing: Click.
 
+# pseudo-things can be used in weird hacky ways!
+thing bad_song_1
+tags bad_song
+prop name Mull of Kintyre
+thing bad_song_2
+tags bad_song
+prop name Agadoo
+thing bad_song_3
+tags bad_song
+prop name Delilah
+thing bad_song_4
+tags bad_song
+prop name Achy Breaky Heart
+thing bad_song_5
+tags bad_song
+prop name Crazy Frog
+thing bad_song_6
+tags bad_song
+prop name Mr Blobby
+thing bad_song_7
+tags bad_song
+prop name Barbie Girl
+thing bad_song_8
+tags bad_song
+prop name Thong Song
+thing bad_song_9
+tags bad_song
+prop name The Cheeky Song
+thing bad_song_10
+tags bad_song
+prop name You're Beautiful
+thing bad_song_11
+tags bad_song
+prop name The Millennium Prayer
+thing bad_song_12
+tags bad_song
+prop name The Birdie Song
+thing bad_song_13
+tags bad_song
+prop name Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini
+thing bad_song_14
+tags bad_song
+prop name Living Next Door to Alice
+thing bad_song_15
+tags bad_song
+prop name Teletubbies Say 'Eh-Oh'
+thing bad_song_16
+tags bad_song
+prop name Earth Song
+thing bad_song_17
+tags bad_song
+prop name I Wish I Could Fly
+thing bad_song_18
+tags bad_song
+prop name Friday
+thing bad_song_19
+tags bad_song
+prop name Surfin' Bird
+thing bad_song_20
+tags bad_song
+prop name Star Trekkin'
+thing bad_song_21
+tags bad_song
+prop name I'm Too Sexy
+thing bad_song_22
+tags bad_song
+prop name Mmmbop
+thing bad_song_23
+tags bad_song
+prop name The Hamster Dance
+thing bad_song_25
+tags bad_song
+prop name Could It Be Magic
+thing bad_song_26
+tags bad_song
+prop name Get Ready For This
+thing bad_song_27
+tags bad_song
+prop name Chirpy Chirpy Cheep Cheep
+thing bad_song_28
+tags bad_song
+prop name Candle in the Wind
+thing bad_song_29
+tags bad_song
+prop name Rockin' Robin
+thing bad_song_30
+tags bad_song
+prop name The Fog on the Tyne
+thing bad_song_31
+tags bad_song
+prop name Shaddap You Face
+thing bad_song_32
+tags bad_song
+prop name Hooray Hooray It's a Holi-Holiday
+thing bad_song_33
+tags bad_song
+prop name There's No One Quite Like Grandma
+thing bad_song_34
+tags bad_song
+prop name The Chicken Song
+thing bad_song_35
+tags bad_song
+prop name All I Want For Christmas is You
+thing bad_song_36
+tags bad_song
+prop name I Wanna Be a Hippy
+thing bad_song_37
+tags bad_song
+prop name I Should Be So Lucky
+thing bad_song_38
+tags bad_song
+prop name No Limits
+thing bad_song_39
+tags bad_song
+prop name Do Ya Think I'm Sexy
+thing bad_song_40
+tags bad_song
+prop name Saturday Night Dance
+thing bad_song_41
+tags bad_song
+prop name My Ding-a-Ling
+
+var num_tracks 41
+
+thing track_order
+
+proc shuffle_tracks
+assign n 0
+all shuffle tagged bad_song
+add n 1
+assign track_order.$n $this.name
+
 rule
 assign playing_here 0
 has boombox boombox_playing
 inscope boombox
 assign playing_here 1
 add track 1
-!eq $track 1: The boombox plays "Mull of Kintyre".
-!eq $track 2: The boombox plays "Agadoo".
-!eq $track 3: The boombox plays "Delilah".
-!eq $track 4: The boombox plays "Achy Breaky Heart".
-!eq $track 5: The boombox plays "Crazy Frog".
-!eq $track 6: The boombox plays "Mr Blobby".
-!eq $track 7: The boombox plays "Barbie Girl".
-!eq $track 8: The boombox plays "Thong Song".
-!eq $track 9: The boombox plays "The Cheeky Song".
-!eq $track 10: The boombox plays "You're Beautiful".
-!eq $track 11: The boombox plays "The Millennium Prayer".
-!eq $track 12: The boombox plays "The Birdie Song".
-!eq $track 13: The boombox plays "Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini".
-!eq $track 14: The boombox plays "Living Next Door to Alice".
-!eq $track 15: The boombox plays "Teletubbies Say 'Eh-Oh'".
-!eq $track 16: The boombox plays "Earth Song".
-!eq $track 17: The boombox plays "I Wish I Could Fly".
-!eq $track 18: The boombox plays "Friday".
-!eq $track 19: The boombox plays "Surfin' Bird".
-!eq $track 20: The boombox plays "Star Trekkin'".
-!eq $track 21: The boombox plays "Im' Too Sexy".
-!eq $track 22: The boombox plays "Mmmbop".
-!eq $track 23: The boombox plays "The Hamster Dance".
-!eq $track 25: The boombox plays "Could It Be Magic".
-!eq $track 26: The boombox plays "Get Ready For This".
-!eq $track 27: The boombox plays "Chirpy Chirpy Cheep Cheep".
-!eq $track 28: The boombox plays "Candle in the Wind".
-!eq $track 29: The boombox plays "Rockin' Robin".
-!eq $track 30: The boombox plays "The Fog on the Tyne".
-!eq $track 31: The boombox plays "Shaddap You Face".
-!eq $track 32: The boombox plays "Hooray Hooray It's a Holi-Holiday".
-!eq $track 33: The boombox plays "There's No One Quite Like Grandma".
-!eq $track 34: The boombox plays "The Chicken Song".
-!eq $track 35: The boombox plays "All I Want For Christmas is You".
-!eq $track 36: The boombox plays "I Wanna Be a Hippy".
-!eq $track 37: The boombox plays "I Should Be So Lucky".
-!eq $track 38: The boombox plays "No Limits".
-!eq $track 39: The boombox plays "Do Ya Think I'm Sexy".
-!eq $track 40: The boombox plays "Saturday Night Dance".
-say The boombox plays "My Ding-a-Ling".
+say The boombox plays "{ track_order.$track }".
+eq $track_order $num_tracks
 assign track 0
 
 rule

@@ -1112,6 +1112,32 @@ Gruescript.iterators = {
 		mode: 'until_succeed'
 	}
 };
+Gruescript.orderers = {
+	forward: {
+		func: function(arr) {
+			return arr;
+		}
+	},
+	backward: {
+		func: function(arr) {
+			var arrOut = [];
+			while(arr.length) {
+				arrOut.push(arr.pop());
+			}
+			return arrOut;
+		}
+	},
+	shuffle: {
+		func: function(arr) {
+			var arrOut = [];
+
+			while(arr.length) {
+				arrOut.push(arr.splice( pick(arr.length), 1)[0]);
+			}
+			return arrOut;	
+		}
+	}
+};
 Gruescript.listers = {
 	carried: {
 		args: [],
@@ -1288,6 +1314,15 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	if(isIterator) {
 		//console.log('iterator_list is: '+words[1]);
 		var iterator_list = words[1];
+		
+		if(Gruescript.orderers[iterator_list]) { // reorder the rest of the words
+			var iterator_order = iterator_list;
+			iterator_list = words[2];
+			var wordsToReorder = words.slice(3);
+			var reorderedWords = Gruescript.orderers[iterator_order].func(wordsToReorder);
+			words = [words[0], words[2]].concat(reorderedWords);
+		}
+		
 		if(!Gruescript.listers[iterator_list]) {
 			return do_error(lineN, '"'+words[1]+'" is not a valid lister');
 		}
@@ -1304,7 +1339,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	for(var i=0;i<command.args.length;++i) {
 		if(command.args[i]==='string') {
 			//passedArgs.push(wordsFrom(words, 1+i));
-			passedArgs.push(wordsFrom(words, (isIterator ? 2+i : 1+i)));
+			passedArgs.push(wordsFrom(words, (isIterator ? (2+i) : 1+i)));
 			break;
 		}
 		if(typeof command.args[i]=='string' && command.args[i].charAt(0)=='+') {
