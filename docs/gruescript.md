@@ -910,7 +910,7 @@ procedure succeeds or fails.
 Gruescript console. This is intended as a debugging aid and has
 no help during gameplay. In an exported game, the words will be
 logged to the JavaScript browser console. Note that the argument
-is *not& a string, so it cannot contain braced expressions, but
+is *not* a string, so it cannot contain braced expressions, but
 any or all of the words may be variable or property references
 (see below.)
 
@@ -1060,7 +1060,7 @@ if the procedure succeeds, or fails if the procedure fails.
 
 <code>js <i>string</i></code>
 : Evaluate and run the string as JavaScript. Convert its return
-value to a boolean, and pass the assertion if the boolean is
+value to a boolean, and pass the assertion if the boolean is true.
 This is cheating. Please do not use it.
 
 Any assertion can be prefixed with an exclamation mark (`!`) to
