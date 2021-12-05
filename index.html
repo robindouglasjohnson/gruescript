@@ -1622,7 +1622,7 @@ function runSteps(steps, lineN) {
 		// iterators are special
 		var words = getWords(thisstep);
 		var iterating = !!(Gruescript.iterators[words[0]] || (
-			words[0].charAt(0)=='!' && Gruescript.iterators[words[0].substring(1)]
+			words[0] && words[0].charAt(0)=='!' && Gruescript.iterators[words[0].substring(1)]
 		));
 		var iteratorSteps = null;
 		if(iterating) {
@@ -1660,6 +1660,10 @@ function runStep(step, words, message, lineN, iteratorSteps) {
 
 	gs_log(lineN, step+(Game.vars.hasOwnProperty('this')? ' ('+Game.vars['this']+')':'')+(message ? ': '+message : ''));
 	var firstwd = words[0];
+	if(DECLARATIONS.includes(firstwd)) {
+		return do_runtime_error('Expected instruction, found "'+firstwd+'"');
+	}
+	
 	var result;
 	var isAssertion = false;
 	var isNot = false;
@@ -5692,7 +5696,7 @@ ConversationVerbs = [
 
 			<div id="gs_controls">
 				<button type="button" id="start_gs" onClick="buildGame();" >Build</button>
-				<button type="button" id="start_gs" onClick="buildGame(true);" >Build and run</button><br/>
+				<button type="button" id="start_gs" onClick="buildGame(true);" >Build and run</button>&nbsp;&nbsp;&nbsp;
 				<button type="button" id="download_game" onClick="export_game();">Download game</button>
 			</div>
 			
@@ -5701,8 +5705,16 @@ ConversationVerbs = [
 					Gruescript version 0.0.1 by Robin Johnson &lt;<a target="blank" href="https://versificator.itch.io">versificator.itch.io</a>&gt;
 				</div>
 				<input type="checkbox" id="debug_steps" name="debug_steps" /><label for="debug_steps">Debug steps</label>
+				<button type="button" id="clear_console" onClick="clear_gs_console();">clear</button><br />
 
-				<button type="button" id="clear_console" onClick="clear_gs_console();">clear</button>
+				<div id="quickrun_container">
+					<textarea id="gs_quickrun" rows="3" onFocus="focus_quickrun();" onChange="change_quickrun();" onKeyup="change_quickrun();"># quick-run gruescript instructions here</textarea>
+					<div id="quickrun_result">&nbsp;</div>
+				</div>
+				<div id="quickrun_buttons">
+					<button type="button" class="quickrun" id="run_command_console" onClick="run_quickrun();">Run</button>
+					<button type="button" class="quickrun" id="clear_command_console" onClick="clear_quickrun();">Clear</button>
+				</div>
 			</div>
 		
 		</div><!-- editor -->

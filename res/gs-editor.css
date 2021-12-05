@@ -200,11 +200,12 @@ div.light span.string {
 
 
 div#gs_controls {
+	font-size: 10pt;
 	text-align: center;
 	background-color: #000033;
 	border: 1px solid #0000cc;
 	margin: 8px 8px 0 0;
-	padding: 8px;
+	padding: 2px;
 	border-radius: 8px;
 }
 span#syntax_highlighting_control {
@@ -216,13 +217,14 @@ span#syntax_highlighting_control input {
 	margin-top: 2px;
 }
 div#console_container {
+	font-size: 10pt;
 	margin: 0 8px 0 0;
 	padding: 4px 0 4px 0;
 	text-align: center;
 }
 div#gs_console {
 	text-align: left;
-	height: 15%;
+	height: 12%;
 	background-color: #000000;
 	color: #999999;
 	border: 1px solid #333333;
@@ -253,9 +255,44 @@ div#gs_console a {
 	color: #6666ff;
 }
 div#editor button {
+	padding: 2px 8px;
 	background-color: #ffffff;
 	color: #000000;
 	font-family: monospace;
+}
+div#quickrun_container {
+	text-align: left;
+	float: left;
+	width: 80%;
+}
+textarea#gs_quickrun {
+	text-align: left;
+	width: 100%;
+	background-color: #000000;
+	color: #999999;
+	border: 1px solid #333333;
+	margin: 4px auto 0px auto;
+	padding: 2px;
+	overflow-y: scroll;
+}
+span#quickrun_result {
+	font-size: 8pt;
+	font-style: italic;
+}
+span#quickrun_result.succeeded {
+	color: #99ff99;
+}
+span#quickrun_result.failed {
+	color: #ff9999;
+}
+div#quickrun_buttons {
+	text-align: left;
+	margin-left: 81%;
+	margin-top: 4px;
+}
+button.quickrun {
+	padding: 1px 4px;
+	width: 5em;
 }
 div#fileOpsContainer {
 	padding-bottom: 4px;

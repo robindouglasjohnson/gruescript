@@ -458,6 +458,26 @@ function hideOptions() {
 }
 
 
+// quickrun
+
+function clear_quickrun() {
+	$('#gs_quickrun').val('');
+	change_quickrun();
+}
+function focus_quickrun() {
+	if($('#gs_quickrun').val()=='# quick-run gruescript instructions here') {
+		clear_quickrun();
+	}
+}
+function change_quickrun() {
+	$('#quickrun_result').html('');
+};
+function run_quickrun() {
+	var succeeded = runSteps($('#gs_quickrun').val().split('\n'), 0);
+	update_display();
+	$('#quickrun_result').removeClass('succeeded').removeClass('failed').addClass(succeeded ? 'succeeded' : 'failed').html(succeeded ? 'Succeeded' : 'Failed');
+}
+
 
 /*
  *
@@ -2823,8 +2843,8 @@ tag boombox boombox_playing: Click.
 
 verb stop boombox
 untag boombox boombox_playing: Click.
-	
-# pseudo-things can be used in weird hacky ways!
+
+# "pseudo-things" can be used as data structures
 thing bad_songs
 prop 1 Mull of Kintyre
 prop 2 Agadoo
