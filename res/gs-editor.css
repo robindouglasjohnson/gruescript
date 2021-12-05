@@ -197,8 +197,6 @@ div.light span.string {
 	color: #009933;
 }
 
-
-
 div#gs_controls {
 	font-size: 10pt;
 	text-align: center;
@@ -207,6 +205,9 @@ div#gs_controls {
 	margin: 8px 8px 0 0;
 	padding: 2px;
 	border-radius: 8px;
+}
+div#gs_controls button {
+	font-size: 11pt;
 }
 span#syntax_highlighting_control {
 	font-size: 8pt;
