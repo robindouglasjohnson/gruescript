@@ -259,7 +259,7 @@ function doHighlighting() {
 			line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
 			
 			// special tags, variables and property names, iterator lists & orderers
-			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|numbers|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 			// properties and directions
 			line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
@@ -939,9 +939,9 @@ die You lose`;
  */
 
 EXAMPLES['The Party Line'] = `game The Party Line
-id TPLGS21
+id TPLGS22
 author Robin Johnson
-version 2.1
+version 2.2
 examine off
 person 2
 assign maxscore 5
@@ -2772,8 +2772,8 @@ at palace
 !eq $angel_chant 15: The angels chant "MIA HUMPUS, MIA BUMPUS, MIA AMABILI LUMPUS FEMINA"
 !eq $angel_chant 16: The angels chant "FAMILIA SUMUS"
 !eq $angel_chant 17: The angels chant "PUELLAE TANTUM VELLE BEATITUDINEM"
-!eq $angel_chant 18: The angels chant "SI VOLO EAM TIBI, DEBUERA CIRCUMDEDERIS",
-!eq $angel_chant 19: The angels chant "ALIUS EST ENIM PULVIS IN MORSU URSORUM",
+!eq $angel_chant 18: The angels chant "SI VOLO EAM TIBI, DEBUERA CIRCUMDEDERIS"
+!eq $angel_chant 19: The angels chant "ALIUS EST ENIM PULVIS IN MORSU URSORUM"
 !eq $angel_chant 20: The angels chant "NON POTES TANGERE"
 say The angels chant "CELEBRAMUS SIMILIS EST MCMXCIX
 assign angel_chant 0
@@ -2825,136 +2825,57 @@ verb stop boombox
 untag boombox boombox_playing: Click.
 	
 # pseudo-things can be used in weird hacky ways!
-thing bad_song_1
-tags bad_song
-prop name Mull of Kintyre
-thing bad_song_2
-tags bad_song
-prop name Agadoo
-thing bad_song_3
-tags bad_song
-prop name Delilah
-thing bad_song_4
-tags bad_song
-prop name Achy Breaky Heart
-thing bad_song_5
-tags bad_song
-prop name Crazy Frog
-thing bad_song_6
-tags bad_song
-prop name Mr Blobby
-thing bad_song_7
-tags bad_song
-prop name Barbie Girl
-thing bad_song_8
-tags bad_song
-prop name Thong Song
-thing bad_song_9
-tags bad_song
-prop name The Cheeky Song
-thing bad_song_10
-tags bad_song
-prop name You're Beautiful
-thing bad_song_11
-tags bad_song
-prop name The Millennium Prayer
-thing bad_song_12
-tags bad_song
-prop name The Birdie Song
-thing bad_song_13
-tags bad_song
-prop name Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini
-thing bad_song_14
-tags bad_song
-prop name Living Next Door to Alice
-thing bad_song_15
-tags bad_song
-prop name Teletubbies Say 'Eh-Oh'
-thing bad_song_16
-tags bad_song
-prop name Earth Song
-thing bad_song_17
-tags bad_song
-prop name I Wish I Could Fly
-thing bad_song_18
-tags bad_song
-prop name Friday
-thing bad_song_19
-tags bad_song
-prop name Surfin' Bird
-thing bad_song_20
-tags bad_song
-prop name Star Trekkin'
-thing bad_song_21
-tags bad_song
-prop name I'm Too Sexy
-thing bad_song_22
-tags bad_song
-prop name Mmmbop
-thing bad_song_23
-tags bad_song
-prop name The Hamster Dance
-thing bad_song_25
-tags bad_song
-prop name Could It Be Magic
-thing bad_song_26
-tags bad_song
-prop name Get Ready For This
-thing bad_song_27
-tags bad_song
-prop name Chirpy Chirpy Cheep Cheep
-thing bad_song_28
-tags bad_song
-prop name Candle in the Wind
-thing bad_song_29
-tags bad_song
-prop name Rockin' Robin
-thing bad_song_30
-tags bad_song
-prop name The Fog on the Tyne
-thing bad_song_31
-tags bad_song
-prop name Shaddap You Face
-thing bad_song_32
-tags bad_song
-prop name Hooray Hooray It's a Holi-Holiday
-thing bad_song_33
-tags bad_song
-prop name There's No One Quite Like Grandma
-thing bad_song_34
-tags bad_song
-prop name The Chicken Song
-thing bad_song_35
-tags bad_song
-prop name All I Want For Christmas is You
-thing bad_song_36
-tags bad_song
-prop name I Wanna Be a Hippy
-thing bad_song_37
-tags bad_song
-prop name I Should Be So Lucky
-thing bad_song_38
-tags bad_song
-prop name No Limits
-thing bad_song_39
-tags bad_song
-prop name Do Ya Think I'm Sexy
-thing bad_song_40
-tags bad_song
-prop name Saturday Night Dance
-thing bad_song_41
-tags bad_song
-prop name My Ding-a-Ling
-
-var num_tracks 41
+thing bad_songs
+prop 1 Mull of Kintyre
+prop 2 Agadoo
+prop 3 Delilah
+prop 4 Achy Breaky Heart
+prop 5 Crazy Frog
+prop 6 Mr Blobby
+prop 7 Barbie Girl
+prop 8 Thong Song
+prop 9 The Cheeky Song
+prop 10 You're Beautiful
+prop 11 The Millennium Prayer
+prop 12 The Birdie Song
+prop 13 Itsy Bitsy Teeny Weenie Yellow Polka Dot Bikini
+prop 14 Living Next Door to Alice
+prop 15 Teletubbies Say 'Eh-Oh'
+prop 16 Earth Song
+prop 17 I Wish I Could Fly
+prop 18 Friday
+prop 19 Surfin' Bird
+prop 20 Star Trekkin'
+prop 21 I'm Too Sexy
+prop 22 Mmmbop
+prop 23 The Hamster Dance
+prop 24 My Heart Will Go On
+prop 25 Could It Be Magic
+prop 26 Get Ready For This
+prop 27 Chirpy Chirpy Cheep Cheep
+prop 28 Candle in the Wind
+prop 29 Rockin' Robin
+prop 30 The Fog on the Tyne
+prop 31 Shaddap You Face
+prop 32 Hooray Hooray It's a Holi-Holiday
+prop 33 There's No One Quite Like Grandma
+prop 34 The Chicken Song
+prop 35 All I Want For Christmas is You
+prop 36 I Wanna Be a Hippy
+prop 37 I Should Be So Lucky
+prop 38 No Limits
+prop 39 Do Ya Think I'm Sexy
+prop 40 Saturday Night Dance
+prop 41 My Ding-a-Ling
+prop num_tracks 41
 
 thing track_order
 
 proc shuffle_tracks
 assign n 0
-all shuffle tagged bad_song
+all shuffle numbers 1 bad_songs.num_tracks
 add n 1
-assign track_order.$n $this.name
+assign track_order.$n bad_songs.$this
 
 rule
 assign playing_here 0
@@ -2963,7 +2884,7 @@ inscope boombox
 assign playing_here 1
 add track 1
 say The boombox plays "{ track_order.$track }".
-eq $track_order $num_tracks
+eq $track bad_songs.num_tracks
 assign track 0
 
 rule

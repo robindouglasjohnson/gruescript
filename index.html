@@ -1216,6 +1216,22 @@ Gruescript.listers = {
 		func: function(values) {
 			return values;
 		}
+	},
+	numbers: {
+		args: ['number', 'number'],
+		func: function(n1, n2) {
+			var arrOut = [];
+			if(n2 >= n1) {
+				for(var i=n1; i<=n2; ++i) {
+					arrOut.push(i);
+				}
+			} else {
+				for(var i=n1; i>=n2; --i) {
+					arrOut.push(i);
+				}
+			}
+			return arrOut;
+		}
 	}
 };
 function is_instruction(word) {
@@ -1440,7 +1456,6 @@ function evalProps(word, useDisplayName, article) {
 	}
 	var thingOrRoomObj=thing ? thing : room;
 	var prop = evalVar(word.substring(dotIx+1));
-	//console.log("looking for property: '"+prop+"'");
 	var caps = 0;
 	var propval = 0;
 	var initcap = false;
@@ -1448,7 +1463,7 @@ function evalProps(word, useDisplayName, article) {
 	if((thing||room).props.hasOwnProperty(prop)) {
 		propval = (thing||room).props[prop];
 		// else try alternate capitalisations
-	} else if(prop.startsWith('dir.')) {
+	} else if((''+prop).startsWith('dir.')) {
 		if(!room) {
 			return do_runtime_error('Couldn\'t evalate "'+word+'" because "'+prop+'" is not a room');
 		}
@@ -1581,6 +1596,9 @@ String.prototype.toUpperCaseExceptEntities = function(txt) {
 
 	return this.replaceAll(/(.*?)(\&\w+?\;)(.*)/g, function(match,p1,p2,p3) {return p1.toUpperCase() + p2 + p3.toUpperCaseExceptEntities()});
 }
+
+// make startswith work with numbers
+
 
 function runSteps(steps, lineN) {
 	if(typeof steps==='undefined'||typeof steps==='null') {
