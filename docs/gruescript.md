@@ -957,13 +957,14 @@ contains each of the specified values (you can include the same
 value more than once, if you like.)
 
 <code>numbers <i>number number</i></code>
-: The list will consist of consecutive numbers, starting from the
-first specified number and ending at the second (inclusive). If the
-second number is greater than the first, the list will "count" upwards;
-if it is smaller than the first, it will count downwards. Like all
-numbers in Gruescript, the numbers must be integers. So
-`numbers 1 5` will produce the numbers *1,2,3,4,5* in that order, and
-`numbers 6 3` will produce *6,5,4,3*.
+: The iteration list will consist of consecutive numbers,
+starting from the first specified number and ending at the second
+(inclusive), counting either up or down depending on whether the
+second number is greater than or less than the first. (If the two
+numbers are equal, the iteration list will contain only one number.)
+So `numbers 1 5` will produce the iteration list *1, 2, 3, 4, 5*
+in that order, and `numbers 6 3` will produce *6, 5, 4, 3*.
+
 
 So, for some examples of commands using listers:
 
