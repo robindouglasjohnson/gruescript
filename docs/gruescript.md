@@ -1724,8 +1724,8 @@ not at all.
 
 The conversation system allows you to create more complex dialogue in 
 your game by switching to a more choice-based system when the player is
-talking toa non-player character (NPC). While a conversation is going
-on, a newpane appears in the interface, between the scroller and 
+talking to a non-player character (NPC). While a conversation is going
+on, a new pane appears in the interface, between the scroller and 
 room description. This specifies who or what the player is talking 
 to, and contains up to three lists of 'topics' -- essentially, a 
 special kind of verb -- that the player can "ask", "tell" or "say". 
@@ -1756,10 +1756,10 @@ When the player 'talks' to Mrs Fothertonhayes-Cranstanley, they will
 see something like:
 
 	Talking to: Mrs Fothertonhayes-Cranstanley
-	Ask about: \[history\] \[geography\]
-	Tell about: \[husband\] \[burglary\]
-	Say: \[club password\]
-	\[end conversation\]
+	Ask about: [history] [geography]
+	Tell about: [husband] [burglary]
+	Say: [club password]
+	[end conversation]
 
 The "end conversation" verb will hide the conversation panel. It
 will also disappear if the NPC that the player was talking to is no
@@ -1836,16 +1836,16 @@ Mrs Fothertonhayes-Cranstanley, and the second message when talking to
 anyone else. Any general `verb ask` blocks would be considered after
 either of them.
 
-General `setverb ask` or <code>setverb_ask_<i>topic</i></code> are 
+General `setverb ask` or <code>setverb ask_<i>topic</i></code> are 
 also allowed:
 
-	verb ask_fish_expert
+	setverb ask_fish_expert
 	has $this fish
 
 will activate "ask fish expert about" for every thing with the `fish`
 tag, and
 
-	verb ask
+	setverb ask
 	has $this hot_topic
 
 will make *any* thing with the `hot_topic` tag available as an ask 
