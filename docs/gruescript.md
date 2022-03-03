@@ -1836,22 +1836,22 @@ Mrs Fothertonhayes-Cranstanley, and the second message when talking to
 anyone else. Any general `verb ask` blocks would be considered after
 either of them.
 
-General `setverb ask` or <code>setverb ask_<i>topic</i></code> are 
+General `setverb ask` or <code>setverb ask_<i>npc</i></code> are 
 also allowed:
 
-	setverb ask_fish_expert
+	setverb ask_fishologist
 	has $this fish
 
-will activate "ask fish expert about" for every thing with the `fish`
+will activate "ask fishologist about" for every thing with the `fish`
 tag, and
 
 	setverb ask
 	has $this hot_topic
 
 will make *any* thing with the `hot_topic` tag available as an ask 
-for *everyone* with `conversation`. Note that in these cases, only 
-'things' will be considered. If you want to do this other topics, 
-create 'dummy' things.
+for *everyone* with `conversation`. Note that in these cases, only
+existing  'things' will be considered. If you want to do this other
+topics, create 'dummy' things.
 
 By using variables, properties or tags in conversational verbs and 
 setverbs, it is possible to create quite complex conversation trees.
