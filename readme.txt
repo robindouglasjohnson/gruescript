@@ -2,7 +2,7 @@ GRUESCRIPT
 
 Gruescript is a scripting language/online tool for creating
 point-n-click text adventures. For more information and full
-documentation, see docs/gruescript.md
+documentation, see <https://github.com/robindouglasjohnson/gruescript/blob/main/docs/gruescript.md>
 
 It's also hosted at https://versificator.itch.io/gruescript
 
