@@ -1466,7 +1466,7 @@ The three orderers are:
 
 So, the iterator
 
-	all these backward Larry Curly Moe
+	all backward these Larry Curly Moe
 	say { $this }
 
 will print:
@@ -1477,7 +1477,7 @@ will print:
 
 but
 
-	all these shuffle Larry Curly Moe
+	all shuffle these Larry Curly Moe
 	say { $this }
 	
 might print the names in this order:
