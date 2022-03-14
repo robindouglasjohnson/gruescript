@@ -1122,8 +1122,7 @@ gt housecat.anger 0
 assign catloc housecat.loc
 select dirs housecat.loc
 eq $catloc.dir.$this $room
-random x 2
-eq $x 1
+chance 1 2
 say You hear an enraged yowl nearby.
 
 rule
@@ -1146,15 +1145,20 @@ random x 4
 say The cat hisses.
 
 rule
-random x 3
-eq $x 1
+chance 1 3
 assign catroom housecat.loc
 run pick_catdir
-sayat $catroom The cat walks {$catdir}.
+run assign_catverb
+sayat $catroom The cat {$catverb} {$catdir}.
 isroom $catroom.dir.$catdir
 put housecat $catroom.dir.$catdir
 run get_opposite
-sayat housecat.loc The cat walks in from the {$opposite}.
+sayat housecat.loc The cat {$catverb} in from the {$opposite}.
+
+proc assign_catverb
+assign catverb walks
+has housecat angry
+assign catverb runs
 
 # set a direction for the cat -
 # it must be a cardinal compass direction,
@@ -1265,58 +1269,50 @@ continue
 
 proc set_dancer
 eq $decade 2 # 1920s
-random x 2
 write a_dancer a man in a blazer and splats
-eq $x 2
+chance 1 2
 write a_dancer a man in a blazer and spats
 
 proc set_dancer
 eq $decade 3 # 1930s
-random x 2
 write a_dancer a man in a crickey jersey
-eq $x 2
+chance 1 2
 write a_dancer a woman in a long silk dress
 
 proc set_dancer
 eq $decade 4 # 1940s
-random x 2
 write a_dancer a man in a World War II army uniform
-eq $x 2
+chance 1 2
 write a_dancer a woman in a military-style dress
 
 proc set_dancer
 eq $decade 5 # 1950s
-random x 2
 write a_dancer a man in a zoot suit
-eq $x 2
+chance 1 2
 write a_dancer a woman in a gingham dress
 
 proc set_dancer
 eq $decade 6 # 1960s
-random x 2
 write a_dancer a man in a Nehru jacket
-eq $x 2
+chance 1 2
 write a_dancer a woman in a mini-dress
 
 proc set_dancer
 eq $decade 7 # 1970s
-random x 2
 write a_dancer a man in a tie-dye shirt and flares
-eq $x 2
+chance 1 2
 write a_dancer a woman in dungarees and platform shoes
 
 proc set_dancer
 eq $decade 8 # 1980s
-random x 2
 write a_dancer a man in a Hawaiian shirt and Ray-bans
-eq $x 2
+chance 1 2
 write a_dancer a woman in a pantsuit with big shoulderpads
 
 proc set_dancer
 eq $decade 9 # 1990s
-random x 2
 write a_dancer a man in a flannel shirt and jeans
-eq $x 2
+chance 1 2
 write a_dancer a woman in a hoodie and striped leggings
 
 proc set_dancer
@@ -1678,9 +1674,8 @@ pick noun these Insect Airship Woman Fred Tulip Rock Vampire King Honey\\
     Skeleton Murderer Graveyard String Belief Sutra Sect Face Occasion \\
     Garden Lizard Sorcerer Weight Hatchet Building Spider Mollusc \\
     Distance Servant Devil Toad Scarf Weather Ocean Knife Kidney Speed
-random x 2
 write band_name {$adjective} {$noun}
-eq $x 1
+chance 1 2
 write band_name the {$adjective} {$noun}s
 
 thing t_shirt band T-shirt

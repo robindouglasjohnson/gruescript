@@ -1058,6 +1058,14 @@ Gruescript.assertions = {
 			return list.includes(value);
 		}
 	},
+	chance: {
+		args: ['number', 'number'],
+		func: function(inN, ofN) {
+			var dicesides = parseInt(ofN);
+			var dieroll = dicesides ? 1 + pick(dicesides) : 0;
+			return dieroll <= parseInt(inN);
+		}
+	},
 	is: {
 		args: ['variable', 'string'],
 		func: function(val1, val2) {

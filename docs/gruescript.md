@@ -1039,6 +1039,13 @@ string.
 : The list includes the value. This uses the same listers, with
 the same arguments, as the `pick` and `count` commands (above).
 
+<code>chance <i>number number</i></code>
+: This succeeds on a random chance of the first number "in" the 
+second number -- for example, `chance 1 4` will succeed one time
+in four, or `chance 2 3` will succeed 2/3 of the time. (If the
+first number is equal to or greater than the second number, it
+will always succeed.)
+
 <code>eq <i>value value</i></code>
 : The two values are equal. This assertion, like its friends `gt`
 and `lt`, is only useful if one of the values is supplied by
