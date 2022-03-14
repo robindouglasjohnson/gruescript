@@ -1045,19 +1045,20 @@ prompt talk to {$this}
 
 verb talk doorman
 eq $score 0
-random x 4
+random x 5
 !eq $x 1: "Why not enjoy some music in the ballroom to the north?"
 !eq $x 2: "Help yourself to some refreshments in the dining hall. It's \\
     through the ballroom, north then east."
-!eq $x 3: "<span class="treasure">Treasures</span> may be deposited in \\
+!eq $x 3: "<font color="yellow">Treasures</font> may be deposited in \\
     the cloakroom to the east."
 !eq $x 4: "Guests who enjoy plants are invited to view the conservatory to the west."
+!eq $x 5: "Visitors are asked not to startle the house cat. It is of a nervous disposition."
 # first floor
 verb talk doorman
 gt $score 0
 lt $score 5
 random x 4
-!eq $x 1: "For those of a sporting disposition, there is a billiard room upstairs. \\
+!eq $x 1: "For those of a sporting inclination, there is a billiard room upstairs. \\
     Bring your own balls."
 !eq $x 2: "Books on a narrow variety of topics are available in the upstairs library, \\
     accessible through the billiard room."
@@ -1683,7 +1684,7 @@ name T-shirt
 tags portable wearable
 loc backstage
 
-thing platinum_disc <span class="treasure">platinum disc</span>
+thing platinum_disc <font color="yellow">platinum disc</font>
 name disc
 tags portable treasure
 loc backstage
@@ -1720,7 +1721,7 @@ verbs read
 loc cloakroom
 
 verb read treasures_sign
-say It reads: "Drop <span class="treasure">treasures</span> here!"
+say It reads: "Drop <font color="yellow">treasures</font> here!"
 
 thing walking_cane walking cane
 name cane
@@ -1916,7 +1917,7 @@ thing chefs_hat chef's hat
 name chef's hat
 tags portable wearable
 
-thing michelin_star <span class="treasure">Michelin star</span>
+thing michelin_star <font color="yellow">Michelin star</font>
 name star
 tags portable treasure
 loc kitchen
@@ -2258,7 +2259,7 @@ proc make_popcorn #bucket is in scope and full of water
 say A robotic voice says "AAARGH--WATER--SHORT--CIRCUI*fizz*"
 tag popcorn_machine broken
 
-thing oscar <span class="treasure">Oscar</span>
+thing oscar <font color="yellow">Oscar</font>
 tags portable treasure
 loc home_cinema
 
@@ -2320,7 +2321,7 @@ say The pool sharp frowns. "It's not fair! These balls aren't even round."
 say He drops the walking cane and sulks off.
 hide pool_sharp
 
-thing trophy <span class="treasure">billiards trophy</span>
+thing trophy <font color="yellow">billiards trophy</font>
 tags portable treasure
 loc billiard_room
 
@@ -2487,7 +2488,7 @@ tag bucket water
 thing toilet
 loc bathroom
 
-thing toilet_seat <span class="treasure">gold toilet seat</span>
+thing toilet_seat <font color="yellow">gold toilet seat</font>
 name toilet seat
 tags portable treasure
 loc bathroom
