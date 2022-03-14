@@ -1031,6 +1031,12 @@ specified thing or room has *at least one* of the listed tags.
 variable having never been set.) This is *not* related to whether
 the room the player is in is dark.
 
+<code>litroom <i>room</i></code>
+: The specified room is *currently* lit. If the room does *not* 
+have the `dark` tag, this assertion will always succeed. If it 
+*does* have the `dark` tag, this assertion will succeed if 
+any thing in the room is a `lightsource`.
+
 <code>is <i>variable string</i></code>
 : The value of the specified variable is equal to the specified
 string.

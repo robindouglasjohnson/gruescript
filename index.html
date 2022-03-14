@@ -1040,6 +1040,12 @@ Gruescript.assertions = {
 			return can_see();
 		}
 	},
+	litroom: {
+		args: ['room'],
+		func: function(room) {
+			return is_lit(room)
+		}
+	},
 	isthing: {
 		args: ['value'],
 		func: function(thing) {
