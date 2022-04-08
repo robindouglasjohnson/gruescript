@@ -3801,6 +3801,9 @@ function runProc(proc) {
 }
 
 function do_setverbs() {
+
+	push_this(null);
+
 	var things = get_things_in_scope();
 	var alreadyset = {};
 	////console.log('things in scope: ' +things.join(' '));
@@ -3931,7 +3934,9 @@ function do_setverbs() {
 				Game.vars.conversation != thing &&
 				has_tag(thing,'conversation')));
 		}
-	}	
+	}
+	
+	pop_this();
 }
 
 function list_verbs(thing, is_room) {
