@@ -900,10 +900,11 @@ values in the list and assigns that value to the variable.
 the variable.
 
 
-<code>run <i>procedure</i></code>
+<code>run <i>procedure values...</i></code>
 : Run the specified procedure (which must be defined elswhere by
-at least one `proc` block.) It does not matter whether the
-procedure succeeds or fails.
+at least one `proc` block.) The values (if any) given after the procedure
+name will be passed to the procedure as its arguments (if it has them).
+It does not matter whether the procedure succeeds or fails.
 
 <code>log <i>words...</i></code>
 : Print the words (there can be any number of them) to the
@@ -1075,9 +1076,11 @@ this in a `verb`, `setverb` or `proc` block to ensure that
 Gruescript 'continues' to the next matching block -- see the
 chapters on verbs, and procedures and rules.
 
-<code>try <i>procedure</i></code>
-: Run the specified procedure and see if it succeeds. This is
-like the command run except that it is an assertion. It succeeds
+<code>try <i>procedure values...</i></code>
+: Run the specified procedure and see if it succeeds. The values
+(if any) given after the procedure name will be passed to the
+procedure as its arguments (if it has them). This is
+like the command `run` except that it is an assertion. It succeeds
 if the procedure succeeds, or fails if the procedure fails.
 
 
@@ -1909,17 +1912,85 @@ is that `run` *itself* is not an assertion and cannot fail.) `try` will
 succeed if *all* the procedure blocks of the specified name succeed, or
 fail as soon as *any one* of those blocks fails.
 
-A note for programmers: Gruescript has no concept of 'scope', except
-for the contextual variable `this` in iterators. Assigning or changing
-a variable in one procedure block will change it for everything else as
-well.
+#### Arguments
+
+Procedure blocks can have **arguments**. These are variables local to the
+procedure block, which can be given specific values when calling the procedure
+with `run` or `try`. For example, given a procedure
+
+	proc say_clothing_colour item colour
+	say You are wearing a {$item} {$colour}.
+
+then calling it with
+
+	run say_clothing_colour tie red
+	
+will print
+
+	You are wearing a red tie.
+
+You could also pass variable values to the run command in the usual way:
+
+	run say_clothing_colour $neckwear $neckwear_colour
+
+Any 'global' variables with the same names as the arguments will not be affected
+(and will not be accessible from the procedure block). If variables called
+`item` or `colour` existed before the procedure was called, they will have their
+original values again after the procedure is executed.
+
+You do not have to specify all the arguments when calling a procedure. If an argument is
+not specified by a `try` or `run` instruction, procedure blocks with that argument
+will treat its value as zero (even if it had a 'global' value already.) If the `try` or
+`run` instruction contains more values than a procedure block has arguments, the block will
+ignore the extraneous values.
+
+Note that strictly speaking, arguments are 'local' to a procedure *block*, not a whole
+procedure! It is possible, but probably not wise, to have multiple blocks for the same
+procedure with completely different arguments; each block that is executed will be passed
+the same values in the same order, but it is the first line of the block that decides
+which values go into which arguments. Also note that changing the value of an 'argument'
+variable within the procedure will *not* affect the value being given to other blocks.
+So, given  the multi-block procedure
+
+	proc counting num
+	say {$num}...
+	add num 1
+	say ...{$num}...
+	continue
+	
+	proc counting num
+	say ...{$num}!
+
+running `run counting 1` will print
+
+	1...
+	...2...
+	...1!
+
+*not* `...3!` on the last line.
+
+
+Variables that are not named as arguments in a procedure *block*
+are treated as 'global', identical to the same variables in all other contexts.
+Changing their value in the procedure block will change them everywhere.
+
+Arguments allow procedures to be recursive:
+
+	proc countdown num
+	eq $num 0
+	say BLAST OFF!
+	
+	proc countdown num
+	say {$num}...
+	add num -1
+	run countdown $num
 
 ### Rules
 
 **Rules** are 'anonymous' procedures that run every turn,  beginning
 at the end of the player's first turn. They are like procedures, but
-have no name; their first line consists of the word `rule` on its own.
-
+have no name or arguments; their first line consists of the word `rule`
+on its own.
 
 Each `rule` block runs its instructions until they are complete or one
 of its assertions fails, and then execution passes to the next `rule`

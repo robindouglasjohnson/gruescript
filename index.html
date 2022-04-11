@@ -722,9 +722,9 @@ COLOURS = {
 
 Gruescript.commands = {
 	run: {
-		args: ['procedure'],
-		func: function(proc) {
-			runProc(proc);
+		args: ['procedure', '+value'],
+		func: function(proc, args) {
+			runProc(proc, args);
 		}
 	},
 	hide: {
@@ -1103,9 +1103,9 @@ Gruescript.assertions = {
 		}
 	},
 	'try': { // run procedure
-		args: ['procedure'],
-		func: function(proc) {
-			return runProc(proc);
+		args: ['procedure', '+value'],
+		func: function(proc, args) {
+			return runProc(proc, args);
 		}
 	},
 	js: { // run arbitrary javascript, please do not use
@@ -2596,8 +2596,15 @@ function buildProc(block) {
 				return do_error(lineN, '"'+words[1]+'" is not a legal procedure name');
 			}
 			procData.name = words[1];
+			procData.args = [];
 			if(words[2]) {
-				return do_error(lineN, '"proc" must have only one word after it');
+				for(var j=2; j<words.length; ++j) {
+					if(!legal_name(words[j])) {
+						return do_error(lineN, '"'+words[j]+'" is not a legal argument name');
+					} else {
+						procData.args.push(words[j]);
+					}
+				}
 			}
 		} else {
 			if(!procData.steps) {
@@ -3786,18 +3793,43 @@ function iterate(steps, iterees, mode, lineN) {
 	}
 }
 
-function runProc(proc) {
+ARGS_STACK = [];
+function push_args(args) {
+	var argObj = {};
+	for(var i in args) {
+		argObj[args[i]] = getVariableValue(args[i]);
+	}
+	ARGS_STACK.push(argObj);
+}
+
+function pop_args() {
+	var argObj = ARGS_STACK.pop();
+	for(var i in argObj) {
+		Gruescript.commands.assign.func(i, argObj[i]);
+	}
+}
+
+function runProc(proc, args) {
 	if(!Procs.hasOwnProperty(proc)) {
 		return do_runtime_error('"'+proc+'" is not a procedure');
 	}
+	
 	for(var i in Procs[proc]) {
+	
+		if(Procs[proc][i].args.length) {
+			push_args(Procs[proc][i].args);
+			for(var j in Procs[proc][i].args) {
+				Gruescript.commands.assign.func(Procs[proc][i].args[j], args[j] ? args[j] : 0);
+			}
+		}
+	
 		if(runSteps(Procs[proc][i].steps, Procs[proc][i].lineN)) {
+			pop_args();
 			return true;
 		}
+		pop_args();
 	}
 	return false;
-	// all proc blocks of this name succeeded
-	return true;
 }
 
 function do_setverbs() {
@@ -5557,6 +5589,8 @@ ConversationVerbs = [
 		}
 	}
 ];
+
+
 
 		</script>
 		<script type="text/javascript" language="JavaScript" src="res/gs-utils.js"></script>
