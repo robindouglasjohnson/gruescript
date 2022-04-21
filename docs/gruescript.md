@@ -370,6 +370,10 @@ to rooms is intended to be the exception rather than the norm; most
 verbs will be attached to things rather than rooms (see the next
 chapter.)
 
+Room verbs are considered "permanent" and cannot be set with setverb.
+If you need to arbitrarily activate and deactivate verbs that are not
+tied to particular things, use [intransitive verbs](#intransitive_verbs).
+
 ## Tags
 
 Rooms may optionally have any number of arbitrary **tags**, added in
@@ -999,7 +1003,10 @@ the player, or the player is carrying it.
 
 <code>visible <i>thing</i></code>
 : The thing is in scope, as above, and the player can see (i.e.
-the special variable `cantsee` is zero).
+the special variable `cantsee` is zero *and* the room that the
+player is in does not have the `dark` tag. The exception is that
+items in the player's inventory are *always* visible, regardless
+of `cantsee` status or darkness.)
 
 <code>at <i>room</i></code>
 : The player is in the specified room
@@ -1405,13 +1412,13 @@ always succeeds.
 
 `sequence`
 : The iterator will iterate for each item on the iteration list
-in turn, `until an iteration fails.` If all the iterations
+in turn, *until an iteration fails.* If all the iterations
 succeed, the iterator itself succeeds. If any one iteration
 fails, the iterator stops and fails itself.
 
 `select`
 : The iterator will iterate for each item on the iteration list
-in turn, `until an iteration succeeds`. If all the iterations
+in turn, *until an iteration succeeds.* If all the iterations
 fail, the iterator itself fails. If any one iteration succeeds,
 the iterator stops and succeeds itself.
 
@@ -1693,7 +1700,7 @@ Specific setverbs come with a noun:
 	setverb cook tomato
 	here special_tomato_oven
 
-Setverb blocks can also be **intransitive**. Intransitive setverb
+<a name="intransitive_verbs"></a>Setverb blocks can also be **intransitive**. Intransitive setverb
 blocks look like specific setverb blocks, but they use the
 pseudo-object `intransitive.`  If an instransitive `setverb` block
 succeeds, its verb will be available to the player but not tied to a
@@ -1858,16 +1865,16 @@ also allowed:
 	setverb ask_fishologist
 	has $this fish
 
-will activate "ask fishologist about" for every thing with the `fish`
-tag, and
+will activate "ask fishologist about" for any thing with the `fish`
+tag.
 
 	setverb ask
 	has $this hot_topic
 
 will make *any* thing with the `hot_topic` tag available as an ask 
 for *everyone* with `conversation`. Note that in these cases, only
-existing  'things' will be considered. If you want to do this other
-topics, create 'dummy' things.
+existing  'things' will be considered. If you want to do this for
+arbitrary topics, create 'dummy' things.
 
 By using variables, properties or tags in conversational verbs and 
 setverbs, it is possible to create quite complex conversation trees.
