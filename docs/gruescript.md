@@ -1580,7 +1580,7 @@ instruction in the general `play` block will refer to either the
 guitar or the piano, whichever is being played.
 
 If Gruescript finds multiple verb blocks that match the player's
-command, it will run through them all (general first, then specific)
+command, it will run through them all (specific first, then general)
 until one succeeds, then stop.
 
 This means we can do something like this:
