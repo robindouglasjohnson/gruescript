@@ -36,8 +36,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		<style type="text/css" id="exportableCSS">
 /* "exportable" CSS, i.e., whatever should be included in the downloaded games */
 body {
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	background-color: #000022;
 	color: #9999ff;
 	font-family:  monospace, Courier New, monospace;
@@ -236,7 +236,7 @@ div#conversation button {
 	}
 	
 	div#score:before {
-			content: "Score: "
+		content: "Score: "
 	}
 	
 	div#left-column {
@@ -4264,7 +4264,7 @@ function is_lit(room) {
 				(Game.vars.room == room && carried(thing))
 			 )
 			) {
-				return true;
+			return true;
 		}
 	}
 
@@ -5000,14 +5000,14 @@ function remove_loader() {
  */
 var JSONfn;
 if (!JSONfn) {
-		JSONfn = {};
+	JSONfn = {};
 }
 
 (function () {
 	JSONfn.stringify = function(obj) {
 		return JSON.stringify(obj,function(key, value){
-						return (typeof value === 'function' ) ? value.toString() : value;
-				});
+			return (typeof value === 'function' ) ? value.toString() : value;
+		});
 	}
 
 	JSONfn.parse = function(str) {
