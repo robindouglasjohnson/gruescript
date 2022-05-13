@@ -36,8 +36,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		<style type="text/css" id="exportableCSS">
 /* "exportable" CSS, i.e., whatever should be included in the downloaded games */
 body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	background-color: #000022;
 	color: #9999ff;
 	font-family:  monospace, Courier New, monospace;
@@ -58,9 +58,17 @@ div#game p {
 	margin: 0;
 }
 
+div#title_container {
+}
+
 span.game_title {
+	display: block;
 	text-decoration: underline;
 	text-transform: uppercase;
+}
+
+span.game_author {
+	display: block;
 }
 
 ul {
@@ -77,15 +85,15 @@ ul.room_contents_in_scroller {
 	text-indent: -5px;
 }
 ul > li {
-  text-indent: -5px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  margin-top: 0px;
-  margin-bottom: 0px;
+	text-indent: -5px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
-div#room_description ul > li:before {
-  content: "- ";
-  text-indent: -5px;
+div#room_description ul > li::before {
+	content: "- ";
+	text-indent: -5px;
 }
 
 img.thing_icon {
@@ -161,6 +169,9 @@ div#scroller button {
 span.prompt {
 	color: #9999cc;
 }
+span.prompt::before {
+	content: "> ";
+}
 span.old_prompt {
 	color: #666699;
 }
@@ -182,12 +193,24 @@ div#room_description {
 div#room_description div.im_in {
 	/* line-height: 1.33; */
 }
+div#room_description div.exits {
+}
+div#room_description div.actions {
+}
+div#room_description div.can_see {
+}
 div#conversation {
 	padding: 4px 4% 4px 4%;
 	display: none;
 	background-color: #000077;
 	line-height: 1.33;
 	color: #ccccff;
+}
+div#conversation div.talking_to {
+}
+div#conversation div.conversation_options {
+}
+div#conversation div.end_conversation {
 }
 div#conversation button {
 	padding-top: 1px;
@@ -213,7 +236,7 @@ div#conversation button {
 	}
 	
 	div#score:before {
-  		content: "Score: "
+			content: "Score: "
 	}
 	
 	div#left-column {
@@ -226,9 +249,9 @@ div#conversation button {
 		padding: 5% 5% 5% 5%;
 	}
 	div#scroller:after { // makes bottom padding work in FF/IE 
-	  content: "";
-	  height: 1em;
-	  display: block;
+		content: "";
+		height: 1em;
+		display: block;
 	}
 	
 	div#right-column {
@@ -729,7 +752,7 @@ Gruescript.commands = {
 	},
 	hide: {
 		args: ['thing'], // takes one argument, which must be a thing
-						  // (or 'this' in some circumstances).
+							// (or 'this' in some circumstances).
 		// args is an array OF arrays: in this case, the zeroth (and only)
 		// argument can only be a thing. ['thing','room'] would allow either.
 		func: function(thing) {
@@ -864,7 +887,7 @@ Gruescript.commands = {
 		}
 	},
 	freeze: { // freeze any {} expressions in a string variable
-	          // so that its value stays static from now on
+						// so that its value stays static from now on
 		args: ['variable'],
 		func: function(variable) {
 			Gruescript.commands.assign.func(variable, expandBraces(getVariableValue(variable)));
@@ -2945,6 +2968,8 @@ function get_point_for(gamevar) {
 
 function describe_room() {
 	
+	// Conversation
+	
 	if(Game.conversation && Game.vars.conversation) {
 		
 		var html = '';
@@ -2953,36 +2978,36 @@ function describe_room() {
 		
 		html += '<div class="conversation">\n';
 		
-		html += Localise.talking_to + ' ' + name(talkee) + '<br/>\n'
+		html += '<div class="talking_to">' + Localise.talking_to + ' ' + name(talkee) + '</div>\n'
 		
 		if(Game.conv.ask && Game.conv.ask.length) {
-			html += Localise.ask_about + ' ';
+			html += '<div class="conversation_options">' + Localise.ask_about + ' ';
 			for(var i in Game.conv.ask) {
 				var topic = Game.conv.ask[i];
 				html += draw_button(display_verb('ask_'+talkee, topic), "do_verb('ask_" + talkee + "','" + topic + "')");
 			}
-			html += '<br/>\n';
+			html += '</div>\n';
 		}
 		
 		if(Game.conv.tell && Game.conv.tell.length) {
-			html += Localise.tell_about + ' ';
+			html += '<div class="conversation_options">' + Localise.tell_about + ' ';
 			for(var i in Game.conv.tell) {
 				var topic = Game.conv.tell[i];
 				html += draw_button(display_verb('tell_'+talkee, topic), "do_verb('tell_" + talkee + "','" + topic + "')");
 			}
-			html += '<br/>\n';
+			html += '</div>\n';
 		}
 		
 		if(Game.conv.say && Game.conv.say.length) {
-			html += Localise.say + ' ';
+			html += '<div class="conversation_options">' + Localise.say + ' ';
 			for(var i in Game.conv.say) {
 				var topic = Game.conv.say[i];
 				html += draw_button(display_verb('say_'+talkee, topic), "do_verb('say_" + talkee + "','" + topic + "')");
 			}
-			html += '<br/>\n';
+			html += '<div/>\n';
 		}
 		
-		html += draw_button(display_verb('end_conversation'), "do_verb('end_conversation', '"+talkee+"')");
+		html += '<div class="end_conversation">' + draw_button(display_verb('end_conversation'), "do_verb('end_conversation', '"+talkee+"')") + '</div>';
 		
 		html += '</div>' // conversation
 		
@@ -2993,6 +3018,8 @@ function describe_room() {
 	} else if($('#conversation').css('display')=='block') {
 		$('#conversation').slideUp();
 	}
+	
+	// Room Description
 	
 	var html = '<div class="im_in">';
 	
@@ -3005,10 +3032,12 @@ function describe_room() {
 	}
 	html += '</div>\n';
 	
+	// Exits
+	
 	var exitOrder = ['north', 'northeast', 'east', 'southeast',
-	                 'south', 'southwest', 'west', 'northwest',
+									 'south', 'southwest', 'west', 'northwest',
 					 'fore', 'aft', 'port', 'starboard',
-	                 'up', 'down', 'in', 'out'];
+									 'up', 'down', 'in', 'out'];
 	
 	var exits = [];
 	exitOrder.forEach(function(dir) {
@@ -3027,18 +3056,24 @@ function describe_room() {
 	
 	if(exits.length) {
 		
-		html += Localise.exits + ' ' + exits.join(' ') + '<br/>\n';
+		html += '<div class="exits">' + Localise.exits + ' ' + exits.join(' ') + '</div>\n';
 	}
 	
+	// Actions
+	
 	if(hero_location().active_verbs && hero_location().active_verbs.length) {
+		
+		html += '<div class="actions">';
 		
 		if(hero_location().actions_name) {
 			html += hero_location().actions_name + ': ';
 		} else {
 			html += Localise.actions + " "
 		}
-		html += list_verbs(Game.vars.room, true) + '<br/>\n';
+		html += list_verbs(Game.vars.room, true) + '</div>\n';
 	}
+	
+	// Things Here
 	
 	var things_here = [];
 	
@@ -3053,7 +3088,7 @@ function describe_room() {
 	// ... then non-portable non-alive things
 	for(var key in Game.things) {
 		if(Game.things[key].props.loc == Game.vars.room && !has_tag(key,'alive') &&
-		   !has_tag(key,'portable') && !has_tag(key,'list_last')) {
+			 !has_tag(key,'portable') && !has_tag(key,'list_last')) {
 			var this_thing = draw_noun(key) + ' ' + list_verbs(key);
 			things_here.push(this_thing);
 		}
@@ -3061,7 +3096,7 @@ function describe_room() {
 	// then portable non-alive things
 	for(var key in Game.things) {
 		if(Game.things[key].props.loc == Game.vars.room && has_tag(key,'portable')
-		   && !has_tag(key,'alive') && !has_tag(key,'list_last')) {
+			 && !has_tag(key,'alive') && !has_tag(key,'list_last')) {
 			var this_thing = draw_noun(key) + ' ' + list_verbs(key);
 			things_here.push(this_thing);
 		}
@@ -3075,11 +3110,11 @@ function describe_room() {
 	}
 
 	if(lit && things_here.length) {
-		html += expandBraces(Localise.you_can_also_see) + '\n<ul>';
+		html += '<div class="can_see">' + expandBraces(Localise.you_can_also_see) + '\n<ul>';
 		things_here.forEach(function(description) {
 			html += '\n<li>' + description + '</li>';
 		})
-		html += '</ul>\n';
+		html += '</ul></div>\n';
 	}
 	
 	if(Game.wait) {
@@ -3128,14 +3163,14 @@ function describe_room_in_scroller() {
 			// then non-portable non-alive things
 			for(var thing in Game.things) {
 				if(!Game.things[thing].is_alive && !Game.things[thing].portable &&
-				   Game.things[thing].props.loc == Game.vars.room && !Game.things[thing].list_last) {
+					 Game.things[thing].props.loc == Game.vars.room && !Game.things[thing].list_last) {
 					things_here.push(Game.things[thing].props.display);
 				}
 			}
 			// then portable non-alive things
 			for(var thing in Game.things) {
 				if(!Game.things[thing].is_alive && Game.things[thing].portable &&
-				   Game.things[thing].props.loc == Game.vars.room && !Game.things[thing].list_last) {
+					 Game.things[thing].props.loc == Game.vars.room && !Game.things[thing].list_last) {
 					things_here.push(Game.things[thing].props.display);
 				}
 			}
@@ -3525,7 +3560,7 @@ function go(direction) {
 
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; ' + display_verb('go', direction, true, true) + '</span>');
+	say('<span class="prompt"> ' + display_verb('go', direction, true, true) + '</span>');
 	
 	Game.vars.verb = 'go';
 	Game.vars.direction = direction;
@@ -3690,7 +3725,7 @@ function do_verb(verb, thing, not_a_turn) {
 		var phrasing = display_verb(verb,thing, true);
 		dim_old_messages();
 		say('');
-		say('<span class="prompt">&gt; ' + phrasing + '</span>');
+		say('<span class="prompt"> ' + phrasing + '</span>');
 		push_undo_state(expandBraces(phrasing));
 		Game.vars.held = Game.held ? Game.held : 0;
 	}
@@ -4158,8 +4193,8 @@ function initialise() {
 	}
 	
 	if(Game.show_title) {
-		say("<span class=\"game_title\">" + Game.title.toUpperCaseExceptEntities() + (Game.author ? "</span><br/>" +
-			Localise.intro_by + " " + Game.author + "" : ""));
+		say("<div id=\"title\"><span class=\"game_title\">" + Game.title + (Game.author ? "</span>" +
+			"<span class=\"game_author\">" + Localise.intro_by + " " + Game.author + "</span></div>" : ""));
 	}
 
 	//say('For instructions, touch: <a href="javascript:void(0)" onClick="instructions()">instructions</a>\n');
@@ -4225,11 +4260,11 @@ function is_lit(room) {
 	
 	for(var thing in Game.things) {
 		if(has_tag(thing, 'lightsource') && (
-		    (Game.things[thing].props.loc == room) ||
-		    (Game.vars.room == room && carried(thing))
-		   )
-		  ) {
-			  return true;
+				(Game.things[thing].props.loc == room) ||
+				(Game.vars.room == room && carried(thing))
+			 )
+			) {
+				return true;
 		}
 	}
 
@@ -4756,7 +4791,7 @@ function undo() {
 	
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; '+Localise.undo+'</span>');
+	say('<span class="prompt"> '+Localise.undo+'</span>');
 
 	var popped_state = pop_undo_state();
 	
@@ -4847,7 +4882,7 @@ function load_game(game_name, suppress_message) {
 	if(!suppress_message) {
 		dim_old_messages();
 		say('');
-		say('<span class="prompt">&gt; restore</span>');
+		say('<span class="prompt"> restore</span>');
 	}
 
 	GAME_OVER = false;
@@ -4965,22 +5000,22 @@ function remove_loader() {
  */
 var JSONfn;
 if (!JSONfn) {
-    JSONfn = {};
+		JSONfn = {};
 }
 
 (function () {
-  JSONfn.stringify = function(obj) {
-    return JSON.stringify(obj,function(key, value){
-            return (typeof value === 'function' ) ? value.toString() : value;
-        });
-  }
+	JSONfn.stringify = function(obj) {
+		return JSON.stringify(obj,function(key, value){
+						return (typeof value === 'function' ) ? value.toString() : value;
+				});
+	}
 
-  JSONfn.parse = function(str) {
-    return JSON.parse(str,function(key, value){
-        if(typeof value != 'string') return value;
-        return ( value.substring(0,8) == 'function') ? eval('('+value+')') : value;
-    });
-  }
+	JSONfn.parse = function(str) {
+		return JSON.parse(str,function(key, value){
+				if(typeof value != 'string') return value;
+				return ( value.substring(0,8) == 'function') ? eval('('+value+')') : value;
+		});
+	}
 }());
 
 
@@ -5319,7 +5354,7 @@ function set_heights() { // no animation
 function instructions() {
 	dim_old_messages();
 	say('');
-	say('<span class="prompt">&gt; '+Localise.intro_instructions_button+'</span>');
+	say('<span class="prompt"> '+Localise.intro_instructions_button+'</span>');
 	say(Localise.instructions, true);
 }
 
