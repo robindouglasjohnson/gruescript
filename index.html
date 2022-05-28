@@ -1195,7 +1195,6 @@ Gruescript.listers = {
 		}
 	},
 	tagged: {
-		args: [],
 		args: ['tag'],
 		func: function(tag) {
 			var things_and_rooms = [];
@@ -1256,7 +1255,7 @@ Gruescript.listers = {
 	},
 	numbers: {
 		args: ['number', 'number'],
-		func: function(n1, n2) {
+		func: function(n1,n2) {
 			var arrOut = [];
 			if(n2 >= n1) {
 				for(var i=n1; i<=n2; ++i) {
@@ -1418,7 +1417,7 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 					return do_error(lineN, '"'+argsArray[j] + '" is not a '+argType + ' (for '+lister+')');
 				}
 			}
-			var listIn = Gruescript.listers[lister].func(argsArray);
+			var listIn = evalLister(lister, argsArray);
 			passedArgs.push(listIn);
 			break;
 		}
@@ -1467,6 +1466,22 @@ function do_instruction(commandName, words, message, lineN, isAssertion, isNot, 
 	return !isAssertion || realResult;
 }
 
+function evalLister(lister, wordList) {
+
+	var listerArgs = [];
+
+	for(var i in Gruescript.listers[lister].args) {
+		var arg = Gruescript.listers[lister].args[i];
+		if(arg.charAt(0)=='+') {
+			listerArgs.push(wordList.slice(i));
+			break;
+		} else {
+			listerArgs.push(wordList[i]);
+		}
+	}
+
+	return Gruescript.listers[lister].func.apply(this, listerArgs);
+}
 
 function evalProps(word, useDisplayName, article) {
 	//console.log('evalProps: '+word);
