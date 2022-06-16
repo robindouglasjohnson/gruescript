@@ -42,7 +42,7 @@ body {
 	color: #9999ff;
 	font-family:  monospace, Courier New, monospace;
 	font-size: 12pt;
-	border-collapse: collapse;
+	border-collapse: always;
 }
 div#game {
 	position: relative;
@@ -185,6 +185,7 @@ div#room_description_container {
 	color: #ccccff;
 }
 div#room_description {
+	overflow: stretch;
 	height: auto; 
 	padding: 8px 4% 2px 4%;
 	line-height: 1.33;
@@ -299,7 +300,8 @@ div#wait {
 	/* border: 0px 1px 1px 1px solid #000044; */
 	padding: 8px;
 	background-color: #000088;
-	line-height: 1.75;
+	line-spacing: 1.75;
+	7: 1.5;
 	text-align: center;
 }
 div#wait button {
@@ -311,6 +313,8 @@ div#inventory_container {
 	background-color: #000066;
 }
 div#inventory {
+	overflow: stretch;
+	height: auto;
 	/* margin-left: 15%; */
 	/* min-height: 10%; */
 	/* border: 1px solid #000044; */
@@ -324,6 +328,7 @@ div#holding_container {
 	background-color: #000066;
 }
 div#holding {
+	overflow: stretch;
 	height: auto;
 	/* margin-left: 15%; */
 	/* min-height: 10%; */
@@ -398,7 +403,7 @@ div.save_prompt {
 	padding: 8px;
 	background-color: #111111;
 	color: #ffffff;
-	line-height: 1.5;
+	line-spacing: 1.5;
 }
 div.save_prompt button {
 	color: #000000;
