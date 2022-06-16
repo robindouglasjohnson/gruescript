@@ -579,7 +579,7 @@ function do_localisation() {
 	}
 }
 
-IS_EXPORT = false;
+IS_EXPORT = true;
  
 Gruescript = {};
 
@@ -964,6 +964,61 @@ Gruescript.commands = {
 			}
 		}
 	},
+	create: { // create an object
+		args: ['value','+value'],
+		func: function(thingName, descWords) {
+			if(!legal_name(roomName)) {
+				return do_runtime_error("couldn't create thing: \""+thingName+"\" is not a valid name");
+			}
+			if(Game.things[thingName]) {
+				return do_runtime_warning("couldn't create thing \""+thingName+"\" as it already exists");
+			}
+			Game.things[thingName] = buildThing({lineN:0,name:thingName,code:['thing '+thingName+' '+descWords.join(' ')]});
+		}
+	},
+	destroy: { // destroy an object
+		args: ['thing'],
+		func: function(thing) {
+			hide(thing);
+			delete Game.things.thing;
+		}
+	},
+	createroom: { // create a room
+		args: ['value','+value'],
+		func: function(roomName, descWords) {
+			if(!legal_name(roomName)) {
+				return do_runtime_error("couldn't create room: \""+roomName+"\" is not a valid name");
+			}
+			if(Game.rooms[roomName]) {
+				return do_runtime_warning("couldn't create room \""+roomName+"\" as it already exists");
+			}
+			Game.rooms[roomName] = buildroom({lineN:0,name:roomName,code:['room '+roomName+' '+descWords.join(' ')]});
+			Game.rooms[roomName].directions = {};
+		}
+	},
+	destroyroom: { // destroy a room
+		args: ['room'],
+		func: function(room) {
+			if(Game.vars.room==room) {
+				return do_runtime_error("couldn't destroy room \""+room+"\" as it is the hero's location");
+			}
+			for(var thing in Game.things) {
+				if(location_of(thing)==room) {
+					hide(thing);
+				}
+			}
+			for(var i in Game.rooms) {
+				if(i!=room) {
+					for(var dir in Game.rooms[i].directions) {
+						if(Game.rooms[i].directions[dir] == room) {
+							delete Game.rooms[i].directions[dir];
+						}
+					}
+				}
+			}
+			delete Game.rooms[room];
+		}
+	},
 	log: {
 		args: ['+value'],
 		func: function(values) {
@@ -1251,6 +1306,12 @@ Gruescript.listers = {
 		args: ['+value'],
 		func: function(values) {
 			return values;
+		}
+	},
+	from: {
+		args: ['string'],
+		func: function(words) {
+			return words.match(/\S+/g) || []
 		}
 	},
 	numbers: {
@@ -1824,12 +1885,12 @@ function readIfChanged() {
 		readGruescript();
 	}
 }
-
+/*
 $(document).ready(function() {
 	if(IS_EXPORT) {
 		buildGame(true);
 	}
-});
+}); */
 
 function readGruescript() {
 	GRUESCRIPT_SRC = $('#gsEdit').val().replaceAll('\r\n','\n').replaceAll('\r','\n').split('\n');
@@ -3249,7 +3310,7 @@ function draw_noun(thing) {
 	if(Game.examine && !Game.things[thing].no_examine) {
 		return draw_button(img + desc, "do_verb('examine','" + thing + "')", true);
 	} else {
-		return img + desc;
+		return img + expandBraces(desc);
 	}
 }
 
@@ -5639,8 +5700,6 @@ ConversationVerbs = [
 		}
 	}
 ];
-
-
 
 		</script>
 		<script type="text/javascript" language="JavaScript" src="res/gs-utils.js"></script>

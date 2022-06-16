@@ -240,7 +240,7 @@ function doHighlighting() {
 			// instructions (& other things) with a string as their first argument
 			line = line.replace(/(^\s*(say|die|js|game|author|prompt|display)\s+)(.*)$/g, '$1<span class="string">$3</span>');
 			// instructions with a string as their second argument, and block names that include a printed message
-			line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
+			line = line.replace(/(^\s*(write|is|room|thing|tagdesc|sayat|localise|localize|create|createroom)\s+[a-zA-Z_]+\s+)(.*)$/g, '$1<span class="string">$3</span>');
 			var str = '';
 			var strIx = line.indexOf('<span class="string">');
 			if(strIx>=0) {
@@ -250,7 +250,7 @@ function doHighlighting() {
 			
 			// commands
 			// todo: might save a few milliseconds if the words in these regexps were sorted by most common first
-			line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log)(?=\s|$)/g,'$1<span class="command">$2</span>');
+			line = line.replaceAll(/(^\s*)(run|hide|bring|give|carry|wear|unwear|unhold|put|putnear|goto|swap|tag|untag|tagroom|untagroom|assign|write|add|random|say|die|open|close|status|pick|count|isthing|isroom|log|create|createroom|destroy|destroyroom)(?=\s|$)/g,'$1<span class="command">$2</span>');
 			// assertions
 			line = line.replaceAll(/(^\s*)(!?(carried|held|here|inscope|visible|at|thingat|near|has|hasany|hasall|taghere|cansee|is|eq|gt|lt|contains|continue|try|js))(?=\s|$)/g,'$1<span class="assertion">$2</span>');
 			// iterators
@@ -259,7 +259,7 @@ function doHighlighting() {
 			line=line.replaceAll(/(^\s*)(game|room|exit|thing|rule|verb|setverb|proc|tagdesc|var)(?=\s|$)/g,'$1<span class="blocktype">$2</span>');
 			
 			// special tags, variables and property names, iterator lists & orderers
-			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|here|inscope|numbers|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
+			line=line.replaceAll(/\s(things|rooms|carried|in|tagged|these|from|here|inscope|numbers|forward|backward|shuffle|start|dark|portable|wearable|worn|alive|lightsource|plural|indef|def|male|female|nonbinary|list_last|quiet|on|off|score|maxscore|intransitive)(?=\s|$)/g,' <span class="specialtag">$1</span>');
 
 			// properties and directions
 			line=line.replaceAll(/(^\s*)(prop|name|desc|north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|fore|aft|port|starboard|id|author|version|person|examine|conversation|show_title|instructions|wait|tags|dir|loc|verbs|cverbs|display|prompt|pronoun|localise|localize|color|colour)(?=\s|$)/g,'$1<span class="prop">$2</span>');
