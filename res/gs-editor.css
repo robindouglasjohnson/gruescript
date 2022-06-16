@@ -237,7 +237,7 @@ div#gs_console {
 button#clear_console {
 	text-align: center;
 	margin: 0 auto;
-	background-color: #000000;
+	background-color: #000000
 	color: #00cc00;
 }
 div#gs_console span.error {
@@ -398,4 +398,4 @@ div#optionsMenu a:hover {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
-}
+}		</style>
