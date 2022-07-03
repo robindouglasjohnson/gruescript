@@ -111,6 +111,32 @@ function syncScroll() {
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
 }
 
+// animation that respects reduced-motion preference
+function allowMotion() {
+	return window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+}
+
+function animate(jQueryElement, animationProperties, duration, force) {
+	var preferredDuration = force || allowMotion() ? duration : 0;
+	return jQueryElement.stop().animate(animationProperties, preferredDuration);
+}
+
+function slideDown(jQueryElement, force) {
+	if (force || allowMotion()) {
+		return jQueryElement.slideDown();
+	} else {
+		return jQueryElement.show();
+	}
+}
+
+function slideUp(jQueryElement, force) {
+	if (force || allowMotion()) {
+		return jQueryElement.slideUp();
+	} else {
+		return jQueryElement.hide();
+	}
+}
+
 SYNTAX_HIGHLIGHTING = true;
 function toggleHighlighting() {
 	if(SYNTAX_HIGHLIGHTING) {
@@ -435,11 +461,11 @@ function doOptionsMenu() {
 	}
 	if(OPTIONS_SHOWN) {
 		$('#options_label').html("Options &darr;");
-		$('#optionsMenu').slideUp();
+		slideUp($('#optionsMenu'));
 		OPTIONS_SHOWN = false;
 	} else {
 		$('#options_label').html("Options &uarr;");
-		$('#optionsMenu').slideDown();
+		slideDown($('#optionsMenu'));
 		OPTIONS_SHOWN = true;
 		// if user leaves the menu open for 10s,
 		// check the mouse isn't still over it,
@@ -450,7 +476,7 @@ function doOptionsMenu() {
 function hideOptions() {
 	// if mouse isn't currently over the menu, hide it
 	if(!$('#optionsMenu:hover').length && !$('#optionsButton:hover').length) {
-		$('#optionsMenu').slideUp();
+		slideUp($('#optionsMenu'));
 		OPTIONS_SHOWN = false;
 	} else { // otherwise check again in 2s
 		setTimeout(()=>{hideOptions();},2000);
@@ -492,11 +518,11 @@ function doExamplesMenu() {
 	}
 	if(EXAMPLES_SHOWN) {
 		$('#examples_label').html("Examples &darr;");
-		$('#examplesMenu').slideUp();
+		slideUp($('#examplesMenu'));
 		EXAMPLES_SHOWN = false;
 	} else {
 		$('#examples_label').html("Examples &uarr;");
-		$('#examplesMenu').slideDown();
+		slideDown($('#examplesMenu'));
 		EXAMPLES_SHOWN = true;
 		// if user leaves the menu open for 10s,
 		// check the mouse isn't still over it,
@@ -507,7 +533,7 @@ function doExamplesMenu() {
 function hideExamples() {
 	// if mouse isn't currently over the menu, hide it
 	if(!$('#examplesMenu:hover').length && !$('#examplesButton:hover').length) {
-		$('#examplesMenu').slideUp();
+		slideUp($('#examplesMenu'));
 		EXAMPLES_SHOWN = false;
 	} else { // otherwise check again in 2s
 		setTimeout(()=>{hideExamples();},2000);

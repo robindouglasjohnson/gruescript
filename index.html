@@ -2915,7 +2915,7 @@ function gs_console_append(txt) {
 		$('#gs_console').append(txt);
 
 		var scrTop = $('#gs_console').prop("scrollHeight");
-		$('#gs_console').stop().animate({scrollTop: scrTop}, 500);
+		animate($('#gs_console'), {scrollTop: scrTop}, 500);
 	}
 }
 
@@ -2939,7 +2939,7 @@ function gs_console(txt) {
 		$('#gs_console').append('<br/>' + txt);
 		
 		var scrTop = $('#gs_console').prop("scrollHeight");
-		$('#gs_console').stop().animate({scrollTop: scrTop}, 500);
+		animate($('#gs_console'), {scrollTop: scrTop}, 500);
 	}
 }
 
@@ -3089,10 +3089,10 @@ function describe_room() {
 		
 		$('#conversation').html(html);
 		if($('#conversation').css('display')=='none') {
-			$('#conversation').slideDown();
+			slideDown($('#conversation'));
 		}
 	} else if($('#conversation').css('display')=='block') {
-		$('#conversation').slideUp();
+		slideUp($('#conversation'));
 	}
 	
 	// Room Description
@@ -3555,7 +3555,7 @@ function say(txt) {
 	
 	// animated scroll to the botton
 	var scrTop = $('#scroller').prop("scrollHeight");
-	$('#scroller').stop().animate({scrollTop: scrTop}, 500);
+	animate($('#scroller'), {scrollTop: scrTop}, 500);
 }
 function say_if(cond, trueTxt, falseTxt) {
 	if(cond) {
@@ -4293,26 +4293,26 @@ function confirm_restart() {
 	if(GAME_OVER) {
 		restart_game();
 	} else {
-		$('#prompt').slideUp();
-		$('#save_prompt').slideUp();
-		$('#restart_prompt').slideDown();
+		slideUp($('#prompt'));
+		slideUp($('#save_prompt'));
+		slideDown($('#restart_prompt'));
 	}
 }
 function really_restart() {
 	restart_game();
-	$('#restart_prompt').slideUp();
-	$('#prompt').slideDown();
+	slideUp($('#restart_prompt'));
+	slideDown($('#prompt'));
 	$('#text_in').focus();
 }
 function cancel_restart() {
-	$('#restart_prompt').slideUp();
-	$('#prompt').slideDown();
+	slideUp($('#restart_prompt'));
+	slideDown($('#prompt'));
 	$('#text_in').focus();
 }
 
 function restart_game() {
-	$('#save_prompt').slideUp();
-	$('#room_description').slideDown();
+	slideUp($('#save_prompt'));
+	slideDown($('#room_description'));
 	GAME_OVER = false;
 	Game = JSONfn.parse(INITIAL_GAME);
 	document.getElementById('scroller_content').innerHTML = '';
@@ -4863,7 +4863,7 @@ function pop_undo_state()
 	return old_state;
 }
 function undo() {
-	$('#room_description').slideDown();
+	slideDown($('#room_description'));
 	
 	dim_old_messages();
 	say('');
@@ -4905,8 +4905,8 @@ function save_game(savename) {
 			Game.title.replaceAll(/[^a-zA-Z0-9\s]/g,'');
 	}
 	
-	$('#restart_prompt').slideUp();
-	$('#save_prompt').slideDown();
+	slideUp($('#restart_prompt'));
+	slideDown($('#save_prompt'));
 	$('#save_name').val(savename).focus().select();
 }
 
@@ -4917,13 +4917,13 @@ function confirm_save() {
 	} else if(game_name.toUpperCase=='AUTOSAVE') {
 		say("'AUTOSAVE' is used internally by Gruescript. Please choose something else.");
 	} else {
-		$('#save_prompt').slideUp();
+		slideUp($('#save_prompt'));
 		SAVED_GAME_NAME = game_name;
 		store_game(game_name);
 	}
 }
 function cancel_save() {
-	$('#save_prompt').slideUp();
+	slideUp($('#save_prompt'));
 }
 function store_game(game_name, suppress_message, circumvent_thingy) {
 	game_name = game_name.toUpperCase();
@@ -5408,14 +5408,14 @@ function animate_heights() {
 }
 
 function animate_inventory_height() {
-	$('#inventory_container').stop().animate({height: $('#inventory').outerHeight()}, 300);
+	animate($('#inventory_container'), {height: $('#inventory').outerHeight()}, 300);
 	set_heights();
 }
 function animate_holding_height() {
-	$('#holding_container').stop().animate({height: $('#holding').outerHeight()}, 300);
+	animate($('#holding_container'), {height: $('#holding').outerHeight()}, 300);
 }
 function animate_room_description_height() {
-	$('#room_description_container').stop().animate({height: $('#room_description').outerHeight()}, 300);
+	animate($('#room_description_container'), {height: $('#room_description').outerHeight()}, 300);
 }
 
 function set_heights() { // no animation
