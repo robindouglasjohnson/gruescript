@@ -769,7 +769,8 @@ whether it is carried.
 <code>give <i>thing</i></code>
 : Put a thing into the player's inventory -- they will be 'holding' the
 new thing, and the thing they were previously holding (if any) will be
-returned to their main inventory.
+returned to their main inventory. If the thing was already in the player's
+inventory, it will be placed in the 'holding' slot.
 
 <code>carry <i>thing</i></code>
 : This is identical to give, except that the player will not be holding

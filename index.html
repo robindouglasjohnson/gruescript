@@ -4355,15 +4355,14 @@ function uncarry(thing) {
 }
 
 function give_hero(thing, sneak) { // if SNEAK is true, put the thing in the inventory, not the PC's hands (i.e. carrying not held)
-	if(!carried(thing)) {
-		if(sneak) {
-			Game.inventory.unshift(thing);
-			activate_verb(thing,'drop');
-			deactivate_verb(thing,'take');
-			set_active(thing,'wear',has_tag(thing,'wearable'));
-		} else {
-			hold(thing);
-		}
+	if(!carried(thing) && sneak) {
+		Game.inventory.unshift(thing);
+		activate_verb(thing,'drop');
+		deactivate_verb(thing,'take');
+		set_active(thing,'wear',has_tag(thing,'wearable'));
+	}
+	else if (!sneak) {
+		hold(thing); // force hold something already carried	
 	}
 	Game.things[thing].props.loc = 0;
 	activate_verb(thing, 'drop');
