@@ -4366,7 +4366,9 @@ function give_hero(thing, sneak) { // if SNEAK is true, put the thing in the inv
 		}
 	}
 	else {
-		hold(thing); // force hold something already carried
+		if (!sneak) {
+			hold(thing); // force hold something already carried
+		}	
 	}
 	Game.things[thing].props.loc = 0;
 	activate_verb(thing, 'drop');
