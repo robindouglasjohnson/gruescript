@@ -579,7 +579,34 @@ function do_localisation() {
 	}
 }
 
-IS_EXPORT = true;
+
+// animation that respects reduced-motion preference
+function allowMotion() {
+	return window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+}
+
+function animate(jQueryElement, animationProperties, duration, force) {
+	var preferredDuration = force || allowMotion() ? duration : 0;
+	return jQueryElement.stop().animate(animationProperties, preferredDuration);
+}
+
+function slideDown(jQueryElement, force) {
+	if (force || allowMotion()) {
+		return jQueryElement.slideDown();
+	} else {
+		return jQueryElement.show();
+	}
+}
+
+function slideUp(jQueryElement, force) {
+	if (force || allowMotion()) {
+		return jQueryElement.slideUp();
+	} else {
+		return jQueryElement.hide();
+	}
+}
+
+IS_EXPORT = false;
  
 Gruescript = {};
 
@@ -1885,12 +1912,12 @@ function readIfChanged() {
 		readGruescript();
 	}
 }
-/*
+
 $(document).ready(function() {
 	if(IS_EXPORT) {
 		buildGame(true);
 	}
-}); */
+});
 
 function readGruescript() {
 	GRUESCRIPT_SRC = $('#gsEdit').val().replaceAll('\r\n','\n').replaceAll('\r','\n').split('\n');

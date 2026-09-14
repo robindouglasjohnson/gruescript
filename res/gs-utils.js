@@ -111,31 +111,6 @@ function syncScroll() {
 	SYNTAX_DIV.scrollLeft = GSEDIT.scrollLeft;
 }
 
-// animation that respects reduced-motion preference
-function allowMotion() {
-	return window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-}
-
-function animate(jQueryElement, animationProperties, duration, force) {
-	var preferredDuration = force || allowMotion() ? duration : 0;
-	return jQueryElement.stop().animate(animationProperties, preferredDuration);
-}
-
-function slideDown(jQueryElement, force) {
-	if (force || allowMotion()) {
-		return jQueryElement.slideDown();
-	} else {
-		return jQueryElement.show();
-	}
-}
-
-function slideUp(jQueryElement, force) {
-	if (force || allowMotion()) {
-		return jQueryElement.slideUp();
-	} else {
-		return jQueryElement.hide();
-	}
-}
 
 SYNTAX_HIGHLIGHTING = true;
 function toggleHighlighting() {
