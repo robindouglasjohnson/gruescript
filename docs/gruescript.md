@@ -451,7 +451,8 @@ They are defined in `thing` blocks, like this:
 	thing top_hat blue top hat
 	name hat
 	desc A tall stovepipe hat in royal blue velvet.
-	loc bedroomtags portable wearable posh
+	loc bedroom
+ 	tags portable wearable posh
 	prop material velvet
 
 Going through this example line by line:
